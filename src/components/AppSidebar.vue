@@ -1,5 +1,7 @@
 <template>
-  <aside v-expandable></aside>
+  <aside v-expandable>
+    <ranges />
+  </aside>
 </template>
 <style scoped lang="scss">
 @import "../style/variables";
@@ -63,6 +65,11 @@ aside {
 </style>
 <script>
 import "../directives/expandable";
+import Ranges from "./Ranges";
 
-export default {};
+export default {
+  components: {
+    Ranges
+  }
+};
 </script>
