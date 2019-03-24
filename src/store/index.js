@@ -2,6 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import address from "./modules/address";
+import ranges from "./modules/ranges";
 
 Vue.use(Vuex);
 
@@ -22,7 +23,8 @@ export default new Vuex.Store({
     error: ""
   },
   modules: {
-    address
+    address,
+    ranges
   },
   mutations,
   actions

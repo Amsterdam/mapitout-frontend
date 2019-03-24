@@ -12,6 +12,7 @@ import GoogleMapsApiLoader from "google-maps-api-loader";
 
 import { getDeviceGeoLocation } from "../utils";
 import styles from "../style/google-maps";
+import { mapState } from "vuex";
 
 export const BOUNDARIES_NETHERLANDS = { north: 53.53, south: 50.74, west: 3.35, east: 7.25 };
 
@@ -21,6 +22,20 @@ export default {
       google: null,
       map: null
     };
+  },
+  computed: {
+    ...mapState("ranges", {
+      ranges: state => state.ranges
+    })
+  },
+  watch: {
+    ranges: function(newValue) {
+      const validRanges = newValue.filter(range => range.address);
+
+      if (validRanges.length > 0) {
+        this.fetchRanges(validRanges);
+      }
+    }
   },
   async mounted() {
     try {
@@ -42,6 +57,11 @@ export default {
       },
       styles
     });
+  },
+  methods: {
+    fetchRanges(ranges) {
+      console.log(ranges);
+    }
   }
 };
 </script>
