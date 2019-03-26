@@ -1,6 +1,6 @@
 <template>
   <div class="range" :class="{ active: isActive }" @click="onRootClick">
-    <location-input class="location" :isDisabled="!isActive" v-model="location" />
+    <location-input class="location" :isDisabled="!isActive" v-model="origin" />
     <transport-type class="transport-type" :isDisabled="!isActive" v-model="transportType" />
     <travel-time class="travel-time" :isDisabled="!isActive" v-model="travelTime" />
   </div>
@@ -71,14 +71,20 @@
 import LocationInput from "./LocationInput";
 import TransportType from "./TransportType";
 import TravelTime from "./TravelTime";
-import { DEFAULT_RANGE } from "../../store/modules/ranges";
 
 export default {
   props: {
     value: {
       type: Object,
       default: function() {
-        return { ...DEFAULT_RANGE };
+        return {
+          travelTime: 45,
+          transportType: "public",
+          originType: "home",
+          originId: undefined,
+          originAddress: undefined,
+          originCoordinates: null
+        };
       }
     },
     isActive: {
@@ -87,23 +93,15 @@ export default {
     }
   },
   data() {
-    let address = null;
-
-    if (this.value.originId) {
-      address = {
-        id: this.value.originId,
-        value: this.value.originCoordinates,
-        label: this.value.originAddress
-      };
-    }
-
     return {
-      location: {
-        type: this.value.originType,
-        address
-      },
+      travelTime: this.value.travelTime,
       transportType: this.value.transportType,
-      travelTime: this.value.travelTime
+      origin: {
+        type: this.value.originType,
+        addressId: this.value.originId,
+        address: this.value.originAddress,
+        coordinates: this.value.originCoordinates
+      }
     };
   },
   components: {
@@ -112,23 +110,13 @@ export default {
     TravelTime
   },
   watch: {
-    location: function(location) {
-      let origin = {
-        originType: location.type,
-        originId: undefined,
-        originAddress: undefined,
-        originCoordinates: undefined
-      };
-
-      if (location.address) {
-        origin.originId = location.id;
-        origin.originAddress = location.label;
-        origin.originCoordinates = location.value;
-      }
-
+    origin: function(origin) {
       this.$emit("input", {
         ...this.value,
-        ...origin
+        originType: origin.type,
+        originId: origin.addressId,
+        originAddress: origin.address,
+        originCoordinates: origin.coordinates
       });
     },
     transportType: function(transportType) {

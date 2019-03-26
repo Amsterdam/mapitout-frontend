@@ -15,7 +15,8 @@ describe("RangeInput", () => {
 
   it("should emit a focus event whenever clicked", () => {
     const wrapper = shallowMount(RangeInput, {
-      localVue
+      localVue,
+      propsData: { isActive: false }
     });
 
     wrapper.trigger("click");
@@ -24,13 +25,15 @@ describe("RangeInput", () => {
   });
 
   // todo this test does not work ofr unknown reasons. It seems that calling setData with a object property does not trigger the watch in tests
-  xit("should emit an input event whenever the location property changes", () => {
+  xit("should emit an input event whenever the origin property changes", () => {
     const wrapper = shallowMount(RangeInput, {
       localVue
     });
 
     wrapper.setData({
-      location: {}
+      origin: {
+        type: "different"
+      }
     });
 
     expect(wrapper.emitted("input")).toBeTruthy();

@@ -4,12 +4,12 @@
       Ranges
     </header>
     <ul>
-      <li v-for="(range, index) in ranges" :key="index">
+      <li v-for="(range, index) in ranges" :key="range.id">
         <range-input
           :isActive="index === activeRangeIndex"
-          :value="ranges[index]"
+          :value="range"
+          @input="onRangeInput"
           @focus="onRangeFocus(index)"
-          @input="onRangeInput(index, $event)"
         />
       </li>
     </ul>
@@ -66,7 +66,6 @@
 <script>
 import RangeInput from "./input/RangeInput";
 import { mapActions, mapState } from "vuex";
-import { isEqual, omit } from "lodash";
 
 export default {
   data() {
@@ -82,28 +81,20 @@ export default {
       ranges: state => state.ranges
     })
   },
-  watch: {
-    ranges: function(newValue, oldValue) {
-      console.log(newValue[0].transportType, oldValue[0].transportType);
-      if (
-        isEqual(
-          newValue.map(range => omit(range, ["originType"])),
-          oldValue.map(range => omit(range, ["originType"]))
-        )
-      ) {
-        this.fetchAreas();
-      }
+  mounted() {
+    if (this.ranges.length === 0) {
+      this.addRange();
     }
   },
   methods: {
-    ...mapActions("ranges", ["addRange", "removeRange", "updateRange", "fetchAreas"]),
+    ...mapActions("ranges", ["addRange", "removeRange", "updateRange"]),
 
     onRangeFocus(index) {
       this.activeRangeIndex = index;
     },
 
-    onRangeInput(index, value) {
-      this.updateRange({ index, range: value });
+    onRangeInput(range) {
+      this.updateRange(range);
     },
 
     onClickAddRange() {

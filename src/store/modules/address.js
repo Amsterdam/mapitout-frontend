@@ -48,10 +48,14 @@ export const actions = {
 
   async resolve({ state, getters, commit, dispatch }, id) {
     const resolved = getters.getResolvedById(state, id);
-    const defaultValue = null;
+    const defaultValue = {
+      id: undefined,
+      label: "",
+      value: null
+    };
 
     if (resolved) {
-      return resolved;
+      return { ...resolved };
     }
 
     const url = new URL(DATASOURCE_LOOKUP);
@@ -89,7 +93,6 @@ export const actions = {
         };
 
         commit("saveResolved", resolved);
-
         return resolved;
       }
     } catch (error) {

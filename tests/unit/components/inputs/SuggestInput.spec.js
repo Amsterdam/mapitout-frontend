@@ -297,7 +297,7 @@ describe("SuggestInput", () => {
     });
     await wrapper.vm.select(-1);
 
-    expect(wrapper.emitted().input[0][0]).toBeNull();
+    expect(wrapper.emitted().input[0][0]).toEqual({ id: undefined, label: "", value: null });
   });
 
   it("should emit an input event whenever a selection is resolved", async () => {
@@ -305,20 +305,18 @@ describe("SuggestInput", () => {
       localVue,
       propsData: {
         search,
-        resolve,
-        value: null
+        resolve
       }
     });
+    const resolved = {
+      id: "test-id",
+      label: "test-label",
+      value: {}
+    };
 
     wrapper.setData({
-      suggestions: [
-        {
-          id: "test-id"
-        }
-      ]
+      suggestions: [{ id: resolved.id }]
     });
-
-    const resolved = { id: "test-resolved-id" };
 
     resolve.mockResolvedValue(resolved);
 

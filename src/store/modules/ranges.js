@@ -4,55 +4,47 @@ export const DEFAULT_RANGE = {
   originAddress: "",
   originCoordinates: undefined,
   transportType: "public",
-  travelTime: 45,
-  area: undefined
+  travelTime: 45
 };
 
-export const getters = {
-  unresolvedRanges: state =>
-    state.ranges
-      .filter(range => range.originId && !range.area)
-      .map(({ originId, travelTime, transportType }) => ({ originId, travelTime, transportType }))
-};
+let id = 0;
 
 export const mutations = {
-  addRange(state, range) {
-    state.ranges.push(range);
+  addRange(state) {
+    state.ranges.push({
+      id: id++,
+      ...DEFAULT_RANGE
+    });
   },
 
   removeRange(state, index) {
     state.ranges.splice(index, 1);
   },
 
-  updateRange(state, { index, range }) {
-    const oldValue = state.ranges[index];
-    console.log(range.transportType, oldValue.transportType);
-    if (
-      oldValue.originId !== range.originId ||
-      oldValue.travelTime !== range.travelTime ||
-      oldValue.transportType !== range.transportType
-    ) {
-      state.ranges[index] = { ...DEFAULT_RANGE, ...range };
-    } else {
-      state.ranges[index] = { ...oldValue, ...range };
-    }
+  updateRange(state, updatedRange) {
+    state.ranges = state.ranges.map(range => {
+      if (range.id === updatedRange.id) {
+        return { ...updatedRange };
+      }
+      return { ...range };
+    });
   }
 };
 
 export const actions = {
   addRange({ commit }) {
-    commit("addRange", { ...DEFAULT_RANGE });
+    commit("addRange");
   },
 
   removeRange({ commit }, index) {
     commit("removeRange", index);
   },
 
-  updateRange({ commit }, payload) {
-    commit("updateRange", payload);
+  updateRange({ commit }, range) {
+    commit("updateRange", range);
   },
 
-  fetchAreas() {
+  fetchAreasWithIntersection() {
     const departureTime = new Date();
     departureTime.setUTCDate(
       departureTime.getUTCDate() + ((1 + 7 - departureTime.getUTCDay()) % 7)
@@ -66,9 +58,8 @@ export const actions = {
 export default {
   namespaced: true,
   state: {
-    ranges: [{ ...DEFAULT_RANGE }]
+    ranges: []
   },
   mutations,
-  actions,
-  getters
+  actions
 };

@@ -12,7 +12,8 @@ import GoogleMapsApiLoader from "google-maps-api-loader";
 
 import { getDeviceGeoLocation } from "../utils";
 import styles from "../style/google-maps";
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { isEqual, omit } from "lodash";
 
 export const BOUNDARIES_NETHERLANDS = { north: 53.53, south: 50.74, west: 3.35, east: 7.25 };
 
@@ -28,18 +29,22 @@ export default {
       ranges: state => state.ranges
     })
   },
-  // watch: {
-  // ranges: function(newValue, oldValue) {
-  // if (
-  //   isEqual(
-  //     newValue.filter(range => range.origin && !range.area),
-  //     oldValue.filter(range => range.origin && !range.area)
-  //   )
-  // ) {
-  //   console.log(newValue, oldValue);
-  // }
-  // }
-  // },
+  watch: {
+    ranges: function(newValue, oldValue) {
+      if (
+        !isEqual(
+          newValue
+            .filter(range => range.originId)
+            .map(range => ({ ...omit(range, ["originType"]) })),
+          oldValue
+            .filter(range => range.originId)
+            .map(range => ({ ...omit(range, ["originType"]) }))
+        )
+      ) {
+        this.fetchAreasWithIntersection();
+      }
+    }
+  },
   async mounted() {
     try {
       this.google = await GoogleMapsApiLoader({ apiKey: process.env.VUE_APP_GOOGLE_API_KEY });
@@ -62,9 +67,7 @@ export default {
     });
   },
   methods: {
-    fetchRanges(ranges) {
-      console.log(ranges);
-    }
+    ...mapActions("ranges", ["fetchAreasWithIntersection"])
   }
 };
 </script>

@@ -64,7 +64,9 @@ describe("LocationInput", () => {
     });
 
     wrapper.setData({
-      address: {}
+      address: {
+        addressId: "different"
+      }
     });
 
     expect(wrapper.emitted("input")).toBeTruthy();
