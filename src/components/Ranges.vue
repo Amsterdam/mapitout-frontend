@@ -1,10 +1,13 @@
 <template>
   <div class="ranges">
+    <header>
+      Ranges
+    </header>
     <ul>
       <li v-for="(range, index) in ranges" :key="index">
         <range-input
           :isActive="index === activeRangeIndex"
-          v-model="ranges[index]"
+          :value="ranges[index]"
           @focus="onRangeFocus(index)"
           @input="onRangeInput(index, $event)"
         />
@@ -19,11 +22,23 @@
 @import "../style/variables";
 
 .ranges {
+  header {
+    background-color: $greyscale-0;
+    color: white;
+    padding: 16px 24px;
+    text-transform: uppercase;
+    display: none;
+
+    @media (min-width: $breakpoint-tablet-portrait) {
+      display: block;
+    }
+  }
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
     background-color: rgba($greyscale-1, 0.4);
+    border-bottom: 2px solid rgba($greyscale-1, 0.2);
 
     li {
       margin: 2px 0;
@@ -42,11 +57,16 @@
 .add-range {
   display: block;
   margin: 72px auto 24px auto;
+  border: 1px solid $greyscale-1;
+  background-color: white;
+  padding: 8px 16px;
+  cursor: pointer;
 }
 </style>
 <script>
 import RangeInput from "./input/RangeInput";
 import { mapActions, mapState } from "vuex";
+import { isEqual, omit } from "lodash";
 
 export default {
   data() {
@@ -62,8 +82,21 @@ export default {
       ranges: state => state.ranges
     })
   },
+  watch: {
+    ranges: function(newValue, oldValue) {
+      console.log(newValue[0].transportType, oldValue[0].transportType);
+      if (
+        isEqual(
+          newValue.map(range => omit(range, ["originType"])),
+          oldValue.map(range => omit(range, ["originType"]))
+        )
+      ) {
+        this.fetchAreas();
+      }
+    }
+  },
   methods: {
-    ...mapActions("ranges", ["addRange", "removeRange", "updateRange"]),
+    ...mapActions("ranges", ["addRange", "removeRange", "updateRange", "fetchAreas"]),
 
     onRangeFocus(index) {
       this.activeRangeIndex = index;

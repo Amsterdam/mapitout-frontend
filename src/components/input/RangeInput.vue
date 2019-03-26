@@ -71,18 +71,14 @@
 import LocationInput from "./LocationInput";
 import TransportType from "./TransportType";
 import TravelTime from "./TravelTime";
+import { DEFAULT_RANGE } from "../../store/modules/ranges";
 
 export default {
   props: {
     value: {
       type: Object,
       default: function() {
-        return {
-          type: "home",
-          origin: null,
-          transportType: "public",
-          travelTime: 45
-        };
+        return { ...DEFAULT_RANGE };
       }
     },
     isActive: {
@@ -91,10 +87,20 @@ export default {
     }
   },
   data() {
+    let address = null;
+
+    if (this.value.originId) {
+      address = {
+        id: this.value.originId,
+        value: this.value.originCoordinates,
+        label: this.value.originAddress
+      };
+    }
+
     return {
       location: {
-        type: this.value.type,
-        address: this.value.origin
+        type: this.value.originType,
+        address
       },
       transportType: this.value.transportType,
       travelTime: this.value.travelTime
@@ -107,7 +113,23 @@ export default {
   },
   watch: {
     location: function(location) {
-      this.$emit("input", { ...this.value, type: location.type, origin: location.address });
+      let origin = {
+        originType: location.type,
+        originId: undefined,
+        originAddress: undefined,
+        originCoordinates: undefined
+      };
+
+      if (location.address) {
+        origin.originId = location.id;
+        origin.originAddress = location.label;
+        origin.originCoordinates = location.value;
+      }
+
+      this.$emit("input", {
+        ...this.value,
+        ...origin
+      });
     },
     transportType: function(transportType) {
       this.$emit("input", { ...this.value, transportType });

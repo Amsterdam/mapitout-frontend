@@ -28,15 +28,18 @@ export default {
       ranges: state => state.ranges
     })
   },
-  watch: {
-    ranges: function(newValue) {
-      const validRanges = newValue.filter(range => range.address);
-
-      if (validRanges.length > 0) {
-        this.fetchRanges(validRanges);
-      }
-    }
-  },
+  // watch: {
+  // ranges: function(newValue, oldValue) {
+  // if (
+  //   isEqual(
+  //     newValue.filter(range => range.origin && !range.area),
+  //     oldValue.filter(range => range.origin && !range.area)
+  //   )
+  // ) {
+  //   console.log(newValue, oldValue);
+  // }
+  // }
+  // },
   async mounted() {
     try {
       this.google = await GoogleMapsApiLoader({ apiKey: process.env.VUE_APP_GOOGLE_API_KEY });
