@@ -20,7 +20,7 @@
 @import "../../style/variables";
 
 $locationTypeIconPaths: (
-  (home, "../../assets/icons/symbol-house.svg"),
+  (home, "../../assets/icons/symbol-home.svg"),
   (work, "../../assets/icons/symbol-work.svg"),
   (health, "../../assets/icons/symbol-health.svg"),
   (wellness, "../../assets/icons/symbol-wellness.svg"),

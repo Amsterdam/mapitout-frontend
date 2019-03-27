@@ -13,7 +13,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: 0 48px;
+  padding: 24px 48px;
   background-color: white;
   cursor: pointer;
   overflow: hidden;
@@ -79,7 +79,7 @@ export default {
       default: function() {
         return {
           travelTime: 45,
-          transportType: "public",
+          transportType: "public_transport",
           originType: "home",
           originId: undefined,
           originAddress: undefined,

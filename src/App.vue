@@ -55,12 +55,37 @@ main {
 import AppHeader from "./components/AppHeader";
 import AppMap from "./components/AppMap";
 import AppSidebar from "./components/AppSidebar";
+import {mapActions, mapGetters, mapState} from "vuex";
+import { isEqual, omit } from "lodash";
 
 export default {
   components: {
     AppHeader,
     AppMap,
     AppSidebar
+  },
+  watch: {
+    rangesWithOrigin: function(newValue, oldValue) {
+      if (
+        !isEqual(
+          newValue.map(range => ({ ...omit(range, ["originType"]) })),
+          oldValue.map(range => ({ ...omit(range, ["originType"]) }))
+        )
+      ) {
+        this.fetchAreas(newValue);
+      }
+    }
+  },
+  computed: {
+    // ...mapState("ranges", {
+    //   ranges: state => state.ranges
+    // }),
+    ...mapGetters("ranges", ["rangesWithOrigin"])
+  },
+  methods: {
+    ...mapActions({
+      fetchAreas: "areas/fetch"
+    })
   }
 };
 </script>

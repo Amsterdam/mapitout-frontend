@@ -4,8 +4,7 @@
       <li
         v-for="(option, index) in options"
         :key="option.value"
-        class="option"
-        :class="[option.value, { selected: option.value === value }]"
+        :class="['option', { selected: option.value === value }]"
       >
         <button tabindex="0" :title="options.label" @click="onListItemClick(index)">
           <icon :name="option.icon" />
@@ -88,11 +87,11 @@
 import Icon from "../Icon";
 
 const TRANSPORT_TYPES = [
-  { value: "public", label: "Public Transport", icon: "bus" },
-  { value: "car", label: "Vehicle", icon: "car" },
-  { value: "bicycle", label: "Bicycle", icon: "bicycle" },
-  { value: "foot", label: "Walking", icon: "pedestrian" },
-  { value: "mixed", label: "Public Transport and Bicycle", icon: "bicycle-bus" }
+  { value: "public_transport", label: "Public Transport", icon: "bus" },
+  { value: "driving", label: "Vehicle", icon: "car" },
+  { value: "cycling", label: "Bicycle", icon: "bicycle" },
+  { value: "walking", label: "Walking", icon: "pedestrian" },
+  { value: "cycling+ferry", label: "Public Transport and Bicycle", icon: "bicycle-bus" }
 ];
 export default {
   props: {

@@ -3,11 +3,15 @@ export const DEFAULT_RANGE = {
   originId: undefined,
   originAddress: "",
   originCoordinates: undefined,
-  transportType: "public",
+  transportType: "public_transport",
   travelTime: 45
 };
 
 let id = 0;
+
+export const getters = {
+  rangesWithOrigin: state => state.ranges.filter(range => range.originId)
+};
 
 export const mutations = {
   addRange(state) {
@@ -42,16 +46,6 @@ export const actions = {
 
   updateRange({ commit }, range) {
     commit("updateRange", range);
-  },
-
-  fetchAreasWithIntersection() {
-    const departureTime = new Date();
-    departureTime.setUTCDate(
-      departureTime.getUTCDate() + ((1 + 7 - departureTime.getUTCDay()) % 7)
-    );
-    departureTime.setUTCHours(9, 0, 0, 0);
-
-    console.log(departureTime);
   }
 };
 
@@ -61,5 +55,6 @@ export default {
     ranges: []
   },
   mutations,
-  actions
+  actions,
+  getters
 };
