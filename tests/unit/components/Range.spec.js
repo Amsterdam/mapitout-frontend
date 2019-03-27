@@ -13,7 +13,7 @@ describe("Range", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();
   });
 
-  it("should emit a focus event whenever clicked", () => {
+  it("should emit a click event whenever clicked", () => {
     const wrapper = shallowMount(Range, {
       localVue,
       propsData: { isActive: false }
@@ -21,7 +21,7 @@ describe("Range", () => {
 
     wrapper.trigger("click");
 
-    expect(wrapper.emitted("focus")).toBeTruthy();
+    expect(wrapper.emitted("click")).toBeTruthy();
   });
 
   // todo this test does not work ofr unknown reasons. It seems that calling setData with a object property does not trigger the watch in tests

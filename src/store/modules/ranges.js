@@ -9,23 +9,21 @@ export const DEFAULT_RANGE = {
 
 let id = 0;
 
-export const getters = {
-  rangesWithOrigin: state => state.ranges.filter(range => range.originId)
-};
-
 export const mutations = {
-  addRange(state) {
+  add(state) {
     state.ranges.push({
       id: id++,
       ...DEFAULT_RANGE
     });
   },
 
-  removeRange(state, index) {
-    state.ranges.splice(index, 1);
+  remove(state, id) {
+    if (state.ranges.length > 1) {
+      state.ranges = state.ranges.filter(range => range.id !== id);
+    }
   },
 
-  updateRange(state, updatedRange) {
+  update(state, updatedRange) {
     state.ranges = state.ranges.map(range => {
       if (range.id === updatedRange.id) {
         return { ...updatedRange };
@@ -36,16 +34,16 @@ export const mutations = {
 };
 
 export const actions = {
-  addRange({ commit }) {
-    commit("addRange");
+  add({ commit }) {
+    commit("add");
   },
 
-  removeRange({ commit }, index) {
-    commit("removeRange", index);
+  remove({ commit }, id) {
+    commit("remove", id);
   },
 
-  updateRange({ commit }, range) {
-    commit("updateRange", range);
+  update({ commit }, range) {
+    commit("update", range);
   }
 };
 
@@ -55,6 +53,5 @@ export default {
     ranges: []
   },
   mutations,
-  actions,
-  getters
+  actions
 };

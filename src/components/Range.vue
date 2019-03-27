@@ -1,8 +1,8 @@
 <template>
-  <div class="range" :class="{ active: isActive }" @click="onRootClick">
-    <location-input class="location" :isDisabled="!isActive" v-model="origin" />
-    <transport-type class="transport-type" :isDisabled="!isActive" v-model="transportType" />
-    <travel-time class="travel-time" :isDisabled="!isActive" v-model="travelTime" />
+  <div class="range" :class="{ disabled: isDisabled }" @click="$emit('click')">
+    <location-input class="location" :isDisabled="isDisabled" v-model="origin" />
+    <transport-type class="transport-type" :isDisabled="isDisabled" v-model="transportType" />
+    <travel-time class="travel-time" :isDisabled="isDisabled" v-model="travelTime" />
   </div>
 </template>
 <style scoped lang="scss">
@@ -10,60 +10,45 @@
 
 .range {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  padding: 24px 48px;
-  background-color: white;
-  cursor: pointer;
-  overflow: hidden;
-
-  > * {
-    padding: 0;
-  }
-
-  &.active {
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: normal;
-    padding: 0;
-    cursor: default;
-
-    > * {
-      padding: 24px 48px;
-    }
-  }
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: normal;
+  padding: 0;
+  cursor: default;
 }
 
 .location::v-deep {
-  background-color: transparent;
-  flex-basis: 60%;
+  z-index: 2;
+  background-color: $greyscale-2;
+  padding: 24px 48px;
 
-  .active & {
-    z-index: 2;
-    background-color: $greyscale-2;
+  .disabled & {
+    background-color: transparent;
+    padding: 0;
   }
 }
 
 .transport-type::v-deep {
-  background-color: transparent;
-  margin-left: auto;
+  z-index: 1;
+  background-color: $greyscale-2;
+  padding: 24px 48px;
 
-  .active & {
-    margin-left: 0;
-    z-index: 1;
-    background-color: $greyscale-2;
+  .disabled & {
+    background-color: transparent;
+    margin-left: auto;
+    padding: 0;
   }
 }
 
 .travel-time::v-deep {
   z-index: 1;
-  background-color: white;
-  margin-left: 4px;
+  background-color: lighten($greyscale-1, 55);
+  padding: 24px 48px;
 
-  .active & {
-    margin-left: 0;
-    background-color: lighten($greyscale-1, 55);
+  .disabled & {
+    background-color: transparent;
+    margin-left: 4px;
+    padding: 0;
   }
 }
 </style>
@@ -87,9 +72,9 @@ export default {
         };
       }
     },
-    isActive: {
+    isDisabled: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
@@ -124,13 +109,6 @@ export default {
     },
     travelTime: function(travelTime) {
       this.$emit("input", { ...this.value, travelTime });
-    }
-  },
-  methods: {
-    onRootClick() {
-      if (!this.isActive) {
-        this.$emit("focus");
-      }
     }
   }
 };

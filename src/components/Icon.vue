@@ -8,6 +8,7 @@ import IconBus from "./icons/IconBus";
 import IconCar from "./icons/IconCar";
 import IconPedestrian from "./icons/IconPedestrian";
 import IconTime from "./icons/IconTime";
+import IconDelete from "./icons/IconDelete";
 
 export default {
   props: {
@@ -15,7 +16,9 @@ export default {
       type: String,
       required: true,
       validator: value =>
-        ["bicycle", "bicycle-bus", "bus", "car", "pedestrian", "icon-time"].includes(value)
+        ["bicycle", "bicycle-bus", "bus", "car", "pedestrian", "icon-time", "delete"].includes(
+          value
+        )
     }
   },
   components: {
@@ -24,7 +27,8 @@ export default {
     bus: IconBus,
     car: IconCar,
     pedestrian: IconPedestrian,
-    "icon-time": IconTime
+    "icon-time": IconTime,
+    delete: IconDelete
   }
 };
 </script>

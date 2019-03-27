@@ -4,13 +4,22 @@
       Ranges
     </header>
     <ul>
-      <li v-for="(range, index) in ranges" :key="range.id">
-        <range
-          :isActive="index === activeRangeIndex"
-          :value="range"
-          @input="onRangeInput"
-          @focus="onRangeFocus(index)"
-        />
+      <li v-for="range in ranges" :key="range.id" :class="{ active: range.id === activeRangeId }">
+        <div class="item">
+          <range
+            :isDisabled="range.id !== activeRangeId"
+            :value="range"
+            @input="onRangeInput"
+            v-on:click="onRangeClick(range.id)"
+          />
+          <button
+            class="delete"
+            v-if="ranges.length > 1 && range.id !== activeRangeId"
+            @click="onClickRangeDelete(range.id)"
+          >
+            <icon name="delete" />
+          </button>
+        </div>
       </li>
     </ul>
     <button class="add-range" @click="onClickAddRange">
@@ -37,18 +46,51 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    background-color: rgba($greyscale-1, 0.4);
     border-bottom: 2px solid rgba($greyscale-1, 0.2);
 
     li {
-      margin: 2px 0;
+      background-color: rgba($greyscale-1, 0.4);
+      padding: 2px 0;
+      min-height: 76px;
 
       &:first-child {
-        margin-top: 0;
+        padding-top: 0;
       }
 
       &:last-child {
-        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+
+      .delete {
+        align-self: center;
+        border: 0 none;
+        background: transparent;
+        outline: none;
+        cursor: pointer;
+        margin: 0 12px;
+        padding: 0;
+        color: $greyscale-1;
+      }
+
+      &:not(.active) {
+        .item {
+          height: auto;
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          background: white;
+
+          .range {
+            flex-grow: 1;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0 24px 48px;
+            background-color: white;
+            cursor: pointer;
+            overflow: hidden;
+          }
+        }
       }
     }
   }
@@ -66,40 +108,54 @@
 <script>
 import Range from "./Range";
 import { mapActions, mapState } from "vuex";
+import Icon from "./Icon";
 
 export default {
   data() {
     return {
-      activeRangeIndex: 0
+      activeRangeId: undefined
     };
   },
   components: {
-    Range
+    Range,
+    Icon
   },
   computed: {
     ...mapState("ranges", {
       ranges: state => state.ranges
     })
   },
+  watch: {
+    ranges: function(ranges) {
+      if (!ranges.find(range => range.id === this.activeRangeId) && this.ranges.length > 0) {
+        this.activeRangeId = this.ranges[0].id;
+      }
+    }
+  },
   mounted() {
     if (this.ranges.length === 0) {
       this.addRange();
+      this.activeRangeId = this.ranges[0].id;
     }
   },
   methods: {
-    ...mapActions("ranges", ["addRange", "removeRange", "updateRange"]),
+    ...mapActions("ranges", ["add", "remove", "update"]),
 
-    onRangeFocus(index) {
-      this.activeRangeIndex = index;
+    onClickRangeDelete(rangeId) {
+      this.remove(rangeId);
+    },
+
+    onRangeClick(rangeId) {
+      this.activeRangeId = rangeId;
     },
 
     onRangeInput(range) {
-      this.updateRange(range);
+      this.update(range);
     },
 
     onClickAddRange() {
-      this.addRange();
-      this.activeRangeIndex = this.ranges.length - 1;
+      this.add();
+      this.activeRangeId = this.ranges[this.ranges.length - 1].id;
     }
   }
 };
