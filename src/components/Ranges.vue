@@ -5,7 +5,7 @@
     </header>
     <ul>
       <li v-for="(range, index) in ranges" :key="range.id">
-        <range-input
+        <range
           :isActive="index === activeRangeIndex"
           :value="range"
           @input="onRangeInput"
@@ -64,7 +64,7 @@
 }
 </style>
 <script>
-import RangeInput from "./input/RangeInput";
+import Range from "./Range";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -74,7 +74,7 @@ export default {
     };
   },
   components: {
-    RangeInput
+    Range
   },
   computed: {
     ...mapState("ranges", {

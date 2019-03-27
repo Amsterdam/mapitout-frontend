@@ -1,12 +1,12 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 
-import RangeInput from "@/components/input/RangeInput.vue";
+import Range from "@/components/Range.vue";
 
 const localVue = createLocalVue();
 
-describe("RangeInput", () => {
+describe("Range", () => {
   it("should create", () => {
-    const wrapper = shallowMount(RangeInput, {
+    const wrapper = shallowMount(Range, {
       localVue
     });
 
@@ -14,7 +14,7 @@ describe("RangeInput", () => {
   });
 
   it("should emit a focus event whenever clicked", () => {
-    const wrapper = shallowMount(RangeInput, {
+    const wrapper = shallowMount(Range, {
       localVue,
       propsData: { isActive: false }
     });
@@ -26,13 +26,24 @@ describe("RangeInput", () => {
 
   // todo this test does not work ofr unknown reasons. It seems that calling setData with a object property does not trigger the watch in tests
   xit("should emit an input event whenever the origin property changes", () => {
-    const wrapper = shallowMount(RangeInput, {
-      localVue
+    const wrapper = shallowMount(Range, {
+      localVue,
+      propsData: {
+        value: {
+          originType: "home",
+          originId: "initial",
+          originAddress: "initial",
+          originCoordinates: null
+        }
+      }
     });
 
     wrapper.setData({
       origin: {
-        type: "different"
+        type: "work",
+        addressId: "different",
+        address: "different",
+        coordinates: { lat: 1, lng: 2 }
       }
     });
 
@@ -40,7 +51,7 @@ describe("RangeInput", () => {
   });
 
   it("should emit an input event whenever the travelTime property changes", () => {
-    const wrapper = shallowMount(RangeInput, {
+    const wrapper = shallowMount(Range, {
       localVue
     });
 
@@ -50,7 +61,7 @@ describe("RangeInput", () => {
   });
 
   it("should emit an input event whenever the transportType property changes", () => {
-    const wrapper = shallowMount(RangeInput, {
+    const wrapper = shallowMount(Range, {
       localVue
     });
 

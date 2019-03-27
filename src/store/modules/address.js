@@ -55,7 +55,7 @@ export const actions = {
     };
 
     if (resolved) {
-      return defaultValue;
+      return resolved;
     }
 
     const url = new URL(DATASOURCE_LOOKUP);
