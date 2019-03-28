@@ -143,7 +143,7 @@ export default {
     }),
 
     onClickRangeDelete(rangeId) {
-      this.remove(rangeId);
+      this.removeRange(rangeId);
     },
 
     onRangeClick(rangeId) {
@@ -151,11 +151,11 @@ export default {
     },
 
     onRangeInput(range) {
-      this.update(range);
+      this.updateRange(range);
     },
 
     onClickAddRange() {
-      this.add();
+      this.addRange();
       this.activeRangeId = this.ranges[this.ranges.length - 1].id;
     }
   }
