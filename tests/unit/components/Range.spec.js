@@ -24,28 +24,27 @@ describe("Range", () => {
     expect(wrapper.emitted("click")).toBeTruthy();
   });
 
-  // todo this test does not work ofr unknown reasons. It seems that calling setData with a object property does not trigger the watch in tests
-  xit("should emit an input event whenever the origin property changes", () => {
+  it("should emit an input event whenever the origin property changes", () => {
     const wrapper = shallowMount(Range, {
       localVue,
-      propsData: {
-        value: {
-          originType: "home",
-          originId: "initial",
-          originAddress: "initial",
-          originCoordinates: null
-        }
+      data() {
+        return {
+          origin: {
+            type: "home",
+            addressId: "initial",
+            address: "initial",
+            coordinates: { lat: 0, lng: 0 }
+          }
+        };
       }
     });
 
-    wrapper.setData({
-      origin: {
-        type: "work",
-        addressId: "different",
-        address: "different",
-        coordinates: { lat: 1, lng: 2 }
-      }
-    });
+    wrapper.vm.origin = {
+      type: "gym",
+      addressId: "different",
+      address: "different",
+      coordinates: { lat: 1, lng: 2 }
+    };
 
     expect(wrapper.emitted("input")).toBeTruthy();
   });
