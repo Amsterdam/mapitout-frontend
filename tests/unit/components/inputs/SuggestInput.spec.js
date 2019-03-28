@@ -230,6 +230,26 @@ describe("SuggestInput", () => {
     expect(selectSpy).toHaveBeenCalledWith(0);
   });
 
+  it("should not trigger a selection of the cursor index when pressing any other key", () => {
+    const wrapper = shallowMount(SuggestInput, {
+      localVue,
+      propsData: {
+        search,
+        resolve
+      }
+    });
+
+    const selectSpy = jest.spyOn(wrapper.vm, "select").mockImplementation();
+
+    wrapper.setData({ cursorIndex: 0 });
+
+    wrapper.find("input").trigger("keydown", {
+      key: "Y"
+    });
+
+    expect(selectSpy).not.toHaveBeenCalled();
+  });
+
   it("should only search for queries longer than two characters", async () => {
     const wrapper = shallowMount(SuggestInput, {
       localVue,
@@ -284,7 +304,7 @@ describe("SuggestInput", () => {
     expect(wrapper.vm.areSuggestionsVisible).toBeFalsy();
   });
 
-  it("should emit an input event with a null value whenever an invalid selection is triggered on a set value", async () => {
+  it("should emit an input event with an empty value whenever an invalid selection is triggered on a set value", async () => {
     const wrapper = shallowMount(SuggestInput, {
       localVue,
       propsData: {

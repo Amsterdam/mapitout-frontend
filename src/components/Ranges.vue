@@ -1,25 +1,25 @@
 <template>
   <div class="ranges">
     <ul>
-      <li v-for="range in ranges" :key="range.id" :class="{ active: range.id === activeRangeId }">
+      <li
+        v-for="range in ranges"
+        :key="range.id"
+        :class="{ active: range.id === activeRangeId }"
+        @click="onRangeClick(range.id)"
+      >
         <div class="item">
-          <range
-            :isDisabled="range.id !== activeRangeId"
-            :value="range"
-            @input="onRangeInput"
-            v-on:click="onRangeClick(range.id)"
-          />
+          <range :isDisabled="range.id !== activeRangeId" :value="range" @input="onRangeInput" />
           <button
             class="delete"
             v-if="ranges.length > 1 && range.id !== activeRangeId"
-            @click="onClickRangeDelete(range.id)"
+            @click="onClickRangeDelete(range.id, $event)"
           >
             <icon name="delete" />
           </button>
         </div>
       </li>
     </ul>
-    <button class="add-range" @click="onClickAddRange">
+    <button class="add" @click="onClickAddRange">
       New Range
     </button>
   </div>
@@ -93,7 +93,7 @@
   }
 }
 
-.add-range {
+.add {
   display: block;
   margin: 72px auto 24px auto;
   border: 1px solid $greyscale-1;
@@ -124,15 +124,14 @@ export default {
   },
   watch: {
     ranges: function(ranges) {
-      if (!ranges.find(range => range.id === this.activeRangeId) && this.ranges.length > 0) {
-        this.activeRangeId = this.ranges[0].id;
+      if (!ranges.map(range => range.id).includes(this.activeRangeId) && this.ranges.length > 0) {
+        this.activeRangeId = this.ranges[this.ranges.length - 1].id;
       }
     }
   },
   mounted() {
     if (this.ranges.length === 0) {
       this.addRange();
-      this.activeRangeId = this.ranges[0].id;
     }
   },
   methods: {
@@ -142,7 +141,9 @@ export default {
       updateRange: "update"
     }),
 
-    onClickRangeDelete(rangeId) {
+    onClickRangeDelete(rangeId, event) {
+      event.stopPropagation();
+
       this.removeRange(rangeId);
     },
 

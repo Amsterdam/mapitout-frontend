@@ -63,11 +63,11 @@ describe("LocationInput", () => {
       }
     });
 
-    wrapper.setData({
-      address: {
-        addressId: "different"
-      }
-    });
+    wrapper.vm.address = {
+      id: "different",
+      label: "different",
+      value: { lat: 2, lng: 3 }
+    };
 
     expect(wrapper.emitted("input")).toBeTruthy();
   });

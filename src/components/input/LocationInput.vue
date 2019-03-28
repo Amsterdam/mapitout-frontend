@@ -225,7 +225,7 @@ export default {
         ...this.value,
         addressId: address.id,
         address: address.label,
-        coordinates: address.value ? { ...address.value } : null
+        coordinates: address.value
       });
     }
   },

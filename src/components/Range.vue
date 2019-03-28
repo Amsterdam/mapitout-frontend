@@ -1,5 +1,5 @@
 <template>
-  <div class="range" :class="{ disabled: isDisabled }" @click="$emit('click')">
+  <div class="range" :class="{ disabled: isDisabled }">
     <location-input class="location" :isDisabled="isDisabled" v-model="origin" />
     <transport-type class="transport-type" :isDisabled="isDisabled" v-model="transportType" />
     <travel-time class="travel-time" :isDisabled="isDisabled" v-model="travelTime" />

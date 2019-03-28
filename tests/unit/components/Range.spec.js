@@ -13,17 +13,6 @@ describe("Range", () => {
     expect(wrapper.isVueInstance()).toBeTruthy();
   });
 
-  it("should emit a click event whenever clicked", () => {
-    const wrapper = shallowMount(Range, {
-      localVue,
-      propsData: { isActive: false }
-    });
-
-    wrapper.trigger("click");
-
-    expect(wrapper.emitted("click")).toBeTruthy();
-  });
-
   it("should emit an input event whenever the origin property changes", () => {
     const wrapper = shallowMount(Range, {
       localVue,
