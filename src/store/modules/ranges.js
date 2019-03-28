@@ -7,12 +7,16 @@ export const DEFAULT_RANGE = {
   travelTime: 45
 };
 
-let id = 0;
-
 export const mutations = {
   add(state) {
+    let index = 0;
+    let id = `range-${index}`;
+
+    while (state.ranges.find(range => range.id === id)) {
+      id = `range-${index++}`;
+    }
     state.ranges.push({
-      id: id++,
+      id,
       ...DEFAULT_RANGE
     });
   },
@@ -28,7 +32,7 @@ export const mutations = {
       if (range.id === updatedRange.id) {
         return { ...updatedRange };
       }
-      return { ...range };
+      return range;
     });
   }
 };

@@ -97,7 +97,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: "public",
+      default: "public_transport",
       validator: value => TRANSPORT_TYPES.map(type => type.value).indexOf(value) !== -1
     },
     isDisabled: Boolean

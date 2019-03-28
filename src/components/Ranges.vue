@@ -1,8 +1,5 @@
 <template>
   <div class="ranges">
-    <header>
-      Ranges
-    </header>
     <ul>
       <li v-for="range in ranges" :key="range.id" :class="{ active: range.id === activeRangeId }">
         <div class="item">
@@ -139,7 +136,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("ranges", ["add", "remove", "update"]),
+    ...mapActions("ranges", {
+      addRange: "add",
+      removeRange: "remove",
+      updateRange: "update"
+    }),
 
     onClickRangeDelete(rangeId) {
       this.remove(rangeId);

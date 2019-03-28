@@ -98,12 +98,17 @@ describe("SuggestInput", () => {
     expect(wrapper.vm.cursorIndex).toEqual(0);
   });
 
-  xit("should reset the cursor whenever this list is hidden", () => {
+  it("should reset the cursor whenever this list is hidden", () => {
     const wrapper = shallowMount(SuggestInput, {
       localVue,
       propsData: {
         search,
         resolve
+      },
+      data() {
+        return {
+          areSuggestionsVisible: true
+        };
       }
     });
     wrapper.setData({

@@ -65,7 +65,7 @@ describe("Range", () => {
       localVue
     });
 
-    wrapper.setData({ transportType: "bicycle" });
+    wrapper.setData({ transportType: "driving" });
 
     expect(wrapper.emitted("input")).toBeTruthy();
   });
