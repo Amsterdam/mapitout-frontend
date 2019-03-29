@@ -7,7 +7,7 @@
         :class="['option', { selected: option.value === value }]"
       >
         <button tabindex="0" :title="options.label" @click="onListItemClick(index)">
-          <icon :name="option.icon" />
+          <component :is="option.icon" />
         </button>
       </li>
     </ul>
@@ -84,14 +84,18 @@
 }
 </style>
 <script>
-import Icon from "../Icon";
+import IconBicycle from "../../assets/icons/IconBicycle.svg";
+import IconBicycleBus from "../../assets/icons/IconBicycleBus.svg";
+import IconBus from "../../assets/icons/IconBus.svg";
+import IconCar from "../../assets/icons/IconCar.svg";
+import IconPedestrian from "../../assets/icons/IconPedestrian.svg";
 
 const TRANSPORT_TYPES = [
-  { value: "public_transport", label: "Public Transport", icon: "bus" },
-  { value: "driving", label: "Vehicle", icon: "car" },
-  { value: "cycling", label: "Bicycle", icon: "bicycle" },
-  { value: "walking", label: "Walking", icon: "pedestrian" },
-  { value: "cycling+ferry", label: "Public Transport and Bicycle", icon: "bicycle-bus" }
+  { value: "public", label: "Public Transport", icon: "icon-bus" },
+  { value: "car", label: "Vehicle", icon: "icon-car" },
+  { value: "bicycle", label: "Bicycle", icon: "icon-bicycle" },
+  { value: "foot", label: "Walking", icon: "icon-pedestrian" },
+  { value: "mixed", label: "Public Transport and Bicycle", icon: "icon-bicycle-bus" }
 ];
 export default {
   props: {
@@ -102,7 +106,13 @@ export default {
     },
     isDisabled: Boolean
   },
-  components: { Icon },
+  components: {
+    IconBicycle,
+    IconBicycleBus,
+    IconBus,
+    IconCar,
+    IconPedestrian
+  },
   data() {
     return {
       publicPath: process.env.BASE_URL,

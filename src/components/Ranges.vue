@@ -14,7 +14,7 @@
             v-if="ranges.length > 1 && range.id !== activeRangeId"
             @click="onClickRangeDelete(range.id, $event)"
           >
-            <icon name="delete" />
+            <icon-delete class="icon" />
           </button>
         </div>
       </li>
@@ -105,7 +105,7 @@
 <script>
 import Range from "./Range";
 import { mapActions, mapState } from "vuex";
-import Icon from "./Icon";
+import IconDelete from "../assets/icons/IconDelete.svg";
 
 export default {
   data() {
@@ -115,7 +115,7 @@ export default {
   },
   components: {
     Range,
-    Icon
+    IconDelete
   },
   computed: {
     ...mapState("ranges", {
