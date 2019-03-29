@@ -12,17 +12,23 @@ describe("Ranges", () => {
   const addRangeSpy = jest.spyOn(ranges.actions, "add");
   const updateRangeSpy = jest.spyOn(ranges.actions, "update");
   const removeRangeSpy = jest.spyOn(ranges.actions, "remove");
+  let $store;
 
   beforeEach(() => {
     jest.resetAllMocks();
-  });
 
-  it("should create", () => {
-    const $store = new Vuex.Store({
+    $store = new Vuex.Store({
       modules: {
         ranges
       }
     });
+
+    $store.state.ranges.ranges.forEach(range => {
+      $store.commit("ranges/remove", range.id);
+    });
+  });
+
+  it("should create", () => {
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
@@ -35,11 +41,6 @@ describe("Ranges", () => {
   });
 
   it("should correctly render the store contained ranges", () => {
-    const $store = new Vuex.Store({
-      modules: {
-        ranges
-      }
-    });
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
@@ -53,11 +54,6 @@ describe("Ranges", () => {
   });
 
   it("should update the activeRangeId the active range is removed", () => {
-    const $store = new Vuex.Store({
-      modules: {
-        ranges
-      }
-    });
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
@@ -77,11 +73,6 @@ describe("Ranges", () => {
   });
 
   it("should update the activeRangeId when an inactive range is clicked", () => {
-    const $store = new Vuex.Store({
-      modules: {
-        ranges
-      }
-    });
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
@@ -102,11 +93,6 @@ describe("Ranges", () => {
 
   // todo not sure why this does not work
   xit("should update the range whenever a range component emits an input event", () => {
-    const $store = new Vuex.Store({
-      modules: {
-        ranges
-      }
-    });
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
@@ -121,11 +107,6 @@ describe("Ranges", () => {
   });
 
   it("should add a range whenever clicking the addRange button", () => {
-    const $store = new Vuex.Store({
-      modules: {
-        ranges
-      }
-    });
     const wrapper = shallowMount(Ranges, {
       localVue,
       mocks: {
