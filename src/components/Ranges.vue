@@ -139,6 +139,8 @@ export default {
   mounted() {
     if (this.ranges.length === 0) {
       this.addRange();
+    } else {
+      this.activeRangeId = this.ranges[0].id;
     }
   },
   methods: {
