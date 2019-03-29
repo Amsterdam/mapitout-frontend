@@ -35,7 +35,7 @@
 
   .disabled & {
     background-color: transparent;
-    margin-left: auto;
+    margin-left: 8px;
     padding: 0;
   }
 }

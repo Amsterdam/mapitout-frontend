@@ -58,17 +58,6 @@
         padding-bottom: 0;
       }
 
-      .delete {
-        align-self: center;
-        border: 0 none;
-        background: transparent;
-        outline: none;
-        cursor: pointer;
-        margin: 0 12px;
-        padding: 0;
-        color: $greyscale-1;
-      }
-
       &:not(.active) {
         .item {
           height: auto;
@@ -89,6 +78,28 @@
           }
         }
       }
+    }
+  }
+}
+
+.delete {
+  align-self: center;
+  border: 0 none;
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+  margin: 0 12px;
+  padding: 0;
+  .icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: lighten($greyscale-1, 25);
+  }
+
+  &:hover {
+    .icon {
+      color: $greyscale-1;
     }
   }
 }
