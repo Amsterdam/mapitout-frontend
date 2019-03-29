@@ -19,7 +19,7 @@
         </div>
       </li>
     </ul>
-    <button class="add" @click="onClickAddRange">
+    <button class="add" @click="onClickAddRange" v-if="ranges.length < 3">
       New Range
     </button>
   </div>
@@ -28,22 +28,12 @@
 @import "../style/variables";
 
 .ranges {
-  header {
-    background-color: $greyscale-0;
-    color: white;
-    padding: 16px 24px;
-    text-transform: uppercase;
-    display: none;
+  background-color: white;
 
-    @media (min-width: $breakpoint-tablet-portrait) {
-      display: block;
-    }
-  }
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
-    border-bottom: 2px solid rgba($greyscale-1, 0.2);
 
     li {
       background-color: rgba($greyscale-1, 0.4);
@@ -107,10 +97,16 @@
 .add {
   display: block;
   margin: 72px auto 24px auto;
-  border: 1px solid $greyscale-1;
+  border: 1px solid lighten($greyscale-1, 25);
   background-color: white;
   padding: 8px 16px;
   cursor: pointer;
+  color: lighten($greyscale-1, 25);
+
+  &:hover {
+    color: $greyscale-1;
+    border-color: $greyscale-1;
+  }
 }
 </style>
 <script>

@@ -21,6 +21,7 @@
   z-index: 2;
   background-color: $greyscale-2;
   padding: 24px 48px;
+  order: 2;
 
   .disabled & {
     background-color: transparent;
@@ -32,6 +33,7 @@
   z-index: 1;
   background-color: $greyscale-2;
   padding: 24px 48px;
+  order: 3;
 
   .disabled & {
     background-color: transparent;
@@ -44,6 +46,7 @@
   z-index: 1;
   background-color: lighten($greyscale-1, 55);
   padding: 24px 48px;
+  order: 4;
 
   .disabled & {
     background-color: transparent;
