@@ -5,7 +5,7 @@
       class="address"
       v-model="address"
       :isDisabled="isDisabled"
-      :search="search"
+      :search="searchByAddress"
       :resolve="resolve"
       placeholder="Choose an address"
     />
