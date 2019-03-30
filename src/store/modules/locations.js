@@ -11,7 +11,7 @@ export const getters = {
 };
 
 export const actions = {
-  async search({ dispatch }, query) {
+  async searchByAddress({ dispatch }, query) {
     const url = new URL(process.env.VUE_APP_ENDPOINT_ADDRESS_SEARCH);
 
     url.searchParams.append("q", query);
