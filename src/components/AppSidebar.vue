@@ -155,7 +155,7 @@
 }
 </style>
 <script>
-import IconArea from "../assets/icons/IconArea.svg";
+import IconArea from "@/assets/icons/IconArea.svg?inline";
 
 export default {
   components: {

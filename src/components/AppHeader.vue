@@ -88,7 +88,7 @@ header {
 }
 </style>
 <script>
-import Logo from "../assets/logo.svg";
+import Logo from "@/assets/logo.svg?inline";
 
 export default {
   components: {

@@ -113,7 +113,7 @@
 <script>
 import Range from "./Range";
 import { mapActions, mapState } from "vuex";
-import IconDelete from "../assets/icons/IconDelete.svg";
+import IconDelete from "@/assets/icons/IconDelete.svg?inline";
 
 export default {
   components: {

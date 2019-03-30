@@ -1,9 +1,9 @@
-import IconHome from "@/assets/icons/IconHome.svg?external";
-import IconTransport from "@/assets/icons/IconTransport.svg?external";
-import IconHealth from "@/assets/icons/IconHealth.svg?external";
-import IconWork from "@/assets/icons/IconWork.svg?external";
-import IconEducation from "@/assets/icons/IconEducation.svg?external";
-import IconWellness from "@/assets/icons/IconWellness.svg?external";
+import IconHome from "@/assets/icons/IconHome.svg";
+import IconTransport from "@/assets/icons/IconTransport.svg";
+import IconHealth from "@/assets/icons/IconHealth.svg";
+import IconWork from "@/assets/icons/IconWork.svg";
+import IconEducation from "@/assets/icons/IconEducation.svg";
+import IconWellness from "@/assets/icons/IconWellness.svg";
 
 export const mutations = {
   saveResolved(state, resolved) {
