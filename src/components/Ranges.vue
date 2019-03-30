@@ -116,39 +116,27 @@ import { mapActions, mapState } from "vuex";
 import IconDelete from "../assets/icons/IconDelete.svg";
 
 export default {
-  data() {
-    return {
-      activeRangeId: undefined
-    };
-  },
   components: {
     Range,
     IconDelete
   },
   computed: {
     ...mapState("ranges", {
-      ranges: state => state.ranges
+      ranges: state => state.ranges,
+      activeRangeId: state => state.activeId
     })
-  },
-  watch: {
-    ranges: function(ranges) {
-      if (!ranges.map(range => range.id).includes(this.activeRangeId) && this.ranges.length > 0) {
-        this.activeRangeId = this.ranges[this.ranges.length - 1].id;
-      }
-    }
   },
   mounted() {
     if (this.ranges.length === 0) {
       this.addRange();
-    } else {
-      this.activeRangeId = this.ranges[0].id;
     }
   },
   methods: {
     ...mapActions("ranges", {
       addRange: "add",
       removeRange: "remove",
-      updateRange: "update"
+      updateRange: "update",
+      activateRange: "activate"
     }),
 
     onClickRangeDelete(rangeId, event) {
@@ -158,7 +146,9 @@ export default {
     },
 
     onRangeClick(rangeId) {
-      this.activeRangeId = rangeId;
+      if (this.activeRangeId !== rangeId) {
+        this.activateRange(rangeId);
+      }
     },
 
     onRangeInput(range) {
@@ -167,7 +157,6 @@ export default {
 
     onClickAddRange() {
       this.addRange();
-      this.activeRangeId = this.ranges[this.ranges.length - 1].id;
     }
   }
 };

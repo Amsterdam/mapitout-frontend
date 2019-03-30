@@ -4,7 +4,8 @@ export const DEFAULT_RANGE = {
   originAddress: "",
   originCoordinates: undefined,
   transportType: "public_transport",
-  travelTime: 45
+  travelTime: 45,
+  highlightColor: "#ff0000"
 };
 
 export const getters = {
@@ -38,12 +39,18 @@ export const mutations = {
       }
       return range;
     });
+  },
+
+  activate(state, id) {
+    state.activeId = id;
   }
 };
 
 export const actions = {
-  add({ commit }) {
+  add({ commit, state }) {
     commit("add");
+
+    commit("activate", state.ranges[state.ranges.length - 1].id);
   },
 
   remove({ commit }, id) {
@@ -52,12 +59,17 @@ export const actions = {
 
   update({ commit }, range) {
     commit("update", range);
+  },
+
+  activate({ commit }, id) {
+    commit("activate", id);
   }
 };
 
 export default {
   namespaced: true,
   state: {
+    activeId: "",
     ranges: []
   },
   mutations,

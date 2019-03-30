@@ -1,3 +1,10 @@
+import IconHome from "../../assets/icons/IconHome.svg?external";
+import IconTransport from "../../assets/icons/IconTransport.svg?external";
+import IconHealth from "../../assets/icons/IconHealth.svg?external";
+import IconWork from "../../assets/icons/IconWork.svg?external";
+import IconEducation from "../../assets/icons/IconEducation.svg?external";
+import IconWellness from "../../assets/icons/IconWellness.svg?external";
+
 export const mutations = {
   saveResolved(state, resolved) {
     if (state.resolved.filter(resolved => resolved.id === resolved.id).length === 0) {
@@ -7,7 +14,7 @@ export const mutations = {
 };
 
 export const getters = {
-  getTypeByValue: state => value => state.types.find(type => type.value === value),
+  getLocationTypeByValue: state => value => state.types.find(type => type.value === value),
   getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id)
 };
 
@@ -104,12 +111,12 @@ export default {
   namespaced: true,
   state: {
     types: [
-      { value: "home", label: "Home", icon: "IconHome" },
-      { value: "transport", label: "Station", icon: "IconTransport" },
-      { value: "health", label: "Health", icon: "IconHealth" },
-      { value: "work", label: "Work", icon: "IconWork" },
-      { value: "education", label: "School", icon: "IconEducation" },
-      { value: "wellness", label: "Gym", icon: "IconWellness" }
+      { value: "home", label: "Home", icon: IconHome, highlightColor: "#ff0000" },
+      { value: "transport", label: "Station", icon: IconTransport, highlightColor: "#fd6500" },
+      { value: "health", label: "Health", icon: IconHealth, highlightColor: "#87c010" },
+      { value: "work", label: "Work", icon: IconWork, highlightColor: "#ff0000" },
+      { value: "education", label: "School", icon: IconEducation, highlightColor: "#0c65d5" },
+      { value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
     ],
     resolved: []
   },

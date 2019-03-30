@@ -98,6 +98,7 @@ export const actions = {
 export default {
   namespaced: true,
   state: {
+    mapBoundaries: { north: 53.53, south: 50.74, west: 3.35, east: 7.25 },
     areas: []
   },
   mutations,

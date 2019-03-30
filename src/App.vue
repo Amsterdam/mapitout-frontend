@@ -148,8 +148,8 @@ export default {
     rangesWithOrigin: function(newValue, oldValue) {
       if (
         !isEqual(
-          newValue.map(range => ({ ...omit(range, ["originType"]) })),
-          oldValue.map(range => ({ ...omit(range, ["originType"]) }))
+          newValue.map(range => ({ ...omit(range, ["originType", "highlightColor"]) })),
+          oldValue.map(range => ({ ...omit(range, ["originType", "highlightColor"]) }))
         )
       ) {
         this.fetchAreas(newValue);
