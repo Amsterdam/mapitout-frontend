@@ -29,6 +29,7 @@
 
 .ranges {
   background-color: white;
+  overflow: scroll;
 
   ul {
     margin: 0;
