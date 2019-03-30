@@ -24,12 +24,9 @@
   transition: border-top-left-radius 0.2s ease-in-out, border-top-right-radius 0.2s ease-in-out,
     height 0.2s ease-in-out;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  background: white;
 
   @media (min-width: $breakpoint-tablet-portrait) {
+    width: 340px;
     overflow: visible;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
