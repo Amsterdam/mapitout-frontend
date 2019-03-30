@@ -7,6 +7,10 @@ export const DEFAULT_RANGE = {
   travelTime: 45
 };
 
+export const getters = {
+  rangesWithOrigin: state => state.ranges.filter(range => range.originId)
+};
+
 export const mutations = {
   add(state) {
     let index = 0;
@@ -57,5 +61,6 @@ export default {
     ranges: []
   },
   mutations,
-  actions
+  actions,
+  getters
 };

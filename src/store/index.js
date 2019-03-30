@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import locations from "./modules/locations";
 import ranges from "./modules/ranges";
+import areas from "./modules/areas";
 
 Vue.use(Vuex);
 
@@ -24,7 +25,8 @@ export default new Vuex.Store({
   },
   modules: {
     locations,
-    ranges
+    ranges,
+    areas
   },
   mutations,
   actions

@@ -7,6 +7,7 @@ export const mutations = {
 };
 
 export const getters = {
+  getTypeByValue: state => value => state.types.find(type => type.value === value),
   getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id)
 };
 
@@ -103,12 +104,12 @@ export default {
   namespaced: true,
   state: {
     types: [
-      { value: "home", label: "Home" },
-      { value: "transport", label: "Station" },
-      { value: "health", label: "Health" },
-      { value: "work", label: "Work" },
-      { value: "education", label: "School" },
-      { value: "wellness", label: "Gym" }
+      { value: "home", label: "Home", icon: "IconHome" },
+      { value: "transport", label: "Station", icon: "IconTransport" },
+      { value: "health", label: "Health", icon: "IconHealth" },
+      { value: "work", label: "Work", icon: "IconWork" },
+      { value: "education", label: "School", icon: "IconEducation" },
+      { value: "wellness", label: "Gym", icon: "IconWellness" }
     ],
     resolved: []
   },
