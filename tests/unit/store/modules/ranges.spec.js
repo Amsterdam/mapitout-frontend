@@ -75,7 +75,10 @@ describe("ranges store module", () => {
 
   describe("actions", () => {
     const context = {
-      commit: jest.fn()
+      commit: jest.fn(),
+      state: {
+        ranges: [{ id: "range-0" }]
+      }
     };
 
     beforeEach(() => {

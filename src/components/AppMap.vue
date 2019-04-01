@@ -185,13 +185,13 @@ export default {
 
       areaCoverage.addListener("mouseover", () => {
         areaCoverage.setOptions({
-          fillOpacity: 0.1
+          fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0
         });
       });
 
       areaCoverage.addListener("mouseout", () => {
         areaCoverage.setOptions({
-          fillOpacity: area.rangeId === this.activeRangeId ? 0.1 : 0
+          fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0
         });
       });
 
