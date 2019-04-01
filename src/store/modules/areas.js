@@ -20,14 +20,6 @@ export const actions = {
       "Content-type": "application/json; charset=utf-8"
     };
 
-    if (process.env.VUE_APP_TRAVELTIME_APPLICATION_ID && process.env.VUE_APP_TRAVELTIME_API_KEY) {
-      headers = {
-        ...headers,
-        "X-Application-Id": process.env.VUE_APP_TRAVELTIME_APPLICATION_ID,
-        "X-Api-Key": process.env.VUE_APP_TRAVELTIME_API_KEY
-      };
-    }
-
     const request = {
       method: "POST",
       headers,
