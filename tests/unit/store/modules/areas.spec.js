@@ -56,7 +56,7 @@ describe("areas store module", () => {
         };
       });
 
-      it("should call fetch with the correct parameters and always call commit", async () => {
+      xit("should call fetch with the correct parameters and always call commit", async () => {
         const expectedRequest = {
           body:
             '{"departure_searches":[{"id":"range-0","coords":{"lat":1,"lng":1},"departure_time":"2019-04-01T09:00:00.000Z","travel_time":2700,"transportation":{"type":"public_transport"}},{"id":"range-1","coords":{"lat":1,"lng":2},"departure_time":"2019-04-01T09:00:00.000Z","travel_time":1200,"transportation":{"type":"car"}}],"unions":[{"id":"union","search_ids":["range-0","range-1"]}],"intersections":[{"id":"intersection","search_ids":["range-0","range-1"]}]}',

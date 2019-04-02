@@ -43,7 +43,7 @@ export default {
     },
 
     activeRangeId: function(activeRangeId) {
-      for (let rangeId in this.areaCoverages) {
+      for (const rangeId in this.areaCoverages) {
         if (this.areaCoverages.hasOwnProperty(rangeId)) {
           if (rangeId === activeRangeId) {
             this.areaCoverages[rangeId].setOptions({
