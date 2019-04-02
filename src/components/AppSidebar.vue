@@ -142,7 +142,7 @@
           order: 1;
 
           @media (min-width: $breakpoint-tablet-portrait) {
-            order: 4 !important;
+            order: 4;
           }
           .expanded &,
           .expanding & {
