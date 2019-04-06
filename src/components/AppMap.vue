@@ -1,5 +1,5 @@
 <template>
-  <section ref="map"></section>
+  <section class="map" ref="map"></section>
 </template>
 <script>
 import GoogleMapsApiLoader from "google-maps-api-loader";

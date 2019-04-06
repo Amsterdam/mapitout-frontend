@@ -45,7 +45,7 @@ describe("App", () => {
     wrapper = shallowMount(App, {
       localVue,
       store,
-      stubs: ["app-header", "app-tabs", "app-map"]
+      stubs: ["app-header", "app-tabs", "app-map", "router-view"]
     });
   });
 
