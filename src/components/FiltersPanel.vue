@@ -15,9 +15,9 @@
         <ul class="filter-list">
           <li class="item" v-for="filter in groups[0][1]" :key="filter.value">
             <filter-item
-              :value="filter"
+              :filter="filter"
               @click="onFilterItemClick(filter)"
-              @input="onFilterToggle"
+              @toggle="onFilterToggle"
             />
           </li>
         </ul>
@@ -29,9 +29,9 @@
             <ul class="filter-list" v-if="visibleGroup === group[0]">
               <li class="item" v-for="filter in group[1]" :key="filter.value">
                 <filter-item
-                  :value="filter"
+                  :filter="filter"
                   @click="onFilterItemClick(filter)"
-                  @input="onFilterToggle"
+                  @toggle="onFilterToggle"
                 />
               </li>
             </ul>
@@ -68,14 +68,41 @@
   margin: 0;
   padding: 0;
   list-style: none;
+
+  .item {
+    display: flex;
+    align-items: center;
+
+    .filter {
+      flex-grow: 1;
+    }
+  }
+}
+
+.filter-list {
+  .item {
+    height: 48px;
+    background-color: $greyscale-2;
+    padding: 0 24px;
+    margin: 6px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 }
 </style>
 <script>
 import IconBuildings from "@/assets/icons/IconBuildings.svg?inline";
 import IconDelete from "@/assets/icons/IconDelete.svg?inline";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg?inline";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 import FilterItem from "./filter/FilterItem";
+import { groupBy, toPairs } from "lodash-es";
 
 export default {
   components: {
@@ -90,29 +117,32 @@ export default {
   },
 
   computed: {
-    ...mapGetters("filters", ["getGroupsByParent"])
+    ...mapState("filters", ["filters"]),
+
+    groups: function() {
+      let filters;
+
+      if (this.viewing) {
+        filters = this.filters.filter(filter => filter.parent === this.viewing.id);
+      } else {
+        filters = this.filters.filter(filter => filter.root);
+      }
+
+      return toPairs(groupBy(filters, filter => filter.category));
+    }
   },
 
   data() {
     return {
       visibleGroup: "",
-      viewing: null,
-      groups: []
+      viewing: null
     };
   },
 
-  mounted() {
-    this.groups = this.getGroupsByParent(this.viewing);
-  },
-
-  watch: {
-    viewing: function(filter) {
-      this.groups = this.getGroupsByParent(filter);
-    }
-  },
-
   methods: {
-    ...mapActions("filters", ["toggle"]),
+    ...mapActions("filters", {
+      toggleFilter: "toggle"
+    }),
 
     onClickClose() {
       this.$emit("input", !this.value);
@@ -128,8 +158,8 @@ export default {
       }
     },
 
-    onFilterToggle(filter) {
-      this.toggle(filter);
+    onFilterToggle(filter, selected) {
+      this.toggleFilter({ id: filter.id, selected });
     }
   }
 };

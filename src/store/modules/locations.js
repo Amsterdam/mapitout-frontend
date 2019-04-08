@@ -1,5 +1,5 @@
 import IconHome from "@/assets/icons/IconHome.svg";
-import IconTransport from "@/assets/icons/IconTransport.svg";
+import IconTransport from "@/assets/icons/IconBus.svg";
 import IconHealth from "@/assets/icons/IconHealth.svg";
 import IconWork from "@/assets/icons/IconWork.svg";
 import IconEducation from "@/assets/icons/IconEducation.svg";

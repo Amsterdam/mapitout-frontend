@@ -1,21 +1,19 @@
-import { isEqual, groupBy, toPairs } from "lodash-es";
+export const mutations = {
+  update(state, { id, selected }) {
+    state.filters = state.filters.map(filter => {
+      if (filter.id !== id && filter.parent !== id) {
+        return filter;
+      }
 
-export const getters = {
-  getGroupsByParent: state => parent => {
-    let filters = state.filters;
-
-    if (parent) {
-      filters = state.filters.find(filter => isEqual(filter, parent)).children;
-    }
-
-    return toPairs(groupBy(filters, filter => filter.category));
+      return { ...filter, selected };
+    });
   }
 };
 
-export const mutations = {};
-
 export const actions = {
-  toggle() {}
+  toggle({ commit }, payload) {
+    commit("update", payload);
+  }
 };
 
 export default {
@@ -23,66 +21,117 @@ export default {
   state: {
     filters: [
       {
-        name: "Station",
+        id: 0,
+        name: "Stations",
         value: "Station",
-        category: "root",
+        category: null,
+        root: true,
         selected: false,
-        children: [
-          {
-            name: "Tram Station",
-            value: "Tram Station",
-            category: null,
-            selected: false
-          },
-          {
-            name: "Bus Station",
-            value: "Bus Station",
-            category: null,
-            selected: false
-          }
-        ]
+        parent: null,
+        children: null,
+        icon: "icon-bus"
+      },
+      // {
+      //   id: 9,
+      //   name: "Train Station",
+      //   value: "Train Station",
+      //   category: null,
+      //   root: false,
+      //   selected: false,
+      //   parent: 0,
+      //   children: null,
+      //   icon: "icon-train"
+      // },
+      // {
+      //   id: 2,
+      //   name: "Bus Station",
+      //   value: "Bus Station",
+      //   category: null,
+      //   root: false,
+      //   selected: false,
+      //   parent: 0,
+      //   children: null,
+      //   icon: "icon-bus"
+      // },
+      // {
+      //   id: 1,
+      //   name: "Tram Station",
+      //   value: "Tram Station",
+      //   category: null,
+      //   root: false,
+      //   selected: false,
+      //   parent: 0,
+      //   children: null,
+      //   icon: "icon-tram"
+      // },
+      // {
+      //   id: 10,
+      //   name: "Subway Station",
+      //   value: "Subway Station",
+      //   category: null,
+      //   root: false,
+      //   selected: false,
+      //   parent: 0,
+      //   children: null,
+      //   icon: "icon-subway"
+      // },
+      {
+        id: 3,
+        name: "Schools",
+        value: "School",
+        category: null,
+        root: true,
+        selected: false,
+        parent: null,
+        children: [4, 5, 6, 7, 8],
+        icon: "icon-education"
       },
       {
-        name: "School",
-        value: "School",
-        category: "root",
+        id: 4,
+        name: "Age range 4-11",
+        value: "Age range 4-11",
+        category: null,
+        root: false,
         selected: false,
-        children: [
-          {
-            name: "Age range 4-11",
-            value: "Age range 4-11",
-            category: "Type of education",
-            selected: false
-          },
-          {
-            name: "Age range 4-18",
-            value: "Age range 4-18",
-            category: "Type of education",
-            selected: false
-          },
-          {
-            name: "Primary education",
-            value: "Primary education",
-            category: "Type of education",
-            selected: false
-          },
-          {
-            name: "Secondary education",
-            value: "Secondary education",
-            category: "Type of education",
-            selected: false
-          },
-          {
-            name: "Secondary education",
-            value: "15-16",
-            category: "Age group",
-            selected: false
-          }
-        ]
+        parent: 3,
+        children: null,
+        icon: "icon-education"
+      },
+      {
+        id: 5,
+        name: "Age range 4-18",
+        value: "Age range 4-18",
+        category: null,
+        root: false,
+        selected: false,
+        parent: 3,
+        children: null,
+        icon: "icon-education"
+      },
+      {
+        id: 6,
+        name: "Primary education",
+        value: "Primary education",
+        category: null,
+        root: false,
+        selected: false,
+        parent: 3,
+        children: null,
+        icon: "icon-education"
+      },
+      {
+        id: 7,
+        name: "Secondary education",
+        value: "Secondary education",
+        category: null,
+        root: false,
+        selected: false,
+        parent: 3,
+        children: null,
+        icon: "icon-education"
       }
     ]
   },
-  getters,
   mutations,
   actions
 };
