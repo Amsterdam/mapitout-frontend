@@ -199,7 +199,7 @@ main {
 import "./directives/expandable";
 import AppHeader from "./components/AppHeader";
 import AppMap from "./components/AppMap";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { isEqual, omit } from "lodash-es";
 import AppNavigation from "./components/AppNavigation";
 import FiltersPanel from "./components/FiltersPanel";
@@ -221,10 +221,24 @@ export default {
       ) {
         this.fetchAreas(newValue);
       }
+    },
+    filters: function(newValue, oldValue) {
+      if (!isEqual(newValue, oldValue) && this.areas.length > 0) {
+        this.fetchPois({ filters: newValue.filter(filter => filter.selected), areas: this.areas });
+      }
+    },
+    areas: function(newValue, oldValue) {
+      const selectedFilters = this.filters.filter(filter => filter.selected);
+
+      if (!isEqual(newValue, oldValue) && selectedFilters.length > 0) {
+        this.fetchPois(selectedFilters, newValue);
+      }
     }
   },
   computed: {
-    ...mapGetters("ranges", ["rangesWithOrigin"])
+    ...mapGetters("ranges", ["rangesWithOrigin"]),
+    ...mapState("filters", ["filters"]),
+    ...mapState("areas", ["areas"])
   },
   data() {
     return {
@@ -233,7 +247,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      fetchAreas: "areas/fetch"
+      fetchAreas: "areas/fetch",
+      fetchPois: "locations/fetch"
     })
   }
 };

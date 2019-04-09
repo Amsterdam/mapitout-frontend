@@ -1,5 +1,5 @@
 export const mutations = {
-  update(state, { id, selected }) {
+  toggle(state, { id, selected }) {
     state.filters = state.filters.map(filter => {
       if (filter.id !== id && filter.parent !== id) {
         return filter;
@@ -12,7 +12,7 @@ export const mutations = {
 
 export const actions = {
   toggle({ commit }, payload) {
-    commit("update", payload);
+    commit("toggle", payload);
   }
 };
 
