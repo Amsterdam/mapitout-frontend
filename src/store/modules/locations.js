@@ -16,6 +16,10 @@ export const mutations = {
 
   updatePois(state, pois) {
     state.pois = pois;
+  },
+
+  view(state, location) {
+    state.viewing = location;
   }
 };
 
@@ -150,9 +154,9 @@ export const actions = {
 
         if (response.ok) {
           const result = await response.json();
-
+          console.log(result);
           if (isArray(result)) {
-            pois = result;
+            pois = result.map(locationData => locationData[0]);
           }
         } else {
           dispatch("reportError", new Error("Invalid server response"), { root: true });
@@ -163,6 +167,65 @@ export const actions = {
     }
 
     commit("updatePois", pois);
+  },
+
+  async lookup({ dispatch, commit, getters }, locationName) {
+    const url = new URL(process.env.VUE_APP_ENDPOINT_POI_SEARCH);
+
+    const request = {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+        poi_by_name: locationName
+      })
+    };
+
+    let location = {
+      name: locationName,
+      description: "Unable to retrieve location details",
+      address: "",
+      website: "",
+      phone: "",
+      coordinates: null,
+      icon: ""
+    };
+
+    try {
+      const response = await fetch(url.toString(), request);
+
+      if (response.ok) {
+        const result = await response.json();
+
+        if (isArray(result)) {
+          location = {
+            name: locationName,
+            description: result[0][0].description,
+            address: `${result[0][0].street}, ${result[0][0].postalcode} ${result[0][0].city}`,
+            website: result[0][0].website,
+            phone: result[0][0].phone,
+            coordinates: result[0][0].geo_location.coordinates.reduce((acc, coordinate, index) => {
+              if (index === 1) {
+                acc.lat = coordinate;
+              } else {
+                acc.lng = coordinate;
+              }
+
+              return acc;
+            }, {}),
+            icon: getters.getLocationTypeById(result[0][0].poi_type_id)
+          };
+        }
+      } else {
+        dispatch("reportError", new Error("Invalid server response"), { root: true });
+      }
+    } catch (error) {
+      dispatch("reportError", new Error("Unable to perform network call"), { root: true });
+    }
+
+    commit("view", location);
   }
 };
 
@@ -189,6 +252,7 @@ export default {
       },
       { value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
     ],
+    viewing: {},
     resolved: [],
     pois: []
   },

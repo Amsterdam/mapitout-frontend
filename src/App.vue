@@ -3,8 +3,12 @@
     <app-header class="app-header" v-model="showFilters" />
     <main>
       <app-map class="app-map" />
-      <aside class="sidebar" :class="{ 'expanded-filters': showFilters }" v-expandable>
-        <app-navigation />
+      <aside
+        class="sidebar"
+        :class="{ 'expanded-filters': showFilters, expanded: $route.path === '/details' }"
+        v-expandable
+      >
+        <app-navigation v-if="$route.path !== '/details'" />
         <router-view class="main" />
         <filters-panel v-model="showFilters" />
       </aside>

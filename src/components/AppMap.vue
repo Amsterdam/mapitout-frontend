@@ -228,22 +228,26 @@ export default {
       this.cleanPois();
 
       this.poiMarkers = this.pois.map(poi => {
-        const position = poi.geo_location.coordinates.reduce((acc, coordinate, index) => {
-          if (index === 1) {
-            acc.lat = coordinate;
-          } else {
-            acc.lng = coordinate;
-          }
+        const marker = new this.google.maps.Marker({
+          position: poi.geo_location.coordinates.reduce((acc, coordinate, index) => {
+            if (index === 1) {
+              acc.lat = coordinate;
+            } else {
+              acc.lng = coordinate;
+            }
 
-          return acc;
-        }, {});
-
-        return new this.google.maps.Marker({
-          position,
+            return acc;
+          }, {}),
           title: poi.name,
           icon: this.getLocationTypeById(poi.poi_type_id).icon,
           map: this.map
         });
+
+        marker.addListener("click", () => {
+          this.$router.push({ path: "/details", query: { name: poi.name } });
+        });
+
+        return marker;
       });
     },
 
