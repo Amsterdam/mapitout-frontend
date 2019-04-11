@@ -47,7 +47,7 @@ store.watch(
       .map(range => pick(range, ["id", "originLat", "originLng", "transportType", "travelTime"]));
 
     if (!isEqual(newDefinedOrigins, oldDefinedOrigins)) {
-      store.dispatch("areas/fetch", newValue);
+      store.dispatch("areas/fetch", newValue.filter(range => range.originLat && range.originLng));
     }
   }
 );

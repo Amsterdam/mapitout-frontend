@@ -7,6 +7,10 @@ export const mutations = {
 
       return { ...filter, selected };
     });
+  },
+
+  update(state, filters) {
+    state.filters = filters;
   }
 };
 
