@@ -20,8 +20,8 @@ export const mutations = {
     state.pois = pois;
   },
 
-  view(state, location) {
-    state.viewing = location;
+  view(state, details) {
+    state.details = details;
   }
 };
 
@@ -165,43 +165,28 @@ export const actions = {
       })
     };
 
-    let location = {
-      name: locationName,
-      description: "Unable to retrieve location details",
-      address: "",
-      website: "",
-      phone: "",
-      coordinates: null,
-      icon: ""
-    };
+    let details = null;
 
     try {
       const result = await http(url, request);
 
       if (isArray(result)) {
-        location = {
-          name: locationName,
+        details = {
+          name: result[0][0].name,
           description: result[0][0].description,
           address: `${result[0][0].street}, ${result[0][0].postalcode} ${result[0][0].city}`,
           website: result[0][0].website,
           phone: result[0][0].phone,
-          coordinates: result[0][0].geo_location.coordinates.reduce((acc, coordinate, index) => {
-            if (index === 1) {
-              acc.lat = coordinate;
-            } else {
-              acc.lng = coordinate;
-            }
-
-            return acc;
-          }, {}),
-          icon: getters.getLocationTypeById(result[0][0].poi_type_id)
+          lng: result[0][0].geo_location.coordinates[0],
+          lat: result[0][0].geo_location.coordinates[1],
+          icon: getters.getLocationTypeById(result[0][0].poi_type_id).icon
         };
       }
     } catch (error) {
       dispatch("reportError", error, { root: true });
     }
 
-    commit("view", location);
+    commit("view", details);
   }
 };
 
@@ -228,7 +213,7 @@ export default {
       },
       { value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
     ],
-    viewing: {},
+    details: null,
     resolved: [],
     pois: []
   },

@@ -14,6 +14,7 @@ export default {
     return {
       google: null,
       map: null,
+      detailsMarker: null,
       fullCoverage: null,
       areaCoverages: [],
       originMarkers: [],
@@ -24,7 +25,7 @@ export default {
   computed: {
     ...mapGetters("locations", ["getLocationTypeByValue", "getLocationTypeById"]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
-    ...mapState("locations", ["pois"]),
+    ...mapState("locations", ["pois", "details"]),
     ...mapState("ranges", {
       ranges: "ranges",
       activeRangeId: state => state.activeId
@@ -40,6 +41,12 @@ export default {
     }
   },
   watch: {
+    details: function() {
+      if (this.pois.length === 0) {
+        this.drawDetailsMarker();
+      }
+    },
+
     areas: function() {
       if (this.google && this.map) {
         this.drawOrigins();
@@ -85,6 +92,10 @@ export default {
       if (this.areas.length > 0) {
         this.drawOrigins();
         this.drawCoverage();
+      }
+
+      if (this.details) {
+        this.drawDetailsMarker();
       }
     }
   },
@@ -260,6 +271,24 @@ export default {
 
         return marker;
       });
+    },
+
+    drawDetailsMarker() {
+      if (this.detailsMarker) {
+        this.detailsMarker.setMap(null);
+      }
+
+      if (this.details) {
+        this.detailsMarker = new this.google.maps.Marker({
+          position: {
+            lat: this.details.lat,
+            lng: this.details.lng
+          },
+          title: this.details.name,
+          icon: this.details.icon,
+          map: this.map
+        });
+      }
     },
 
     cleanOrigins() {

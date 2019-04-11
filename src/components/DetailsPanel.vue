@@ -5,12 +5,12 @@
         <button class="back" @click="onClickBack">
           <icon-arrow-left class="icon" />
         </button>
-        <span>{{ details.name }}</span>
+        <span v-if="details">{{ details.name }}</span>
       </div>
     </div>
     <div class="body">
-      <p v-if="details.description" class="description">{{ details.description }}</p>
-      <dl class="details" v-if="details.address || details.phone || details.website">
+      <p class="description" v-if="!details">Unable to retrieve location details</p>
+      <dl class="details" v-if="details">
         <dd>
           <icon-poi class="icon icon-poi" />
           <span>{{ details.address }}</span>
@@ -100,10 +100,10 @@
 }
 </style>
 <script>
-import IconArrowLeft from "../assets/icons/IconArrowLeft.svg?inline";
-import IconPoi from "../assets/icons/IconPoi.svg?inline";
-import IconWebsite from "../assets/icons/IconWebsite.svg?inline";
-import IconPhone from "../assets/icons/IconPhone.svg?inline";
+import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg?inline";
+import IconPoi from "@/assets/icons/IconPoi.svg?inline";
+import IconWebsite from "@/assets/icons/IconWebsite.svg?inline";
+import IconPhone from "@/assets/icons/IconPhone.svg?inline";
 import { mapActions, mapState } from "vuex";
 
 export default {
@@ -115,13 +115,13 @@ export default {
   },
 
   computed: {
-    ...mapState("locations", {
-      details: "viewing"
-    })
+    ...mapState("locations", ["details"])
   },
 
   beforeRouteUpdate(to, from, next) {
-    this.lookupPoi(to.query.name);
+    if (to.query.name !== from.query.name) {
+      this.lookupPoi(to.query.name);
+    }
 
     next();
   },
