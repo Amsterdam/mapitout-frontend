@@ -8,7 +8,7 @@
         :class="{ 'expanded-filters': showFilters, expanded: $route.path === '/details' }"
         v-expandable
       >
-        <app-navigation v-if="$route.path !== '/details'" />
+        <app-navigation class="nav" v-if="$route.path !== '/details'" />
         <router-view class="main" />
         <filters-panel v-model="showFilters" />
       </aside>
@@ -63,6 +63,10 @@ main {
   @media (min-width: $breakpoint-tablet-portrait) {
     bottom: 0;
   }
+}
+
+.nav {
+  z-index: 2;
 }
 
 .sidebar {
@@ -203,8 +207,6 @@ main {
 import "./directives/expandable";
 import AppHeader from "./components/AppHeader";
 import AppMap from "./components/AppMap";
-import { mapActions, mapGetters, mapState } from "vuex";
-import { isEqual, omit } from "lodash-es";
 import AppNavigation from "./components/AppNavigation";
 import FiltersPanel from "./components/FiltersPanel";
 
@@ -215,45 +217,10 @@ export default {
     AppNavigation,
     FiltersPanel
   },
-  watch: {
-    rangesWithOrigin: function(newValue, oldValue) {
-      if (
-        !isEqual(
-          newValue.map(range => ({ ...omit(range, ["originType", "highlightColor"]) })),
-          oldValue.map(range => ({ ...omit(range, ["originType", "highlightColor"]) }))
-        )
-      ) {
-        this.fetchAreas(newValue);
-      }
-    },
-    filters: function(newValue, oldValue) {
-      if (!isEqual(newValue, oldValue) && this.areas.length > 0) {
-        this.fetchPois({ filters: newValue.filter(filter => filter.selected), areas: this.areas });
-      }
-    },
-    areas: function(newValue, oldValue) {
-      const selectedFilters = this.filters.filter(filter => filter.selected);
-
-      if (!isEqual(newValue, oldValue) && selectedFilters.length > 0) {
-        this.fetchPois(selectedFilters, newValue);
-      }
-    }
-  },
-  computed: {
-    ...mapGetters("ranges", ["rangesWithOrigin"]),
-    ...mapState("filters", ["filters"]),
-    ...mapState("areas", ["areas"])
-  },
   data() {
     return {
       showFilters: false
     };
-  },
-  methods: {
-    ...mapActions({
-      fetchAreas: "areas/fetch",
-      fetchPois: "locations/fetch"
-    })
   }
 };
 </script>

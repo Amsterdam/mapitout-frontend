@@ -20,10 +20,10 @@ export const actions = {
           return {
             id: range.id,
             coords: {
-              lat: range.originCoordinates.lat,
-              lng: range.originCoordinates.lng
+              lat: range.originLat,
+              lng: range.originLng
             },
-            departure_time: range.departureTime.toISOString(),
+            departure_time: range.departureTime,
             travel_time: range.travelTime * 60,
             transportation: {
               type: range.transportType

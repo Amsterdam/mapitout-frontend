@@ -2,7 +2,7 @@
   <div class="panel panel-details">
     <div class="header">
       <div class="title">
-        <button class="close" @click="onClickBack">
+        <button class="back" @click="onClickBack">
           <icon-arrow-left class="icon" />
         </button>
         <span>{{ details.name }}</span>
@@ -63,6 +63,12 @@
 
 .description {
   margin: 0;
+}
+
+.back {
+  background-color: transparent;
+  border: 0 none;
+  outline: none;
 }
 
 .details {

@@ -23,10 +23,10 @@ export default {
   },
   computed: {
     ...mapGetters("locations", ["getLocationTypeByValue", "getLocationTypeById"]),
-    ...mapGetters("ranges", ["rangesWithOrigin"]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
     ...mapState("locations", ["pois"]),
     ...mapState("ranges", {
+      ranges: "ranges",
       activeRangeId: state => state.activeId
     }),
 
@@ -41,8 +41,10 @@ export default {
   },
   watch: {
     areas: function() {
-      this.drawOrigins();
-      this.drawCoverage();
+      if (this.google && this.map) {
+        this.drawOrigins();
+        this.drawCoverage();
+      }
     },
 
     activeRangeId: function(activeRangeId) {
@@ -59,9 +61,11 @@ export default {
       });
     },
 
-    rangesWithOrigin: function() {
-      this.drawOrigins();
-      this.drawCoverage();
+    ranges: function() {
+      if (this.google && this.map) {
+        this.drawOrigins();
+        this.drawCoverage();
+      }
     },
 
     pois: function(newValue, oldValue) {
@@ -119,14 +123,19 @@ export default {
     drawOrigins() {
       this.cleanOrigins();
 
-      this.originMarkers = this.rangesWithOrigin.map(range => {
-        return new this.google.maps.Marker({
-          position: range.originCoordinates,
-          title: range.originAddress,
-          icon: this.getLocationTypeByValue(range.originType).icon,
-          map: this.map
+      this.originMarkers = this.ranges
+        .filter(range => range.originLat && range.originLng)
+        .map(range => {
+          return new this.google.maps.Marker({
+            position: {
+              lat: range.originLat,
+              lng: range.originLng
+            },
+            title: range.originAddress,
+            icon: this.getLocationTypeByValue(range.originType).icon,
+            map: this.map
+          });
         });
-      });
     },
 
     drawCoverage() {
@@ -196,11 +205,13 @@ export default {
     },
 
     drawArea(area) {
+      const range = this.ranges.find(range => range.id === area.rangeId);
+      const rangeType = this.getLocationTypeByValue(range.originType);
       const areaCoverage = new this.google.maps.Polygon({
         paths: [...area.paths],
         strokeOpacity: 0,
         strokeWeight: 0,
-        fillColor: this.rangesWithOrigin.find(range => range.id === area.rangeId).highlightColor,
+        fillColor: rangeType.highlightColor,
         fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0,
         map: this.map
       });

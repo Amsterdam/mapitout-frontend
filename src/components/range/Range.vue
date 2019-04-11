@@ -59,24 +59,12 @@
 import LocationInput from "../input/LocationInput";
 import TransportType from "../input/TransportType";
 import TravelTime from "../input/TravelTime";
-import { mapState } from "vuex";
 
 export default {
   props: {
-    value: {
+    range: {
       type: Object,
-      default: function() {
-        return {
-          departureTime: new Date(),
-          travelTime: 45,
-          transportType: "public_transport",
-          originType: "home",
-          originId: undefined,
-          originAddress: undefined,
-          originCoordinates: null,
-          highlightColor: "#ff0000"
-        };
-      }
+      required: true
     },
     isDisabled: {
       type: Boolean,
@@ -85,22 +73,19 @@ export default {
   },
   data() {
     return {
-      travelTime: this.value.travelTime,
-      transportType: this.value.transportType,
-      highlightColor: this.value.highlightColor,
-      departureTime: this.value.departureTime,
+      travelTime: this.range.travelTime,
+      transportType: this.range.transportType,
+      departureTime: this.range.departureTime,
       origin: {
-        type: this.value.originType,
-        addressId: this.value.originId,
-        address: this.value.originAddress,
-        coordinates: this.value.originCoordinates
+        type: this.range.originType,
+        addressId: this.range.originId,
+        address: this.range.originAddress,
+        coordinates: {
+          lat: this.range.originLat,
+          lng: this.range.originLng
+        }
       }
     };
-  },
-  computed: {
-    ...mapState("locations", {
-      originTypes: state => state.types
-    })
   },
   components: {
     LocationInput,
@@ -109,23 +94,23 @@ export default {
   },
   watch: {
     origin: function(origin) {
-      this.$emit("input", {
-        ...this.value,
+      this.$emit("change", {
+        ...this.range,
         originType: origin.type,
         originId: origin.addressId,
         originAddress: origin.address,
-        originCoordinates: origin.coordinates,
-        highlightColor: this.originTypes.find(type => type.value === origin.type).highlightColor,
-        departureTime: this.getDepartureTime(new Date())
+        originLat: origin.coordinates ? origin.coordinates.lat : null,
+        originLng: origin.coordinates ? origin.coordinates.lng : null,
+        departureTime: this.getDepartureTime(new Date()).toISOString()
       });
     },
 
     transportType: function(transportType) {
-      this.$emit("input", { ...this.value, transportType });
+      this.$emit("change", { ...this.range, transportType });
     },
 
     travelTime: function(travelTime) {
-      this.$emit("input", { ...this.value, travelTime });
+      this.$emit("change", { ...this.range, travelTime });
     }
   },
   methods: {
