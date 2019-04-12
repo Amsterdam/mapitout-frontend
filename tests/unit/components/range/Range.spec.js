@@ -9,10 +9,10 @@ localVue.use(Vuex);
 describe("Range", () => {
   const store = new Vuex.Store({
     modules: {
-      locations: {
+      origins: {
         namespaced: true,
         state: {
-          originTypes: [{ id: 0, value: "wellness", label: "Well" }]
+          types: [{ id: 0, value: "wellness", label: "Well" }]
         }
       }
     }

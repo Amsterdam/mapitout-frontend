@@ -182,7 +182,7 @@ export default {
       type: Object,
       default: function() {
         return {
-          type: "home",
+          typeId: 0,
           addressId: undefined,
           address: undefined,
           addressLat: null,

@@ -94,8 +94,8 @@ export default {
     };
   },
   computed: {
-    ...mapState("locations", {
-      originTypes: state => state.originTypes
+    ...mapState("origins", {
+      originTypes: state => state.types
     })
   },
   components: {
@@ -128,7 +128,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("locations", ["lookupAddress", "resolveAddressId"]),
+    ...mapActions("origins", ["lookupAddress", "resolveAddressId"]),
 
     getDepartureTime(date) {
       const dayOfWeek = date.getUTCDay();

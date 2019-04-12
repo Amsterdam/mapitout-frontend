@@ -23,10 +23,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("locations", [
+    ...mapGetters("locations", ["getPoiIconByPoiTypeId"]),
+    ...mapGetters("origins", [
       "getOriginIconByOriginTypeId",
-      "getOriginHighlightColorByOriginTypeId",
-      "getPoiIconByPoiTypeId"
+      "getOriginHighlightColorByOriginTypeId"
     ]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
     ...mapState("locations", ["pois", "details"]),

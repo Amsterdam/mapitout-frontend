@@ -8,6 +8,7 @@ import ranges from "./modules/ranges";
 import areas from "./modules/areas";
 import filters from "./modules/filters";
 import router from "../router";
+import origins from "./modules/origins";
 
 Vue.use(Vuex);
 
@@ -28,6 +29,7 @@ const store = new Vuex.Store({
     error: ""
   },
   modules: {
+    origins,
     locations,
     ranges,
     areas,
