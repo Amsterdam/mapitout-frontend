@@ -23,7 +23,11 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("locations", ["getLocationTypeByValue", "getLocationTypeById"]),
+    ...mapGetters("locations", [
+      "getOriginIconByOriginTypeId",
+      "getOriginHighlightColorByOriginTypeId",
+      "getPoiIconByPoiTypeId"
+    ]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
     ...mapState("locations", ["pois", "details"]),
     ...mapState("ranges", {
@@ -143,7 +147,7 @@ export default {
               lng: range.originLng
             },
             title: range.originAddress,
-            icon: this.getLocationTypeByValue(range.originType).icon,
+            icon: this.getOriginIconByOriginTypeId(range.originTypeId),
             map: this.map
           });
         });
@@ -217,12 +221,12 @@ export default {
 
     drawArea(area) {
       const range = this.ranges.find(range => range.id === area.rangeId);
-      const rangeType = this.getLocationTypeByValue(range.originType);
+      const highlightColor = this.getOriginHighlightColorByOriginTypeId(range.originTypeId);
       const areaCoverage = new this.google.maps.Polygon({
         paths: [...area.paths],
         strokeOpacity: 0,
         strokeWeight: 0,
-        fillColor: rangeType.highlightColor,
+        fillColor: highlightColor,
         fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0,
         map: this.map
       });
@@ -261,7 +265,7 @@ export default {
             return acc;
           }, {}),
           title: poi.name,
-          icon: this.getLocationTypeById(poi.poi_type_id).icon,
+          icon: this.getPoiIconByPoiTypeId(poi.poi_type_id),
           map: this.map
         });
 

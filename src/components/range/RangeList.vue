@@ -8,7 +8,7 @@
         :class="{ active: range.id === activeRangeId }"
         @click="onRangeClick(range.id)"
       >
-        <range :isDisabled="range.id !== activeRangeId" :range="range" @change="onChangeRange" />
+        <range :isDisabled="range.id !== activeRangeId" :value="range" @input="onInputRange" />
         <button
           class="delete"
           v-if="range.id !== activeRangeId"
@@ -168,7 +168,7 @@ export default {
       this.addRange();
     },
 
-    onChangeRange(range) {
+    onInputRange(range) {
       this.updateRange(range);
     }
   }

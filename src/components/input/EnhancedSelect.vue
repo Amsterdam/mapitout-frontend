@@ -1,6 +1,7 @@
 <template>
   <div
     ref="rootEl"
+    class="enhanced-select"
     :class="{ disabled: isDisabled }"
     v-overlay-container="{ togglePropName: 'isListVisible' }"
   >
@@ -9,8 +10,8 @@
     </button>
     <transition name="fade">
       <ul class="dropdown" v-if="isListVisible">
-        <li class="option" v-for="option in options" :key="option.value">
-          <button :class="option.value" @click="onListItemClick(option.value)">
+        <li class="item" v-for="option in options" :key="option.id">
+          <button class="option" :class="option.value" @click="onListItemClick(option.id)">
             {{ option.label }}
           </button>
         </li>
@@ -23,16 +24,16 @@
       @change="onSelectChange"
       :class="selectedClass"
     >
-      <option v-for="option in options" :key="option.value" :value="option.value">
+      <option v-for="option in options" :key="option.id" :value="option.id">
         {{ option.label }}
       </option>
     </select>
   </div>
 </template>
-<style scoped lang="scss">
+<style lang="scss">
 @import "../../style/variables";
 
-div {
+.enhanced-select {
   position: relative;
   overflow: visible;
   height: 28px;
@@ -68,7 +69,7 @@ div {
     margin: 4px 0 0 0;
     background: white;
     border-radius: 3px;
-    box-shadow: 0 2px 4px 0 $greyscale-2;
+    box-shadow: 0 2px 4px 0 $greyscale-1;
 
     &.fade-enter-active,
     &.fade-leave-active {
@@ -81,18 +82,18 @@ div {
       opacity: 0;
     }
   }
+}
 
-  .option {
-    margin: 4px 8px;
+.item {
+  margin: 4px 8px;
+}
 
-    button {
-      border: 0 none;
-      cursor: pointer;
-      text-align: center;
-      color: $greyscale-1;
-      outline: none;
-    }
-  }
+.option {
+  border: 0 none;
+  cursor: pointer;
+  text-align: center;
+  color: $greyscale-1;
+  outline: none;
 }
 </style>
 <script>
@@ -100,12 +101,18 @@ import "../../directives/overlayContainer";
 
 export default {
   props: {
-    value: String,
+    value: {
+      type: Number,
+      default: -1
+    },
     isDisabled: {
       type: Boolean,
       default: false
     },
-    options: Array
+    options: {
+      type: Array,
+      default: () => []
+    }
   },
   data() {
     return {
@@ -115,7 +122,20 @@ export default {
   },
   computed: {
     selectedClass: function() {
-      return `selected-${this.selected}`;
+      const option = this.options.find(option => option.id === this.selected);
+
+      if (option) {
+        return `selected-${option.value}`;
+      }
+
+      return `selected-none`;
+    }
+  },
+  watch: {
+    selected: function(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.$emit("input", newValue);
+      }
     }
   },
   methods: {
@@ -126,17 +146,12 @@ export default {
     },
 
     onListItemClick(value) {
-      this.selectOption(value);
+      this.selected = value;
+      this.isListVisible = false;
     },
 
     onSelectChange(event) {
-      this.selectOption(event.target.value);
-    },
-
-    selectOption(value) {
-      this.selected = value;
-      this.isListVisible = false;
-      this.$emit("input", value);
+      this.selected = parseInt(event.target.value);
     }
   }
 };

@@ -7,6 +7,16 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("Range", () => {
+  const store = new Vuex.Store({
+    modules: {
+      locations: {
+        namespaced: true,
+        state: {
+          originTypes: [{ id: 0, value: "wellness", label: "Well" }]
+        }
+      }
+    }
+  });
   const range = {
     id: "range-0",
     originType: "home",
@@ -21,8 +31,10 @@ describe("Range", () => {
   it("should create", () => {
     const wrapper = shallowMount(Range, {
       localVue,
+      store,
+      stubs: ["location-input"],
       propsData: {
-        range
+        value: range
       }
     });
 
@@ -32,73 +44,88 @@ describe("Range", () => {
   it("should emit an input event whenever the origin property changes", () => {
     const wrapper = shallowMount(Range, {
       localVue,
+      store,
       propsData: {
-        range
-      },
-      store: new Vuex.Store({
-        modules: {
-          locations: {
-            namespaced: true,
-            state: {
-              types: [{ value: "wellness", highlightColor: "#ff0000" }]
-            }
-          }
-        }
-      }),
-      data() {
-        return {
-          origin: {
-            type: "home",
-            addressId: "initial",
-            address: "initial",
-            coordinates: { lat: 0, lng: 0 }
-          }
-        };
+        value: range
       }
     });
 
-    wrapper.vm.origin = {
-      type: "wellness",
-      addressId: "different",
+    const origin = {
+      typeId: 0,
       address: "different",
-      coordinates: { lat: 1, lng: 2 }
+      addressId: "different",
+      addressLat: 1,
+      addressLng: 2
     };
 
-    expect(wrapper.emitted("change")).toBeTruthy();
+    wrapper.vm.origin = origin;
+
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([
+      {
+        ...wrapper.vm.value,
+        originTypeId: origin.typeId,
+        originId: origin.addressId,
+        originAddress: origin.address,
+        originLat: origin.addressLat,
+        originLng: origin.addressLng
+      }
+    ]);
   });
 
   it("should emit an input event whenever the travelTime property changes", () => {
     const wrapper = shallowMount(Range, {
       localVue,
+      store,
       propsData: {
-        range
+        value: range
       }
     });
+    const travelTime = 10;
 
-    wrapper.setData({ travelTime: 10 });
+    wrapper.setData({ travelTime });
 
-    expect(wrapper.emitted("change")).toBeTruthy();
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([
+      {
+        ...wrapper.vm.value,
+        travelTime: travelTime,
+        departureTime: wrapper.vm.getDepartureTime(new Date()).toISOString()
+      }
+    ]);
   });
 
   it("should emit an input event whenever the transportType property changes", () => {
     const wrapper = shallowMount(Range, {
       localVue,
+      store,
       propsData: {
-        range
+        value: range
       }
     });
+    const transportType = "driving";
 
-    wrapper.setData({ transportType: "driving" });
+    wrapper.setData({ transportType });
 
-    expect(wrapper.emitted("change")).toBeTruthy();
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([
+      {
+        ...wrapper.vm.value,
+        transportType: transportType
+      }
+    ]);
   });
 
   describe("getDepartureTime", () => {
     it("should return the current day 9AM GMT+1 if the current day is a Monday", () => {
       const wrapper = shallowMount(Range, {
         localVue,
+        store,
         propsData: {
-          range
+          value: range
         }
       });
 
@@ -112,8 +139,9 @@ describe("Range", () => {
     it("should return the next Monday9AM GMT+1 if the current day is not a Monday", () => {
       const wrapper = shallowMount(Range, {
         localVue,
+        store,
         propsData: {
-          range
+          value: range
         }
       });
 

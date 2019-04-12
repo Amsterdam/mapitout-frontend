@@ -1,6 +1,6 @@
 export const DEFAULT_RANGE = {
   id: "range-0",
-  originType: "home",
+  originTypeId: 0,
   originId: "",
   originAddress: "",
   originLat: null,

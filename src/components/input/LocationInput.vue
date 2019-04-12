@@ -1,12 +1,12 @@
 <template>
   <div :class="['location', { disabled: isDisabled }]">
-    <enhanced-select class="type" v-model="type" :isDisabled="isDisabled" :options="types" />
+    <enhanced-select class="type" v-model="typeId" :isDisabled="isDisabled" :options="types" />
     <suggest-input
       class="address"
       v-model="address"
       :isDisabled="isDisabled"
-      :search="searchByAddress"
-      :resolve="resolve"
+      :search="lookupAddress"
+      :resolve="resolveSelection"
       placeholder="Choose an address"
     />
   </div>
@@ -64,24 +64,24 @@ $locationTypeIconPaths: (
       width: 162px;
       padding: 9px 12px;
     }
+  }
 
-    .option {
-      margin: 5px 11px;
+  .item {
+    margin: 5px 11px;
+  }
 
-      button {
-        width: 30px;
-        padding: 30px 0 0 0;
-        background-size: 26px 26px;
-        background-position: center 2px;
-        background-repeat: no-repeat;
-        background-color: transparent;
-        font-size: 11px;
+  .option {
+    width: 30px;
+    padding: 30px 0 0 0;
+    background-size: 26px 26px;
+    background-position: center 2px;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    font-size: 11px;
 
-        @each $key, $path in $locationTypeIconPaths {
-          &.#{$key} {
-            background-image: url($path);
-          }
-        }
+    @each $key, $path in $locationTypeIconPaths {
+      &.#{$key} {
+        background-image: url($path);
       }
     }
   }
@@ -171,9 +171,12 @@ $locationTypeIconPaths: (
 <script>
 import EnhancedSelect from "./EnhancedSelect";
 import SuggestInput from "./SuggestInput";
-import { mapActions, mapState } from "vuex";
 
 export default {
+  components: {
+    EnhancedSelect,
+    SuggestInput
+  },
   props: {
     value: {
       type: Object,
@@ -182,50 +185,79 @@ export default {
           type: "home",
           addressId: undefined,
           address: undefined,
-          coordinates: null
+          addressLat: null,
+          addressLng: null
         };
       }
     },
     isDisabled: {
       type: Boolean,
       default: false
+    },
+    types: {
+      type: Array,
+      required: true
+    },
+    lookupAddress: {
+      type: Function,
+      required: true
+    },
+    resolveAddressId: {
+      type: Function,
+      required: true
     }
-  },
-  components: {
-    EnhancedSelect,
-    SuggestInput
   },
   data() {
     return {
-      type: this.value.type,
+      typeId: this.value.typeId,
       address: {
         id: this.value.addressId,
-        value: this.value.coordinates,
+        value: {
+          lat: this.value.addressLat,
+          lng: this.value.addressLng
+        },
         label: this.value.address
       }
     };
   },
-  computed: {
-    ...mapState("locations", {
-      types: state => state.types
-    })
-  },
   watch: {
-    type: function(type) {
-      this.$emit("input", { ...this.value, type });
+    typeId: function(typeId) {
+      this.$emit("input", { ...this.value, typeId });
     },
 
-    address: function(address) {
+    address: function(selectedAddress) {
       this.$emit("input", {
         ...this.value,
-        addressId: address.id,
-        address: address.label,
-        coordinates: address.value
+        addressId: selectedAddress.id,
+        address: selectedAddress.label,
+        addressLat: selectedAddress.value.lat,
+        addressLng: selectedAddress.value.lng
       });
     }
   },
+
   methods: {
-    ...mapActions("locations", ["searchByAddress", "resolve"])
+    async resolveSelection(id) {
+      const addressDetails = await this.resolveAddressId(id);
+      let resolved = {
+        id: undefined,
+        label: "",
+        value: null
+      };
+
+      if (addressDetails) {
+        resolved = {
+          id: addressDetails.id,
+          value: {
+            lat: addressDetails.lat,
+            lng: addressDetails.lng
+          },
+          label: addressDetails.address
+        };
+      }
+
+      return resolved;
+    }
   }
 };
 </script>

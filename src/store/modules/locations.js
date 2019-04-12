@@ -26,13 +26,29 @@ export const mutations = {
 };
 
 export const getters = {
-  getLocationTypeByValue: state => value => state.types.find(type => type.value === value),
-  getLocationTypeById: state => id => state.types.find(type => type.id === id),
-  getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id)
+  getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id),
+
+  getOriginIconByOriginTypeId: state => id => {
+    const originType = state.originTypes.find(originType => originType.id === id);
+
+    return originType ? originType.icon : undefined;
+  },
+
+  getOriginHighlightColorByOriginTypeId: state => id => {
+    const originType = state.originTypes.find(originType => originType.id === id);
+
+    return originType ? originType.highlightColor : "#000000";
+  },
+
+  getPoiIconByPoiTypeId: state => id => {
+    const poiType = state.poiTypes.find(poiType => poiType.id === id);
+
+    return poiType ? poiType.icon : undefined;
+  }
 };
 
 export const actions = {
-  async searchByAddress({ dispatch }, query) {
+  async lookupAddress({ dispatch }, query) {
     const url = new URL(process.env.VUE_APP_ENDPOINT_ADDRESS_SEARCH);
 
     url.searchParams.append("q", query);
@@ -57,7 +73,7 @@ export const actions = {
     return suggestions;
   },
 
-  async resolve({ state, getters, commit, dispatch }, id) {
+  async resolveAddressId({ state, getters, commit, dispatch }, id) {
     let resolved = getters.getResolvedById(state, id);
 
     if (resolved) {
@@ -72,28 +88,22 @@ export const actions = {
       method: "GET"
     };
 
-    resolved = {
-      id: undefined,
-      label: "",
-      value: null
-    };
+    resolved = null;
 
     try {
       const result = await http(url, request);
+      const coordinates = result.response.docs[0].centroide_ll
+        .replace("POINT(", "")
+        .replace(")", "")
+        .split(" ")
+        .map(coord => parseFloat(coord));
 
       if (result.response.docs[0]) {
         resolved = {
           id,
-          value: result.response.docs[0].centroide_ll
-            .replace("POINT(", "")
-            .replace(")", "")
-            .split(" ")
-            .map(coord => parseFloat(coord))
-            .reduce((acc, value, index) => {
-              acc[index === 0 ? "lng" : "lat"] = value;
-              return acc;
-            }, {}),
-          label: result.response.docs[0].weergavenaam
+          lng: coordinates[0],
+          lat: coordinates[1],
+          address: result.response.docs[0].weergavenaam
         };
 
         commit("saveResolved", resolved);
@@ -179,7 +189,7 @@ export const actions = {
           phone: result[0][0].phone,
           lng: result[0][0].geo_location.coordinates[0],
           lat: result[0][0].geo_location.coordinates[1],
-          icon: getters.getLocationTypeById(result[0][0].poi_type_id).icon
+          icon: getters.getPoiIconByPoiTypeId(result[0][0].poi_type_id)
         };
       }
     } catch (error) {
@@ -193,25 +203,35 @@ export const actions = {
 export default {
   namespaced: true,
   state: {
-    types: [
-      { value: "home", label: "Home", icon: IconHome, highlightColor: "#ff0000" },
+    originTypes: [
+      { id: 0, value: "home", label: "Home", icon: IconHome, highlightColor: "#ff0000" },
       {
+        id: 1,
         value: "transport",
         label: "Station",
         icon: IconTransport,
-        highlightColor: "#fd6500",
-        id: 1
+        highlightColor: "#fd6500"
       },
-      { value: "health", label: "Health", icon: IconHealth, highlightColor: "#87c010" },
-      { value: "work", label: "Work", icon: IconWork, highlightColor: "#ff0000" },
+      { id: 2, value: "health", label: "Health", icon: IconHealth, highlightColor: "#87c010" },
+      { id: 3, value: "work", label: "Work", icon: IconWork, highlightColor: "#ff0000" },
       {
+        id: 4,
         value: "education",
         label: "School",
         icon: IconEducation,
-        highlightColor: "#0c65d5",
-        id: 2
+        highlightColor: "#0c65d5"
       },
-      { value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
+      { id: 5, value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
+    ],
+    poiTypes: [
+      {
+        icon: IconTransport,
+        id: 1
+      },
+      {
+        icon: IconEducation,
+        id: 2
+      }
     ],
     details: null,
     resolved: [],

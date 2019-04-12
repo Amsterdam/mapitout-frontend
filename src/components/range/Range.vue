@@ -1,6 +1,13 @@
 <template>
   <div class="range" :class="{ disabled: isDisabled }">
-    <location-input class="location" :isDisabled="isDisabled" v-model="origin" />
+    <location-input
+      class="location"
+      v-model="origin"
+      :isDisabled="isDisabled"
+      :types="originTypes"
+      :lookup-address="lookupAddress"
+      :resolve-address-id="resolveAddressId"
+    />
     <transport-type class="transport-type" :isDisabled="isDisabled" v-model="transportType" />
     <travel-time class="travel-time" :isDisabled="isDisabled" v-model="travelTime" />
   </div>
@@ -59,10 +66,11 @@
 import LocationInput from "../input/LocationInput";
 import TransportType from "../input/TransportType";
 import TravelTime from "../input/TravelTime";
+import { mapActions, mapState } from "vuex";
 
 export default {
   props: {
-    range: {
+    value: {
       type: Object,
       required: true
     },
@@ -73,19 +81,22 @@ export default {
   },
   data() {
     return {
-      travelTime: this.range.travelTime,
-      transportType: this.range.transportType,
-      departureTime: this.range.departureTime,
+      travelTime: this.value.travelTime,
+      transportType: this.value.transportType,
+      departureTime: this.value.departureTime,
       origin: {
-        type: this.range.originType,
-        addressId: this.range.originId,
-        address: this.range.originAddress,
-        coordinates: {
-          lat: this.range.originLat,
-          lng: this.range.originLng
-        }
+        typeId: this.value.originTypeId,
+        addressId: this.value.originId,
+        address: this.value.originAddress,
+        addressLat: this.value.originLat,
+        addressLng: this.value.originLng
       }
     };
+  },
+  computed: {
+    ...mapState("locations", {
+      originTypes: state => state.originTypes
+    })
   },
   components: {
     LocationInput,
@@ -94,26 +105,31 @@ export default {
   },
   watch: {
     origin: function(origin) {
-      this.$emit("change", {
-        ...this.range,
-        originType: origin.type,
+      this.$emit("input", {
+        ...this.value,
+        originTypeId: origin.typeId,
         originId: origin.addressId,
         originAddress: origin.address,
-        originLat: origin.coordinates ? origin.coordinates.lat : null,
-        originLng: origin.coordinates ? origin.coordinates.lng : null,
-        departureTime: this.getDepartureTime(new Date()).toISOString()
+        originLat: origin.addressLat,
+        originLng: origin.addressLng
       });
     },
 
     transportType: function(transportType) {
-      this.$emit("change", { ...this.range, transportType });
+      this.$emit("input", { ...this.value, transportType });
     },
 
     travelTime: function(travelTime) {
-      this.$emit("change", { ...this.range, travelTime });
+      this.$emit("input", {
+        ...this.value,
+        travelTime,
+        departureTime: this.getDepartureTime(new Date()).toISOString()
+      });
     }
   },
   methods: {
+    ...mapActions("locations", ["lookupAddress", "resolveAddressId"]),
+
     getDepartureTime(date) {
       const dayOfWeek = date.getUTCDay();
 

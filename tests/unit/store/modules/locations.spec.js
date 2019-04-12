@@ -76,41 +76,52 @@ describe("locations store module", () => {
       });
     });
 
-    describe("getLocationTypeByValue", () => {
-      it("should retrieve the type stored in the state by value passed", () => {
-        const type = { value: "test-value", icon: "" };
-        const state = { types: [type] };
+    describe("getOriginIconByOriginTypeId", () => {
+      const originType = { id: 0, value: "test-value", icon: "icon" };
+      const state = { originTypes: [originType] };
 
-        const result = getters.getLocationTypeByValue(state)(type.value);
+      it("should return the icon of the origin type stored in the state by passed type id", () => {
+        const result = getters.getOriginIconByOriginTypeId(state)(originType.id);
 
-        expect(result).toEqual(type);
+        expect(result).toEqual(originType.icon);
       });
 
       it("should return undefined if the requested id was not saved into the state", () => {
-        const type = { value: "test-value", icon: "" };
-        const state = { types: [type] };
-
-        const result = getters.getLocationTypeByValue(state)("other-id");
+        const result = getters.getOriginIconByOriginTypeId(state)("other-id");
 
         expect(result).toBeUndefined();
       });
     });
 
-    describe("getLocationTypeById", () => {
-      it("should retrieve the type stored in the state by id passed", () => {
-        const type = { id: "test-id", icon: "" };
-        const state = { types: [type] };
+    describe("getOriginHighlightColorByOriginTypeId", () => {
+      const originType = { id: 0, value: "test-value", highlightColor: "color" };
+      const state = { originTypes: [originType] };
 
-        const result = getters.getLocationTypeById(state)(type.id);
+      it("should return the highlight color of the origin type stored in the state by passed type id", () => {
+        const result = getters.getOriginHighlightColorByOriginTypeId(state)(originType.id);
 
-        expect(result).toEqual(type);
+        expect(result).toEqual(originType.highlightColor);
       });
 
       it("should return undefined if the requested id was not saved into the state", () => {
-        const type = { id: "test-id", icon: "" };
-        const state = { types: [type] };
+        const result = getters.getOriginHighlightColorByOriginTypeId(state)("other-id");
 
-        const result = getters.getLocationTypeById(state)("other-id");
+        expect(result).toBe("#000000");
+      });
+    });
+
+    describe("getPoiIconByPoiTypeId", () => {
+      const poiType = { id: 0, icon: "icon" };
+      const state = { poiTypes: [poiType] };
+
+      it("should return the icon of the poi type stored in the state by value passed type id", () => {
+        const result = getters.getPoiIconByPoiTypeId(state)(poiType.id);
+
+        expect(result).toEqual(poiType.icon);
+      });
+
+      it("should return undefined if the requested id was not saved into the state", () => {
+        const result = getters.getPoiIconByPoiTypeId(state)("other-id");
 
         expect(result).toBeUndefined();
       });
@@ -122,8 +133,8 @@ describe("locations store module", () => {
       dispatch: jest.fn(),
       commit: jest.fn(),
       getters: {
-        getResolvedById: jest.fn(),
-        getLocationTypeById: jest.fn()
+        getPoiIconByPoiTypeId: jest.fn(),
+        getResolvedById: jest.fn()
       }
     };
 
@@ -131,11 +142,11 @@ describe("locations store module", () => {
       jest.resetAllMocks();
     });
 
-    describe("searchByAddress", () => {
+    describe("lookupAddress", () => {
       it("should call http with the correct url and request object", () => {
         const query = "testQuery";
         const expectedRequestObject = { method: "GET" };
-        actions.searchByAddress(context, query);
+        actions.lookupAddress(context, query);
 
         expect(http).toHaveBeenCalledTimes(1);
 
@@ -162,7 +173,7 @@ describe("locations store module", () => {
           { id: "test-id2", label: "test address2" }
         ];
 
-        const result = await actions.searchByAddress(context, query);
+        const result = await actions.lookupAddress(context, query);
 
         expect(result).toEqual(expectedResult);
       });
@@ -172,7 +183,7 @@ describe("locations store module", () => {
 
         http.mockRejectedValue(new Error());
 
-        const result = await actions.searchByAddress(context, query);
+        const result = await actions.lookupAddress(context, query);
 
         expect(result).toEqual([]);
         expect(context.dispatch).toBeCalledTimes(1);
@@ -182,14 +193,14 @@ describe("locations store module", () => {
       });
     });
 
-    describe("resolve", () => {
+    describe("resolveAddressId", () => {
       it("should return the already resolved address if present in its state", async () => {
         const testId = "test-id";
-        const resolved = { id: testId, value: "test value", coordinates: { lat: 1, lng: 2 } };
+        const resolved = { id: testId, address: "test value", addressLat: 1, addressLng: 2 };
 
         context.getters.getResolvedById.mockReturnValue(resolved);
 
-        const result = await actions.resolve(context, testId);
+        const result = await actions.resolveAddressId(context, testId);
 
         expect(result).toEqual(resolved);
       });
@@ -198,7 +209,7 @@ describe("locations store module", () => {
         const testId = "test-id";
         const expectedRequestObject = { method: "GET" };
 
-        actions.resolve(context, testId);
+        actions.resolveAddressId(context, testId);
 
         expect(http).toHaveBeenCalledTimes(1);
 
@@ -206,13 +217,13 @@ describe("locations store module", () => {
         expect(http.mock.calls[0][1]).toEqual(expectedRequestObject);
       });
 
-      it("should return an empty resolve value and dispatch an error on a failed http call", async () => {
+      it("should return null and dispatch an error on a failed http call", async () => {
         const testId = "test-id";
-        const expectedResult = { id: undefined, label: "", value: null };
+        const expectedResult = null;
 
         http.mockRejectedValue(new Error());
 
-        const result = await actions.resolve(context, testId);
+        const result = await actions.resolveAddressId(context, testId);
 
         expect(result).toEqual(expectedResult);
         expect(context.dispatch).toBeCalledTimes(1);
@@ -226,8 +237,9 @@ describe("locations store module", () => {
         const address = "test-address";
         const expectedResult = {
           id: testId,
-          label: address,
-          value: { lat: 51.31204224, lng: 3.94129736 }
+          address: address,
+          lat: 51.31204224,
+          lng: 3.94129736
         };
 
         http.mockResolvedValue({
@@ -235,13 +247,13 @@ describe("locations store module", () => {
             docs: [
               {
                 weergavenaam: address,
-                centroide_ll: "POINT(3.94129736 51.31204224)"
+                centroide_ll: `POINT(${expectedResult.lng} ${expectedResult.lat})`
               }
             ]
           }
         });
 
-        const result = await actions.resolve(context, testId);
+        const result = await actions.resolveAddressId(context, testId);
 
         expect(result).toEqual(expectedResult);
         expect(context.commit).toBeCalledTimes(1);
@@ -392,7 +404,7 @@ describe("locations store module", () => {
         };
         const icon = "icon";
 
-        context.getters.getLocationTypeById.mockReturnValue({ icon });
+        context.getters.getPoiIconByPoiTypeId.mockReturnValue(icon);
 
         http.mockResolvedValue([[response]]);
 

@@ -7,68 +7,105 @@ const localVue = createLocalVue();
 localVue.use(Vuex);
 
 describe("LocationInput", () => {
-  let $store;
-
-  beforeEach(() => {
-    $store = new Vuex.Store({
-      modules: {
-        locations: {
-          namespaced: true,
-          state: {
-            types: [
-              { id: "type-1", label: "type-1-label" },
-              { id: "type-2", label: "type-2-label" }
-            ]
-          },
-          actions: {
-            searchByAddress: jest.fn(),
-            resolve: jest.fn()
-          }
-        }
-      }
-    });
-  });
+  const propsData = {
+    types: [],
+    lookupAddress: jest.fn(),
+    resolveAddressId: jest.fn()
+  };
 
   it("should create", () => {
     const wrapper = shallowMount(LocationInput, {
       localVue,
-      mocks: {
-        $store
-      }
+      propsData
     });
 
     expect(wrapper.isVueInstance()).toBeTruthy();
   });
 
-  it("should trigger a setValue call whenever the type property changes ", () => {
+  it("should emit an input event whenever the typeId changes ", () => {
     const wrapper = shallowMount(LocationInput, {
       localVue,
-      mocks: {
-        $store
-      }
+      propsData
     });
 
     wrapper.setData({
-      type: "work"
+      typeId: 1
     });
 
-    expect(wrapper.emitted("input")).toBeTruthy();
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([{ ...wrapper.vm.value, typeId: 1 }]);
   });
 
-  it("should trigger a setValue call whenever the address property changes ", () => {
+  it("should emit and input event whenever the address changes ", () => {
     const wrapper = shallowMount(LocationInput, {
       localVue,
-      mocks: {
-        $store
-      }
+      propsData
     });
-
-    wrapper.vm.address = {
+    const address = {
       id: "different",
       label: "different",
       value: { lat: 2, lng: 3 }
     };
 
-    expect(wrapper.emitted("input")).toBeTruthy();
+    wrapper.vm.address = address;
+
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([
+      {
+        ...wrapper.vm.value,
+        addressId: address.id,
+        address: address.label,
+        addressLat: address.value.lat,
+        addressLng: address.value.lng
+      }
+    ]);
+  });
+
+  describe("resolveSelection", () => {
+    it("should return a resolved object whenever the resolver provides it one", async () => {
+      const wrapper = shallowMount(LocationInput, {
+        localVue,
+        propsData
+      });
+
+      const resolved = {
+        id: "different",
+        address: "different",
+        lat: 2,
+        lng: 3
+      };
+
+      propsData.resolveAddressId.mockResolvedValue(resolved);
+
+      const result = await wrapper.vm.resolveSelection();
+
+      expect(result).toEqual({
+        id: resolved.id,
+        label: resolved.address,
+        value: {
+          lat: resolved.lat,
+          lng: resolved.lng
+        }
+      });
+    });
+
+    it("should return an empty resolved object whenever the resolver fails to provide it one", async () => {
+      const wrapper = shallowMount(LocationInput, {
+        localVue,
+        propsData
+      });
+
+      propsData.resolveAddressId.mockResolvedValue(null);
+
+      const result = await wrapper.vm.resolveSelection();
+
+      expect(result).toEqual({
+        id: undefined,
+        label: "",
+        value: null
+      });
+    });
   });
 });

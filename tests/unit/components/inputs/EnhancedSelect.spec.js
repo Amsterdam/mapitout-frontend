@@ -5,9 +5,17 @@ import EnhancedSelect from "@/components/input/EnhancedSelect.vue";
 const localVue = createLocalVue();
 
 describe("EnhancedSelect", () => {
+  const options = [
+    { id: 0, value: "value 1", label: "label 1" },
+    { id: 1, value: "value 2", label: "label 2" }
+  ];
+
   it("should create", () => {
     const wrapper = shallowMount(EnhancedSelect, {
-      localVue
+      localVue,
+      propsData: {
+        options
+      }
     });
 
     expect(wrapper.isVueInstance()).toBeTruthy();
@@ -15,7 +23,10 @@ describe("EnhancedSelect", () => {
 
   it("should display the list upon clicking the trigger", () => {
     const wrapper = shallowMount(EnhancedSelect, {
-      localVue
+      localVue,
+      propsData: {
+        options
+      }
     });
 
     wrapper.find("button").trigger("click");
@@ -27,6 +38,7 @@ describe("EnhancedSelect", () => {
     const wrapper = shallowMount(EnhancedSelect, {
       localVue,
       propsData: {
+        options,
         isDisabled: true
       }
     });
@@ -38,7 +50,10 @@ describe("EnhancedSelect", () => {
 
   it("should hide the list upon clicking the trigger a second time", () => {
     const wrapper = shallowMount(EnhancedSelect, {
-      localVue
+      localVue,
+      propsData: {
+        options
+      }
     });
 
     wrapper.setData({ isListVisible: true });
@@ -48,53 +63,36 @@ describe("EnhancedSelect", () => {
     expect(wrapper.vm.isListVisible).toBeFalsy();
   });
 
-  it("should trigger a selection whenever clicking on an enhanced list element button", () => {
-    const selectedOption = { value: "test-val", label: "test-label" };
+  it("should hide the list and emit an input event whenever clicking on an enhanced list element button", () => {
     const wrapper = shallowMount(EnhancedSelect, {
       localVue,
       propsData: {
-        options: [selectedOption]
+        options
       }
     });
-    const selectOptionSpy = jest.spyOn(wrapper.vm, "selectOption");
 
     wrapper.setData({ isListVisible: true });
 
     wrapper.find("ul li button").trigger("click");
 
-    expect(selectOptionSpy).toHaveBeenCalledWith(selectedOption.value);
+    expect(wrapper.vm.isListVisible).toBeFalsy();
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([0]);
   });
 
-  it("should trigger a selection whenever selecting an option from the native select element", () => {
-    const selectedOption = { value: "test-val", label: "test-label" };
+  it("should emit and input event whenever selecting an option from the native select element", () => {
     const wrapper = shallowMount(EnhancedSelect, {
       localVue,
       propsData: {
-        options: [selectedOption]
+        options
       }
     });
 
-    const selectOptionSpy = jest.spyOn(wrapper.vm, "selectOption");
-
     wrapper.findAll("select").trigger("change");
 
-    expect(selectOptionSpy).toHaveBeenCalledWith(selectedOption.value);
-  });
-
-  it("should update the model, hide the enhanced list and emit a value change whenever a selection is triggered", () => {
-    const selectedValue = "test";
-    const wrapper = shallowMount(EnhancedSelect, {
-      localVue
-    });
-
-    wrapper.setData({
-      isListVisible: true
-    });
-
-    wrapper.vm.selectOption(selectedValue);
-
-    expect(wrapper.vm.isListVisible).toBeFalsy();
-    expect(wrapper.vm.selected).toEqual(selectedValue);
-    expect(wrapper.emitted().input[0]).toEqual([selectedValue]);
+    expect(wrapper.emitted().input).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([0]);
   });
 });

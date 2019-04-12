@@ -42,11 +42,11 @@ store.watch(
   (newValue, oldValue) => {
     const newDefinedOrigins = newValue
       .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["originType"]));
+      .map(range => omit(range, ["originTypeId"]));
 
     const oldDefinedOrigins = oldValue
       .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["originType"]));
+      .map(range => omit(range, ["originTypeId"]));
 
     if (!isEqual(newDefinedOrigins, oldDefinedOrigins)) {
       store.dispatch("areas/fetch", newValue.filter(range => range.originLat && range.originLng));
