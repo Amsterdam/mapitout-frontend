@@ -55,10 +55,10 @@ store.watch(
 store.watch(
   state => state.filters.filters,
   (newValue, oldValue) => {
-    if (!isEqual(newValue, oldValue) && store.state.areas.areas.length > 0) {
+    if (!isEqual(newValue, oldValue)) {
       store.dispatch("locations/fetch", {
         filters: newValue.filter(filter => filter.selected),
-        areas: store.state.areas.areas
+        unionArea: store.state.areas.areas.find(area => area.id === "union")
       });
     }
   }

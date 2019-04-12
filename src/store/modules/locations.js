@@ -30,10 +30,10 @@ export const getters = {
 };
 
 export const actions = {
-  async fetch({ dispatch, commit }, { filters, areas }) {
+  async fetch({ dispatch, commit }, { filters, unionArea }) {
     let pois = [];
 
-    if (filters.length > 0 && areas.length > 0) {
+    if (filters.length > 0 && unionArea) {
       const url = new URL(process.env.VUE_APP_ENDPOINT_POI_SEARCH);
 
       const request = {
@@ -48,9 +48,9 @@ export const actions = {
             type: "Feature",
             geometry: {
               type: "Polygon",
-              coordinates: areas
-                .find(area => area.rangeId === "union")
-                .paths.map(polygon => polygon.map(point => [point.lng, point.lat])),
+              coordinates: unionArea.paths.map(polygon =>
+                polygon.map(point => [point.lng, point.lat])
+              ),
               crs: {
                 type: "name",
                 properties: {

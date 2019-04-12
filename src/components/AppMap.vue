@@ -81,7 +81,7 @@ export default {
 
     pois: function(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
-        this.drawPois();
+        this.drawPois(newValue);
       }
     },
 
@@ -196,7 +196,22 @@ export default {
         .map(range => this.createOriginMarker(range))
         .map(originMarker => {
           originMarker.setMap(this.map);
+
           return originMarker;
+        });
+    },
+
+    drawPois(pois) {
+      this.poiMarkers.forEach(marker => {
+        marker.setMap(null);
+      });
+
+      this.poiMarkers = pois
+        .map(poi => this.createPoiMarker(poi))
+        .map(poiMarker => {
+          poiMarker.setMap(this.map);
+
+          return poiMarker;
         });
     },
 
@@ -300,31 +315,24 @@ export default {
       return originMarker;
     },
 
-    drawPois() {
-      this.cleanPois();
-
-      this.poiMarkers = this.pois.map(poi => {
-        const marker = new this.google.maps.Marker({
-          position: poi.geo_location.coordinates.reduce((acc, coordinate, index) => {
-            if (index === 1) {
-              acc.lat = coordinate;
-            } else {
-              acc.lng = coordinate;
-            }
-
-            return acc;
-          }, {}),
-          title: poi.name,
-          icon: this.getPoiIconByPoiTypeId(poi.poi_type_id),
-          map: this.map
-        });
-
-        marker.addListener("click", () => {
-          this.$router.push({ path: "/details", query: { name: poi.name } });
-        });
-
-        return marker;
+    createPoiMarker(poi) {
+      const poiMarker = new this.google.maps.Marker({
+        position: {
+          lat: poi.geo_location.coordinates[1],
+          lng: poi.geo_location.coordinates[0]
+        },
+        title: poi.name,
+        icon: {
+          url: this.getPoiIconByPoiTypeId(poi.poi_type_id),
+          scaledSize: new this.google.maps.Size(24, 24)
+        }
       });
+
+      poiMarker.addListener("click", () => {
+        this.$router.push({ path: "/details", query: { name: poi.name } });
+      });
+
+      return poiMarker;
     },
 
     drawDetailsMarker() {
@@ -343,14 +351,6 @@ export default {
           map: this.map
         });
       }
-    },
-
-    cleanPois() {
-      this.poiMarkers = this.poiMarkers.reduce((acc, marker) => {
-        marker.setMap(null);
-
-        return acc;
-      }, []);
     }
   }
 };
