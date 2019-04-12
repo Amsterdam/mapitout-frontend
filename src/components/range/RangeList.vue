@@ -9,13 +9,15 @@
         @click="onRangeClick(range.id)"
       >
         <range :isDisabled="range.id !== activeRangeId" :value="range" @input="onInputRange" />
-        <button
-          class="delete"
-          v-if="range.id !== activeRangeId"
-          @click="onClickRangeDelete(range.id, $event)"
-        >
-          <icon-delete class="icon" />
-        </button>
+        <div class="controls">
+          <button
+            class="delete"
+            v-if="range.id !== activeRangeId"
+            @click="onClickRangeDelete(range.id, $event)"
+          >
+            <icon-delete class="icon" />
+          </button>
+        </div>
       </li>
     </ul>
     <button class="add" @click="onClickAddRange" v-if="ranges.length < 3">
@@ -28,94 +30,98 @@
 
 .range-list {
   overflow: scroll;
+}
 
-  .list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    background-color: rgba($greyscale-1, 0.4);
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.item {
+  border-color: rgba($greyscale-1, 0.4);
+  border-style: solid;
+  border-width: 2px 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+
+  &:first-child {
+    border-top-width: 0;
+  }
+
+  &:last-child {
+    border-bottom-width: 0;
+  }
+
+  .range {
+    flex-grow: 1;
+  }
+
+  .controls {
     display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+  }
 
-    .item {
-      margin: 2px 0;
-      height: 76px;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      background-color: white;
+  .delete {
+    border: 0 none;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    margin: 0 12px;
+    padding: 0;
 
-      &:first-child {
-        margin-top: 0;
-      }
+    .icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      color: lighten($greyscale-1, 25);
+    }
 
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .range {
-        flex-grow: 1;
-      }
-
-      .delete {
-        align-self: center;
-        border: 0 none;
-        background: transparent;
-        outline: none;
-        cursor: pointer;
-        margin: 0 12px;
-        padding: 0;
-        .icon {
-          display: block;
-          width: 16px;
-          height: 16px;
-          color: lighten($greyscale-1, 25);
-        }
-
-        &:hover {
-          .icon {
-            color: $greyscale-1;
-          }
-        }
-      }
-
-      &.active {
-        height: auto;
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        background: white;
-      }
-
-      &:not(.active) {
-        .range {
-          flex-grow: 1;
-          flex-direction: row;
-          align-items: center;
-          justify-content: space-between;
-          padding: 24px 0 24px 48px;
-          background-color: white;
-          cursor: pointer;
-          overflow: hidden;
-        }
+    &:hover {
+      .icon {
+        color: $greyscale-1;
       }
     }
   }
 
-  .add {
-    display: block;
-    margin: 72px auto 24px auto;
-    border: 1px solid lighten($greyscale-1, 25);
-    background-color: white;
-    padding: 8px 16px;
-    cursor: pointer;
-    color: lighten($greyscale-1, 25);
+  &.active {
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    background: white;
+  }
 
-    &:hover {
-      color: $greyscale-1;
-      border-color: $greyscale-1;
+  &:not(.active) {
+    .range {
+      flex-grow: 1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      background-color: white;
+      cursor: pointer;
+      overflow: hidden;
     }
+  }
+}
+
+.add {
+  display: block;
+  margin: 72px auto 24px auto;
+  border: 1px solid lighten($greyscale-1, 25);
+  background-color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: lighten($greyscale-1, 25);
+
+  &:hover {
+    color: $greyscale-1;
+    border-color: $greyscale-1;
   }
 }
 </style>
@@ -135,14 +141,17 @@ export default {
       activeRangeId: state => state.activeId
     })
   },
-  mounted() {
+  async mounted() {
     const ranges = this.ranges;
+    let rangeId;
 
     if (ranges.length === 0) {
-      this.addRange();
+      rangeId = await this.addRange(Range.props.value.default());
     } else {
-      this.activateRange(ranges[ranges.length - 1].id);
+      rangeId = ranges[ranges.length - 1].id;
     }
+
+    this.activateRange(rangeId);
   },
   methods: {
     ...mapActions("ranges", {
@@ -164,8 +173,10 @@ export default {
       }
     },
 
-    onClickAddRange() {
-      this.addRange();
+    async onClickAddRange() {
+      const rangeId = await this.addRange();
+
+      this.activateRange(rangeId);
     },
 
     onInputRange(range) {

@@ -1,27 +1,6 @@
-export const DEFAULT_RANGE = {
-  id: "range-0",
-  originTypeId: 0,
-  originId: "",
-  originAddress: "",
-  originLat: null,
-  originLng: null,
-  transportType: "public_transport",
-  travelTime: 45,
-  departureTime: new Date().toISOString()
-};
-
 export const mutations = {
-  add(state) {
-    let index = 0;
-    let id = `range-${index}`;
-
-    while (state.ranges.find(range => range.id === id)) {
-      id = `range-${index++}`;
-    }
-    state.ranges.push({
-      ...DEFAULT_RANGE,
-      id
-    });
+  add(state, range) {
+    state.ranges.push(range);
   },
 
   update(state, updatedRange) {
@@ -42,14 +21,24 @@ export const mutations = {
 
   activate(state, id) {
     state.activeId = id;
+  },
+
+  replace(state, ranges) {
+    state.ranges = ranges;
   }
 };
 
 export const actions = {
-  add({ commit, state }) {
-    commit("add");
+  add({ commit, state }, range) {
+    let id = 0;
 
-    commit("activate", state.ranges[state.ranges.length - 1].id);
+    while (state.ranges.find(range => range.id === id)) {
+      id++;
+    }
+
+    commit("add", { id, ...range });
+
+    return id;
   },
 
   update({ commit }, range) {
@@ -62,6 +51,31 @@ export const actions = {
 
   activate({ commit }, id) {
     commit("activate", id);
+  },
+
+  async replace({ dispatch, commit }, unresolvedRanges) {
+    const resolvedOrigins = await Promise.all(
+      unresolvedRanges.map(range =>
+        dispatch("origins/resolveAddressId", range.originId, { root: true })
+      )
+    );
+
+    const ranges = unresolvedRanges.map(range => {
+      const origin = resolvedOrigins.find(origin => origin.id === range.originId);
+
+      if (origin) {
+        return {
+          ...range,
+          originLat: origin.lat,
+          originLng: origin.lng,
+          originAddress: origin.address
+        };
+      }
+
+      return null;
+    });
+
+    commit("replace", ranges.filter(range => range));
   }
 };
 

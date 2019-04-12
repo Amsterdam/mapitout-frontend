@@ -6,6 +6,7 @@ import store from "./store";
 
 import RangesPanel from "./components/RangesPanel";
 import DetailsPanel from "./components/DetailsPanel";
+import { isEqual, pick } from "lodash-es";
 
 Vue.use(Router);
 
@@ -19,7 +20,34 @@ const router = new Router({
     },
     {
       path: "/ranges",
-      component: RangesPanel
+      component: RangesPanel,
+      beforeEnter: async (to, from, next) => {
+        const queryRanges = Object.values(qs.parse(to.query.ranges)).map(range => ({
+          id: parseInt(range.id),
+          travelTime: parseInt(range.tt),
+          originId: range.oId,
+          originTypeId: parseInt(range.otId),
+          transportTypeId: parseInt(range.ttId),
+          departureTime: new Date(parseInt(range.t)).toISOString()
+        }));
+
+        const storeRanges = store.state.ranges.ranges.map(range =>
+          pick(range, [
+            "id",
+            "travelTime",
+            "originId",
+            "originTypeId",
+            "transportTypeId",
+            "departureTime"
+          ])
+        );
+
+        if (!isEqual(queryRanges, storeRanges)) {
+          await store.dispatch("ranges/replace", queryRanges);
+        } else {
+          next();
+        }
+      }
     },
     {
       path: "/details",
@@ -31,39 +59,6 @@ const router = new Router({
       }
     }
   ]
-});
-
-router.onReady(async () => {
-  const url = new URL(window.location);
-
-  const ranges = Object.values(qs.parse(url.searchParams.get("ranges"))).map((range, index) => ({
-    ...range,
-    id: `range-${index}`,
-    travelTime: parseInt(range.travelTime),
-    originLat: parseFloat(range.originLat),
-    originLng: parseFloat(range.originLng)
-  }));
-
-  const selectedFilters = Object.values(qs.parse(url.searchParams.get("filters"))).map(filterId =>
-    parseInt(filterId)
-  );
-
-  const filters = store.state.filters.filters.map(filter => ({
-    ...filter,
-    selected: selectedFilters.includes(filter.id)
-  }));
-
-  store.replaceState({
-    ...store.state,
-    ranges: {
-      ...store.state.ranges,
-      ranges
-    },
-    filters: {
-      ...store.state.filters,
-      filters
-    }
-  });
 });
 
 export default router;

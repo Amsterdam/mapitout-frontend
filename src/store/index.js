@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import qs from "qs";
-import { isEqual, omit } from "lodash-es";
+import { isEqual, omit, pick } from "lodash-es";
 
 import locations from "./modules/locations";
 import ranges from "./modules/ranges";
@@ -9,6 +9,7 @@ import areas from "./modules/areas";
 import filters from "./modules/filters";
 import router from "../router";
 import origins from "./modules/origins";
+import transports from "./modules/transports";
 
 Vue.use(Vuex);
 
@@ -33,28 +34,12 @@ const store = new Vuex.Store({
     locations,
     ranges,
     areas,
-    filters
+    filters,
+    transports
   },
   mutations,
   actions
 });
-
-store.watch(
-  state => state.ranges.ranges,
-  (newValue, oldValue) => {
-    const newDefinedOrigins = newValue
-      .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["originTypeId"]));
-
-    const oldDefinedOrigins = oldValue
-      .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["originTypeId"]));
-
-    if (!isEqual(newDefinedOrigins, oldDefinedOrigins)) {
-      store.dispatch("areas/fetch", newValue.filter(range => range.originLat && range.originLng));
-    }
-  }
-);
 
 store.watch(
   state => state.areas.areas,
@@ -95,20 +80,61 @@ store.watch(
 
 store.watch(
   state => state.ranges.ranges,
-  (newValue, oldValue) => {
-    const newDefinedRanges = newValue
+  (newRanges, oldRanges) => {
+    const newDefinedOrigins = newRanges
       .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["id"]));
+      .map(range => omit(range, ["originTypeId"]));
 
-    const oldDefinedRanges = oldValue
+    const oldDefinedOrigins = oldRanges
       .filter(range => range.originLat && range.originLng)
-      .map(range => omit(range, ["id"]));
+      .map(range => omit(range, ["originTypeId"]));
 
-    if (!isEqual(newDefinedRanges, oldDefinedRanges)) {
+    if (!isEqual(newDefinedOrigins, oldDefinedOrigins)) {
+      store.dispatch("areas/fetch", newRanges.filter(range => range.originLat && range.originLng));
+    }
+  }
+);
+
+store.watch(
+  state => state.ranges.ranges,
+  (newRanges, oldRanges) => {
+    const [definedRanges, oldDefinedRanges] = [newRanges, oldRanges].map(ranges =>
+      ranges
+        .filter(range => range.originId)
+        .map(range =>
+          pick(range, [
+            "id",
+            "originId",
+            "originTypeId",
+            "transportTypeId",
+            "travelTime",
+            "departureTime"
+          ])
+        )
+    );
+
+    const queryString =
+      definedRanges.length > 0
+        ? qs.stringify(
+            definedRanges.map(definedRange => ({
+              id: definedRange.id,
+              oId: definedRange.originId,
+              otId: definedRange.originTypeId,
+              ttId: definedRange.transportTypeId,
+              tt: definedRange.travelTime,
+              t: new Date(definedRange.departureTime).getTime()
+            }))
+          )
+        : undefined;
+
+    if (
+      !isEqual(definedRanges, oldDefinedRanges) &&
+      queryString !== router.currentRoute.query.ranges
+    ) {
       router.push({
         query: {
           ...router.currentRoute.query,
-          ranges: newDefinedRanges.length > 0 ? qs.stringify(newDefinedRanges) : undefined
+          ranges: queryString
         }
       });
     }

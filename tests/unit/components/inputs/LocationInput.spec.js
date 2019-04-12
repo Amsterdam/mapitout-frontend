@@ -1,12 +1,12 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 
-import LocationInput from "@/components/input/LocationInput.vue";
+import Location from "@/components/input/Location.vue";
 import Vuex from "vuex";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
-describe("LocationInput", () => {
+describe("Location", () => {
   const propsData = {
     types: [],
     lookupAddress: jest.fn(),
@@ -14,7 +14,7 @@ describe("LocationInput", () => {
   };
 
   it("should create", () => {
-    const wrapper = shallowMount(LocationInput, {
+    const wrapper = shallowMount(Location, {
       localVue,
       propsData
     });
@@ -23,7 +23,7 @@ describe("LocationInput", () => {
   });
 
   it("should emit an input event whenever the typeId changes ", () => {
-    const wrapper = shallowMount(LocationInput, {
+    const wrapper = shallowMount(Location, {
       localVue,
       propsData
     });
@@ -38,14 +38,15 @@ describe("LocationInput", () => {
   });
 
   it("should emit and input event whenever the address changes ", () => {
-    const wrapper = shallowMount(LocationInput, {
+    const wrapper = shallowMount(Location, {
       localVue,
       propsData
     });
     const address = {
       id: "different",
-      label: "different",
-      value: { lat: 2, lng: 3 }
+      address: "different",
+      lat: 2,
+      lng: 3
     };
 
     wrapper.vm.address = address;
@@ -56,56 +57,10 @@ describe("LocationInput", () => {
       {
         ...wrapper.vm.value,
         addressId: address.id,
-        address: address.label,
-        addressLat: address.value.lat,
-        addressLng: address.value.lng
+        address: address.address,
+        addressLat: address.lat,
+        addressLng: address.lng
       }
     ]);
-  });
-
-  describe("resolveSelection", () => {
-    it("should return a resolved object whenever the resolver provides it one", async () => {
-      const wrapper = shallowMount(LocationInput, {
-        localVue,
-        propsData
-      });
-
-      const resolved = {
-        id: "different",
-        address: "different",
-        lat: 2,
-        lng: 3
-      };
-
-      propsData.resolveAddressId.mockResolvedValue(resolved);
-
-      const result = await wrapper.vm.resolveSelection();
-
-      expect(result).toEqual({
-        id: resolved.id,
-        label: resolved.address,
-        value: {
-          lat: resolved.lat,
-          lng: resolved.lng
-        }
-      });
-    });
-
-    it("should return an empty resolved object whenever the resolver fails to provide it one", async () => {
-      const wrapper = shallowMount(LocationInput, {
-        localVue,
-        propsData
-      });
-
-      propsData.resolveAddressId.mockResolvedValue(null);
-
-      const result = await wrapper.vm.resolveSelection();
-
-      expect(result).toEqual({
-        id: undefined,
-        label: "",
-        value: null
-      });
-    });
   });
 });

@@ -1,15 +1,26 @@
 <template>
   <div class="range" :class="{ disabled: isDisabled }">
-    <location-input
-      class="location"
-      v-model="origin"
-      :isDisabled="isDisabled"
-      :types="originTypes"
-      :lookup-address="lookupAddress"
-      :resolve-address-id="resolveAddressId"
-    />
-    <transport-type class="transport-type" :isDisabled="isDisabled" v-model="transportType" />
-    <travel-time class="travel-time" :isDisabled="isDisabled" v-model="travelTime" />
+    <div class="origin">
+      <location
+        class="input"
+        v-model="origin"
+        :isDisabled="isDisabled"
+        :types="originTypes"
+        :lookup-address="lookupAddress"
+        :resolve-address-id="resolveAddressId"
+      />
+    </div>
+    <div class="transport">
+      <transport-type
+        class="input"
+        :isDisabled="isDisabled"
+        v-model="transportTypeId"
+        :options="transportTypes"
+      />
+    </div>
+    <div class="time">
+      <travel-time class="input" :isDisabled="isDisabled" v-model="travelTime" />
+    </div>
   </div>
 </template>
 <style scoped lang="scss">
@@ -22,12 +33,27 @@
   justify-content: normal;
   padding: 0;
   cursor: default;
+
+  > * {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 80px;
+    padding: 0 36px;
+
+    .input {
+      flex-grow: 1;
+    }
+  }
+
+  &.disabled {
+    padding: 0 36px;
+  }
 }
 
-.location::v-deep {
+.origin {
   z-index: 2;
   background-color: $greyscale-2;
-  padding: 24px 48px;
   order: 2;
 
   .disabled & {
@@ -36,10 +62,9 @@
   }
 }
 
-.transport-type::v-deep {
+.transport {
   z-index: 1;
   background-color: $greyscale-2;
-  padding: 24px 48px;
   order: 3;
 
   .disabled & {
@@ -49,10 +74,9 @@
   }
 }
 
-.travel-time::v-deep {
+.time {
   z-index: 1;
-  background-color: $greyscale-2;
-  padding: 24px 48px;
+  background-color: darken($greyscale-2, 10);
   order: 4;
 
   .disabled & {
@@ -63,16 +87,30 @@
 }
 </style>
 <script>
-import LocationInput from "../input/LocationInput";
+import Location from "../input/Location";
 import TransportType from "../input/TransportType";
 import TravelTime from "../input/TravelTime";
 import { mapActions, mapState } from "vuex";
 
 export default {
+  components: {
+    Location,
+    TransportType,
+    TravelTime
+  },
   props: {
     value: {
       type: Object,
-      required: true
+      default: () => ({
+        travelTime: 45,
+        transportTypeId: 0,
+        departureTime: new Date().toISOString(),
+        originTypeId: 0,
+        originId: "",
+        originAddress: "",
+        originLat: null,
+        originLng: null
+      })
     },
     isDisabled: {
       type: Boolean,
@@ -82,7 +120,7 @@ export default {
   data() {
     return {
       travelTime: this.value.travelTime,
-      transportType: this.value.transportType,
+      transportTypeId: this.value.transportTypeId,
       departureTime: this.value.departureTime,
       origin: {
         typeId: this.value.originTypeId,
@@ -96,12 +134,10 @@ export default {
   computed: {
     ...mapState("origins", {
       originTypes: state => state.types
+    }),
+    ...mapState("transports", {
+      transportTypes: state => state.types
     })
-  },
-  components: {
-    LocationInput,
-    TransportType,
-    TravelTime
   },
   watch: {
     origin: function(origin) {
@@ -115,8 +151,8 @@ export default {
       });
     },
 
-    transportType: function(transportType) {
-      this.$emit("input", { ...this.value, transportType });
+    transportTypeId: function(transportTypeId) {
+      this.$emit("input", { ...this.value, transportTypeId });
     },
 
     travelTime: function(travelTime) {

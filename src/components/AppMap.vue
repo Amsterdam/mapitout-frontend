@@ -7,7 +7,7 @@ import GoogleMapsApiLoader from "google-maps-api-loader";
 import { getDeviceGeoLocation } from "../utils";
 import styles from "../style/google-maps";
 import { mapGetters, mapState, mapActions } from "vuex";
-import { isEqual } from "lodash-es";
+import { isEqual, pick } from "lodash-es";
 
 export default {
   data() {
@@ -15,11 +15,11 @@ export default {
       google: null,
       map: null,
       detailsMarker: null,
-      fullCoverage: null,
-      areaCoverages: [],
       originMarkers: [],
-      intersectionPaths: [],
-      poiMarkers: []
+      poiMarkers: [],
+      unionPolygon: null,
+      intersectionPolylines: [],
+      rangePolygons: []
     };
   },
   computed: {
@@ -45,43 +45,49 @@ export default {
     }
   },
   watch: {
-    details: function() {
-      if (this.pois.length === 0) {
-        this.drawDetailsMarker();
+    areas: function(areas) {
+      if (this.google && this.map) {
+        this.drawAreas(areas);
       }
     },
 
-    areas: function() {
+    ranges: function(newRanges, oldRanges) {
       if (this.google && this.map) {
-        this.drawOrigins();
-        this.drawCoverage();
+        this.drawOriginMarkers(newRanges);
+      }
+
+      const [rangeOriginTypes, oldRangeOriginTypes] = [newRanges, oldRanges].map(ranges =>
+        ranges.map(range => pick(range, ["id", "originTypeId"]))
+      );
+
+      if (!isEqual(rangeOriginTypes, oldRangeOriginTypes)) {
+        this.updateAreas(newRanges);
       }
     },
 
     activeRangeId: function(activeRangeId) {
-      this.areaCoverages.forEach(({ rangeId, areaCoverage }) => {
+      this.rangePolygons.forEach(({ rangeId, polygon }) => {
         if (rangeId === activeRangeId) {
-          areaCoverage.setOptions({
+          polygon.setOptions({
             fillOpacity: 0.2
           });
         } else {
-          areaCoverage.setOptions({
+          polygon.setOptions({
             fillOpacity: 0
           });
         }
       });
     },
 
-    ranges: function() {
-      if (this.google && this.map) {
-        this.drawOrigins();
-        this.drawCoverage();
-      }
-    },
-
     pois: function(newValue, oldValue) {
       if (!isEqual(newValue, oldValue)) {
         this.drawPois();
+      }
+    },
+
+    details: function() {
+      if (this.pois.length === 0) {
+        this.drawDetailsMarker();
       }
     }
   },
@@ -93,10 +99,8 @@ export default {
       this.google = googleApi;
       this.map = await this.initGoogleMaps(googleApi);
 
-      if (this.areas.length > 0) {
-        this.drawOrigins();
-        this.drawCoverage();
-      }
+      this.drawAreas(this.areas);
+      this.drawOriginMarkers(this.ranges);
 
       if (this.details) {
         this.drawDetailsMarker();
@@ -135,67 +139,92 @@ export default {
       });
     },
 
-    drawOrigins() {
-      this.cleanOrigins();
+    drawAreas(areas) {
+      if (this.unionPolygon) {
+        this.unionPolygon.setMap(null);
+      }
 
-      this.originMarkers = this.ranges
-        .filter(range => range.originLat && range.originLng)
-        .map(range => {
-          return new this.google.maps.Marker({
-            position: {
-              lat: range.originLat,
-              lng: range.originLng
-            },
-            title: range.originAddress,
-            icon: this.getOriginIconByOriginTypeId(range.originTypeId),
-            map: this.map
-          });
-        });
-    },
+      this.unionPolygon = this.createUnionPolygon(areas.find(area => area.id === "union"));
 
-    drawCoverage() {
-      this.cleanCoverage();
+      if (this.unionPolygon) {
+        this.unionPolygon.setMap(this.map);
+      }
 
-      this.areas.forEach(area => {
-        switch (area.rangeId) {
-          case "union":
-            this.fullCoverage = this.drawUnion(area);
-            break;
-          case "intersection":
-            this.intersectionPaths = this.drawIntersections(area);
-            break;
-          default:
-            this.areaCoverages.push({ rangeId: area.rangeId, areaCoverage: this.drawArea(area) });
-        }
+      this.intersectionPolylines.map(polyline => {
+        polyline.setMap(null);
+      });
+
+      this.intersectionPolylines = this.createIntersectionPolylines(
+        areas.find(area => area.id === "intersection")
+      );
+
+      this.intersectionPolylines.map(polyline => {
+        polyline.setMap(this.map);
+      });
+
+      this.rangePolygons.map(({ polygon }) => {
+        polygon.setMap(null);
+      });
+
+      this.rangePolygons = areas
+        .filter(area => !["intersection", "union"].includes(area.id))
+        .map(area => this.createRangePolygon(area));
+
+      this.rangePolygons.map(({ polygon }) => {
+        polygon.setMap(this.map);
       });
     },
 
-    drawUnion(area) {
-      let union = null;
+    updateAreas(ranges) {
+      this.rangePolygons.forEach(({ rangeId, polygon }) => {
+        const range = ranges.find(range => range.id === rangeId);
+        const highlightColor = this.getOriginHighlightColorByOriginTypeId(range.originTypeId);
 
-      if (area.paths.length >= 1) {
-        union = new this.google.maps.Polygon({
-          paths: [this.maskPath, ...area.paths],
+        polygon.setOptions({
+          fillColor: highlightColor
+        });
+      });
+    },
+
+    drawOriginMarkers(ranges) {
+      this.originMarkers.forEach(marker => {
+        marker.setMap(null);
+      });
+
+      this.originMarkers = ranges
+        .filter(range => range.originLat && range.originLng)
+        .map(range => this.createOriginMarker(range))
+        .map(originMarker => {
+          originMarker.setMap(this.map);
+          return originMarker;
+        });
+    },
+
+    createUnionPolygon(unionArea) {
+      let unionPolygon = null;
+
+      if (unionArea && unionArea.paths.length > 0) {
+        unionPolygon = new this.google.maps.Polygon({
+          paths: [this.maskPath, ...unionArea.paths],
           strokeColor: "#000000",
           strokeOpacity: 1,
           strokeWeight: 2,
           fillColor: "#4d4d4d",
-          fillOpacity: 0.4,
-          map: this.map
+          fillOpacity: 0.4
         });
       }
 
-      return union;
+      return unionPolygon;
     },
 
-    drawIntersections(area) {
-      let intersectionPaths = [];
+    createIntersectionPolylines(intersectionArea) {
+      let intersectionPolylines = [];
 
-      if (this.areas.filter(area => !["union", "intersection"].includes(area.rangeId)).length > 1) {
-        intersectionPaths = area.paths.map(
-          intersectionPath =>
+      if (intersectionArea && intersectionArea.paths.length > 0) {
+        intersectionPolylines = intersectionArea.paths.map(
+          path =>
             new this.google.maps.Polyline({
-              path: intersectionPath,
+              path: path,
               strokeColor: "#000000",
               strokeOpacity: 1,
               fillOpacity: 0,
@@ -210,44 +239,65 @@ export default {
                   offset: "0",
                   repeat: "10px"
                 }
-              ],
-              map: this.map
+              ]
             })
         );
       }
 
-      return intersectionPaths;
+      return intersectionPolylines;
     },
 
-    drawArea(area) {
-      const range = this.ranges.find(range => range.id === area.rangeId);
-      const highlightColor = this.getOriginHighlightColorByOriginTypeId(range.originTypeId);
-      const areaCoverage = new this.google.maps.Polygon({
-        paths: [...area.paths],
-        strokeOpacity: 0,
-        strokeWeight: 0,
-        fillColor: highlightColor,
-        fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0,
-        map: this.map
-      });
+    createRangePolygon(area) {
+      if (area && area.paths.length > 0) {
+        const range = this.ranges.find(range => range.id === area.rangeId);
+        const highlightColor = this.getOriginHighlightColorByOriginTypeId(range.originTypeId);
 
-      areaCoverage.addListener("mouseover", () => {
-        areaCoverage.setOptions({
-          fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0
+        const polygon = new this.google.maps.Polygon({
+          paths: [...area.paths],
+          strokeOpacity: 0,
+          strokeWeight: 0,
+          fillColor: highlightColor,
+          fillOpacity: range.id === this.activeRangeId ? 0.2 : 0
         });
-      });
 
-      areaCoverage.addListener("mouseout", () => {
-        areaCoverage.setOptions({
-          fillOpacity: area.rangeId === this.activeRangeId ? 0.2 : 0
+        polygon.addListener("mouseover", () => {
+          polygon.setOptions({
+            fillOpacity: range.id === this.activeRangeId ? 0.2 : 0
+          });
         });
+
+        polygon.addListener("mouseout", () => {
+          polygon.setOptions({
+            fillOpacity: range.id === this.activeRangeId ? 0.2 : 0
+          });
+        });
+
+        polygon.addListener("click", () => {
+          this.activateRange(range.id);
+        });
+
+        return { rangeId: range.id, polygon };
+      }
+    },
+
+    createOriginMarker(range) {
+      const originMarker = new this.google.maps.Marker({
+        position: {
+          lat: range.originLat,
+          lng: range.originLng
+        },
+        title: range.originAddress,
+        icon: {
+          url: this.getOriginIconByOriginTypeId(range.originTypeId),
+          scaledSize: new this.google.maps.Size(24, 24)
+        }
       });
 
-      areaCoverage.addListener("click", () => {
-        this.activateRange(area.rangeId);
+      originMarker.addListener("click", () => {
+        this.activateRange(range.id);
       });
 
-      return areaCoverage;
+      return originMarker;
     },
 
     drawPois() {
@@ -293,31 +343,6 @@ export default {
           map: this.map
         });
       }
-    },
-
-    cleanOrigins() {
-      this.originMarkers.forEach(marker => {
-        marker.setMap(null);
-      });
-
-      this.originMarkers = [];
-    },
-
-    cleanCoverage() {
-      if (this.fullCoverage) {
-        this.fullCoverage.setMap(null);
-        this.fullCoverage = null;
-      }
-
-      this.intersectionPaths = this.intersectionPaths.reduce((acc, polyline) => {
-        polyline.setMap(null);
-        return acc;
-      }, []);
-
-      this.areaCoverages = this.areaCoverages.reduce((acc, { areaCoverage }) => {
-        areaCoverage.setMap(null);
-        return acc;
-      }, []);
     },
 
     cleanPois() {

@@ -11,13 +11,13 @@ export const getters = {
   getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id),
 
   getOriginIconByOriginTypeId: state => id => {
-    const originType = state.originTypes.find(originType => originType.id === id);
+    const originType = state.types.find(originType => originType.id === id);
 
     return originType ? originType.icon : undefined;
   },
 
   getOriginHighlightColorByOriginTypeId: state => id => {
-    const originType = state.originTypes.find(originType => originType.id === id);
+    const originType = state.types.find(originType => originType.id === id);
 
     return originType ? originType.highlightColor : "#000000";
   }
@@ -104,24 +104,54 @@ export default {
   namespaced: true,
   state: {
     types: [
-      { id: 0, value: "home", label: "Home", icon: IconHome, highlightColor: "#ff0000" },
+      {
+        id: 0,
+        value: "home",
+        label: "Home",
+        icon: IconHome,
+        iconComponent: "icon-home",
+        highlightColor: "#ff0000"
+      },
       {
         id: 1,
         value: "transport",
         label: "Station",
         icon: IconTransport,
+        iconComponent: "icon-transport",
         highlightColor: "#fd6500"
       },
-      { id: 2, value: "health", label: "Health", icon: IconHealth, highlightColor: "#87c010" },
-      { id: 3, value: "work", label: "Work", icon: IconWork, highlightColor: "#ff0000" },
+      {
+        id: 2,
+        value: "health",
+        label: "Health",
+        icon: IconHealth,
+        iconComponent: "icon-health",
+        highlightColor: "#87c010"
+      },
+      {
+        id: 3,
+        value: "work",
+        label: "Work",
+        icon: IconWork,
+        iconComponent: "icon-work",
+        highlightColor: "#ff0000"
+      },
       {
         id: 4,
         value: "education",
         label: "School",
         icon: IconEducation,
+        iconComponent: "icon-education",
         highlightColor: "#0c65d5"
       },
-      { id: 5, value: "wellness", label: "Gym", icon: IconWellness, highlightColor: "#942190" }
+      {
+        id: 5,
+        value: "wellness",
+        label: "Gym",
+        icon: IconWellness,
+        iconComponent: "icon-wellness",
+        highlightColor: "#942190"
+      }
     ],
     resolved: []
   },

@@ -1,13 +1,13 @@
 import { http } from "../../utils";
 
 export const mutations = {
-  update(state, areas) {
+  replace(state, areas) {
     state.areas = areas;
   }
 };
 
 export const actions = {
-  async fetch({ dispatch, commit }, ranges) {
+  async fetch({ dispatch, commit, rootGetters }, ranges) {
     const url = new URL(process.env.VUE_APP_ENDPOINT_AREAS);
     const request = {
       method: "POST",
@@ -18,7 +18,7 @@ export const actions = {
       body: JSON.stringify({
         departure_searches: ranges.map(range => {
           return {
-            id: range.id,
+            id: `${range.id}`,
             coords: {
               lat: range.originLat,
               lng: range.originLng
@@ -26,20 +26,20 @@ export const actions = {
             departure_time: range.departureTime,
             travel_time: range.travelTime * 60,
             transportation: {
-              type: range.transportType
+              type: rootGetters["transports/getTransportValueById"](range.transportTypeId)
             }
           };
         }),
         unions: [
           {
             id: "union",
-            search_ids: ranges.map(range => range.id)
+            search_ids: ranges.map(range => `${range.id}`)
           }
         ],
         intersections: [
           {
             id: "intersection",
-            search_ids: ranges.map(range => range.id)
+            search_ids: ranges.map(range => `${range.id}`)
           }
         ]
       })
@@ -50,10 +50,10 @@ export const actions = {
     try {
       const result = await http(url, request);
 
-      areas = result.results.map((timeMap, index) => {
+      areas = result.results.map(timeMap => {
         return {
-          id: `area-${index}`,
-          rangeId: timeMap.search_id,
+          id: timeMap.search_id,
+          rangeId: parseInt(timeMap.search_id),
           paths: timeMap.shapes.reduce((acc, shape) => {
             let paths = [shape.shell];
 
@@ -69,7 +69,7 @@ export const actions = {
       dispatch("reportError", error, { root: true });
     }
 
-    commit("update", areas);
+    commit("replace", areas);
   }
 };
 

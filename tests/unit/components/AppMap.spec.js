@@ -122,7 +122,7 @@ describe("AppMap", () => {
       store
     });
 
-    const drawOriginsSpy = jest.spyOn(wrapper.vm, "drawOrigins");
+    const drawOriginsSpy = jest.spyOn(wrapper.vm, "drawOriginMarkers");
     const drawCoverageSpy = jest.spyOn(wrapper.vm, "drawCoverage");
 
     await flushPromises();
