@@ -174,7 +174,7 @@ export default {
     },
 
     async onClickAddRange() {
-      const rangeId = await this.addRange();
+      const rangeId = await this.addRange(Range.props.value.default());
 
       this.activateRange(rangeId);
     },
