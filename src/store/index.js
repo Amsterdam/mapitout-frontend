@@ -1,13 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import qs from "qs";
 import { isEqual, omit } from "lodash-es";
 
 import locations from "./modules/locations";
 import ranges from "./modules/ranges";
 import areas from "./modules/areas";
 import filters from "./modules/filters";
-import router from "../router";
 import origins from "./modules/origins";
 import transports from "./modules/transports";
 
@@ -43,38 +41,19 @@ const store = new Vuex.Store({
 
 store.watch(
   state => state.areas.areas,
-  (areas, oldValue) => {
-    const filters = store.state.filters.filters.filter(filter => filter.selected);
-
-    if (!isEqual(areas, oldValue) && filters.length > 0) {
-      store.dispatch("locations/fetch", { filters, areas });
+  (newAreas, oldAreas) => {
+    if (!isEqual(newAreas, oldAreas)) {
+      store.dispatch("locations/fetch");
     }
   }
 );
 
 store.watch(
   state => state.filters.filters,
-  (newValue, oldValue) => {
-    if (!isEqual(newValue, oldValue)) {
-      store.dispatch("locations/fetch", {
-        filters: newValue.filter(filter => filter.selected),
-        unionArea: store.state.areas.areas.find(area => area.id === "union")
-      });
+  (newFilters, oldFilters) => {
+    if (!isEqual(newFilters, oldFilters)) {
+      store.dispatch("locations/fetch");
     }
-  }
-);
-
-store.watch(
-  state => state.filters.filters,
-  filters => {
-    const selectedFilterIds = filters.filter(filter => filter.selected).map(filter => filter.id);
-
-    router.push({
-      query: {
-        ...router.currentRoute.query,
-        filters: selectedFilterIds.length > 0 ? qs.stringify(selectedFilterIds) : undefined
-      }
-    });
   }
 );
 
@@ -86,7 +65,7 @@ store.watch(
     );
 
     if (!isEqual(newValue, oldValue)) {
-      store.dispatch("areas/fetch", newRanges);
+      store.dispatch("areas/fetch");
     }
   }
 );

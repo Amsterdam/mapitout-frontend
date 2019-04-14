@@ -2,7 +2,9 @@ import { http } from "../../utils";
 
 export const getters = {
   getAreasFromCache: state => key =>
-    state.cache.find(cachedAreaObject => cachedAreaObject.key === key)
+    state.cache.find(cachedAreaObject => cachedAreaObject.key === key),
+
+  unionArea: state => state.areas.find(area => area.id === "union")
 };
 
 export const mutations = {
@@ -18,9 +20,8 @@ export const mutations = {
 };
 
 export const actions = {
-  async fetch({ dispatch, commit, getters, rootGetters }, ranges) {
-    const rangesWithDefinedOrigins = ranges.filter(range => range.originId);
-
+  async fetch({ dispatch, commit, getters, rootState, rootGetters }) {
+    const rangesWithDefinedOrigins = rootState.ranges.ranges.filter(range => range.originId);
     let areas = [];
 
     if (rangesWithDefinedOrigins.length > 0) {

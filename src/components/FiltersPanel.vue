@@ -15,9 +15,9 @@
         <ul class="filter-list">
           <li class="item" v-for="filter in groups[0][1]" :key="filter.value">
             <filter-item
-              :filter="filter"
+              :value="filter"
               @click="onFilterItemClick(filter)"
-              @toggle="onFilterToggle"
+              @input="onFilterInput"
             />
           </li>
         </ul>
@@ -29,9 +29,9 @@
             <ul class="filter-list" v-if="visibleGroup === group[0]">
               <li class="item" v-for="filter in group[1]" :key="filter.value">
                 <filter-item
-                  :filter="filter"
+                  :value="filter"
                   @click="onFilterItemClick(filter)"
-                  @toggle="onFilterToggle"
+                  @input="onFilterInput"
                 />
               </li>
             </ul>
@@ -43,6 +43,11 @@
 </template>
 <style lang="scss" scoped>
 @import "../style/variables.scss";
+
+.content {
+  height: 300px;
+  width: 100%;
+}
 
 .close {
   border: 0 none;
@@ -59,15 +64,12 @@
   }
 }
 
-.body {
-  padding: 24px;
-}
-
 .filter-list,
 .group-list {
   margin: 0;
-  padding: 0;
+  padding: 24px;
   list-style: none;
+  overflow: scroll;
 
   .item {
     display: flex;
@@ -100,9 +102,10 @@
 import IconBuildings from "@/assets/icons/IconBuildings.svg?inline";
 import IconDelete from "@/assets/icons/IconDelete.svg?inline";
 import IconArrowLeft from "@/assets/icons/IconArrowLeft.svg?inline";
-import { mapActions, mapState } from "vuex";
+import { mapState } from "vuex";
 import FilterItem from "./filter/FilterItem";
 import { groupBy, toPairs } from "lodash-es";
+import qs from "qs";
 
 export default {
   components: {
@@ -140,10 +143,6 @@ export default {
   },
 
   methods: {
-    ...mapActions("filters", {
-      toggleFilter: "toggle"
-    }),
-
     onClickClose() {
       this.$emit("input", !this.value);
     },
@@ -158,8 +157,29 @@ export default {
       }
     },
 
-    onFilterToggle(filter, selected) {
-      this.toggleFilter({ id: filter.id, selected });
+    onFilterInput(updatedFilter) {
+      let filters = this.filters.map(filter => {
+        if (filter.id === updatedFilter.id) {
+          return updatedFilter;
+        }
+
+        return filter;
+      });
+
+      this.navigate(filters);
+    },
+
+    navigate(filters) {
+      const selectedFilters = filters.filter(filter => filter.selected);
+
+      const fQueryString =
+        selectedFilters.length > 0
+          ? qs.stringify(selectedFilters.map(filter => filter.id))
+          : undefined;
+
+      if (this.$route.query.f !== fQueryString) {
+        this.$router.push({ query: { ...this.$route.query, f: fQueryString } });
+      }
     }
   }
 };

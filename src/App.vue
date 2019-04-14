@@ -9,7 +9,7 @@
         v-expandable
       >
         <app-navigation class="nav" v-if="$route.path !== '/details'" />
-        <router-view class="main" />
+        <router-view />
         <filters-panel v-model="showFilters" />
       </aside>
     </main>

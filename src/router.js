@@ -45,12 +45,16 @@ router.beforeEach(async (to, from, next) => {
     departureTime: new Date(parseInt(range.t)).toISOString()
   }));
 
-  // if (ranges[0] && store.state.ranges.ranges[0]) {
-  //   console.log(ranges[0].transportTypeId, store.state.ranges.ranges[0].transportTypeId);
-  // }
+  const filters = Object.values(qs.parse(to.query.f)).map(selectedFilterId =>
+    parseInt(selectedFilterId)
+  );
 
-  if (!isEqual(ranges, store.state.ranges.ranges)) {
+  if (!isEqual(ranges, store.state.ranges.ranges.filter(range => range.originId))) {
     await store.dispatch("ranges/replace", ranges);
+  }
+
+  if (!isEqual(filters, store.state.filters.filters.map(filter => filter.id))) {
+    await store.dispatch("filters/select", filters);
   }
 
   next();

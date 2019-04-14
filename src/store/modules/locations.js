@@ -30,40 +30,53 @@ export const getters = {
 };
 
 export const actions = {
-  async fetch({ dispatch, commit }, { filters, unionArea }) {
+  async fetch({ dispatch, commit, rootState, rootGetters }) {
     let pois = [];
 
-    if (filters.length > 0 && unionArea) {
-      const url = new URL(process.env.VUE_APP_ENDPOINT_POI_SEARCH);
+    const unionArea = rootGetters["areas/unionArea"];
+    const filters = rootState.filters.filters;
+    const selectedFilters = filters.filter(filter => filter.selected);
 
-      const request = {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-type": "application/json; charset=utf-8"
-        },
-        body: JSON.stringify({
-          poi_by_type: filters.map(filter => filter.value),
-          poi_in_polygon: {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: unionArea.paths.map(polygon =>
-                polygon.map(point => [point.lng, point.lat])
-              ),
-              crs: {
-                type: "name",
-                properties: {
-                  name: "EPSG:4326"
-                }
+    if (unionArea && selectedFilters.length > 0) {
+      const requestBody = {
+        poi_in_polygon: {
+          type: "Feature",
+          geometry: {
+            type: "Polygon",
+            coordinates: unionArea.paths.map(polygon =>
+              polygon.map(point => [point.lng, point.lat])
+            ),
+            crs: {
+              type: "name",
+              properties: {
+                name: "EPSG:4326"
               }
             }
           }
-        })
+        }
       };
 
+      const selectedRootFilters = selectedFilters.filter(filter => filter.root);
+
+      if (selectedRootFilters.length > 0) {
+        requestBody.poi_by_type = selectedRootFilters.map(filter => filter.value);
+      }
+
+      const selectedPropertyFilters = selectedFilters.filter(filter => filter.propertyId);
+
+      if (selectedPropertyFilters.length > 0) {
+        requestBody.poi_by_property = selectedPropertyFilters.map(filter => filter.value);
+      }
+
       try {
-        const result = await http(url, request);
+        const result = await http(process.env.VUE_APP_ENDPOINT_POI_SEARCH, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-type": "application/json; charset=utf-8"
+          },
+          body: JSON.stringify(requestBody)
+        });
 
         if (isArray(result)) {
           pois = result.map(locationData => locationData[0]);
