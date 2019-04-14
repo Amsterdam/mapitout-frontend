@@ -12,12 +12,8 @@ export const mutations = {
     }
   },
 
-  updatePois(state, pois) {
+  replace(state, pois) {
     state.pois = pois;
-  },
-
-  view(state, details) {
-    state.details = details;
   }
 };
 
@@ -62,11 +58,11 @@ export const actions = {
         requestBody.poi_by_type = selectedRootFilters.map(filter => filter.value);
       }
 
-      const selectedPropertyFilters = selectedFilters.filter(filter => filter.propertyId);
-
-      if (selectedPropertyFilters.length > 0) {
-        requestBody.poi_by_property = selectedPropertyFilters.map(filter => filter.value);
-      }
+      // const selectedPropertyFilters = selectedFilters.filter(filter => filter.propertyId);
+      //
+      // if (selectedPropertyFilters.length > 0) {
+      //   requestBody.poi_by_property = selectedPropertyFilters.map(filter => filter.value);
+      // }
 
       try {
         const result = await http(process.env.VUE_APP_ENDPOINT_POI_SEARCH, {
@@ -86,10 +82,10 @@ export const actions = {
       }
     }
 
-    commit("updatePois", pois);
+    commit("replace", pois);
   },
 
-  async lookup({ dispatch, commit, getters }, locationName) {
+  async lookup({ dispatch, getters }, locationName) {
     const url = new URL(process.env.VUE_APP_ENDPOINT_POI_SEARCH);
 
     const request = {
@@ -124,7 +120,7 @@ export const actions = {
       dispatch("reportError", error, { root: true });
     }
 
-    commit("view", details);
+    return details;
   }
 };
 

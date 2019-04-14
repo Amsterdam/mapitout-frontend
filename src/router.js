@@ -23,13 +23,9 @@ const router = new Router({
       component: RangesPanel
     },
     {
-      path: "/details",
-      component: DetailsPanel,
-      beforeEnter: async (to, from, next) => {
-        await store.dispatch("locations/lookup", to.query.name);
-
-        next();
-      }
+      path: "/details/:poi",
+      name: "details",
+      component: DetailsPanel
     }
   ]
 });
@@ -53,7 +49,12 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch("ranges/replace", ranges);
   }
 
-  if (!isEqual(filters, store.state.filters.filters.map(filter => filter.id))) {
+  if (
+    !isEqual(
+      filters,
+      store.state.filters.filters.filter(filter => filter.selected).map(filter => filter.id)
+    )
+  ) {
     await store.dispatch("filters/select", filters);
   }
 

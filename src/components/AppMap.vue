@@ -30,7 +30,7 @@ export default {
       "getOriginHighlightColorByOriginTypeId"
     ]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
-    ...mapState("locations", ["pois", "details"]),
+    ...mapState("locations", ["pois"]),
     ...mapState("ranges", {
       ranges: "ranges",
       activeRangeId: state => state.activeId
@@ -76,12 +76,6 @@ export default {
       if (!isEqual(newValue, oldValue)) {
         this.drawPois(newValue);
       }
-    },
-
-    details: function() {
-      if (this.pois.length === 0) {
-        this.drawDetailsMarker();
-      }
     }
   },
 
@@ -93,10 +87,7 @@ export default {
       this.map = await this.initGoogleMaps(googleApi);
 
       this.drawAreas(this.areas, this.ranges);
-
-      if (this.details) {
-        this.drawDetailsMarker();
-      }
+      this.drawPois(this.pois);
     }
   },
 
@@ -345,28 +336,13 @@ export default {
       });
 
       poiMarker.addListener("click", () => {
-        this.$router.push({ path: "/details", query: { name: poi.name } });
+        this.$router.push({
+          path: `/details/${poi.name}`,
+          query: { ...this.$route.query }
+        });
       });
 
       return poiMarker;
-    },
-
-    drawDetailsMarker() {
-      if (this.detailsMarker) {
-        this.detailsMarker.setMap(null);
-      }
-
-      if (this.details) {
-        this.detailsMarker = new this.google.maps.Marker({
-          position: {
-            lat: this.details.lat,
-            lng: this.details.lng
-          },
-          title: this.details.name,
-          icon: this.details.icon,
-          map: this.map
-        });
-      }
     }
   }
 };
