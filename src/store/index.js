@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import qs from "qs";
 import { isEqual, omit } from "lodash-es";
 
 import locations from "./modules/locations";
@@ -40,19 +41,33 @@ const store = new Vuex.Store({
 });
 
 store.watch(
-  state => state.areas.areas,
-  (newAreas, oldAreas) => {
-    if (!isEqual(newAreas, oldAreas)) {
-      store.dispatch("locations/fetch");
-    }
-  }
-);
+  state => state.route,
+  async route => {
+    const ranges = Object.values(qs.parse(route.query.r)).map(range => ({
+      id: parseInt(range.id),
+      originTypeId: parseInt(range.otId),
+      originId: range.oId,
+      origin: range.o,
+      transportTypeId: parseInt(range.ttId),
+      travelTime: parseInt(range.tt),
+      departureTime: new Date(parseInt(range.t)).toISOString()
+    }));
 
-store.watch(
-  state => state.filters.filters,
-  (newFilters, oldFilters) => {
-    if (!isEqual(newFilters, oldFilters)) {
-      store.dispatch("locations/fetch");
+    const filters = Object.values(qs.parse(route.query.f)).map(selectedFilterId =>
+      parseInt(selectedFilterId)
+    );
+
+    if (!isEqual(ranges, store.state.ranges.ranges.filter(range => range.originId))) {
+      await store.dispatch("ranges/replace", ranges);
+    }
+
+    if (
+      !isEqual(
+        filters,
+        store.state.filters.filters.filter(filter => filter.selected).map(filter => filter.id)
+      )
+    ) {
+      await store.dispatch("filters/select", filters);
     }
   }
 );
@@ -66,6 +81,24 @@ store.watch(
 
     if (!isEqual(newValue, oldValue)) {
       store.dispatch("areas/fetch");
+    }
+  }
+);
+
+store.watch(
+  state => state.areas.areas,
+  (newAreas, oldAreas) => {
+    if (!isEqual(newAreas, oldAreas)) {
+      store.dispatch("locations/fetch");
+    }
+  }
+);
+
+store.watch(
+  state => state.filters.filters,
+  (newFilters, oldFilters) => {
+    if (!isEqual(newFilters, oldFilters)) {
+      store.dispatch("locations/fetch");
     }
   }
 );
