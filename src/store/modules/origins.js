@@ -8,7 +8,7 @@ import IconWellness from "@/assets/icons/IconWellness.svg";
 import { http } from "../../utils";
 
 export const getters = {
-  getResolvedById: state => id => state.resolved.find(resolved => resolved.id === id),
+  getOriginById: state => id => state.cache.find(origin => origin.id === id),
 
   getOriginIconByOriginTypeId: state => id => {
     const originType = state.types.find(originType => originType.id === id);
@@ -24,15 +24,15 @@ export const getters = {
 };
 
 export const mutations = {
-  saveResolved(state, resolved) {
-    if (state.resolved.filter(resolved => resolved.id === resolved.id).length === 0) {
-      state.resolved.push(resolved);
+  save(state, origin) {
+    if (!state.cache.find(origin => origin.id === origin.id)) {
+      state.cache.push(origin);
     }
   }
 };
 
 export const actions = {
-  async lookupAddress({ dispatch }, query) {
+  async lookup({ dispatch }, query) {
     const url = new URL(process.env.VUE_APP_ENDPOINT_ADDRESS_SEARCH);
 
     url.searchParams.append("q", query);
@@ -48,7 +48,7 @@ export const actions = {
 
       suggestions = result.response.docs.map(suggestion => ({
         id: suggestion.id,
-        label: suggestion.weergavenaam
+        address: suggestion.weergavenaam
       }));
     } catch (error) {
       dispatch("reportError", error, { root: true });
@@ -57,11 +57,11 @@ export const actions = {
     return suggestions;
   },
 
-  async resolveAddressId({ state, getters, commit, dispatch }, id) {
-    let resolved = getters.getResolvedById(state, id);
+  async resolve({ getters, commit, dispatch }, id) {
+    let origin = getters.getOriginById(id);
 
-    if (resolved) {
-      return resolved;
+    if (origin) {
+      return origin;
     }
 
     const url = new URL(process.env.VUE_APP_ENDPOINT_GEOLOCATION);
@@ -72,7 +72,7 @@ export const actions = {
       method: "GET"
     };
 
-    resolved = null;
+    origin = null;
 
     try {
       const result = await http(url, request);
@@ -83,20 +83,20 @@ export const actions = {
         .map(coord => parseFloat(coord));
 
       if (result.response.docs[0]) {
-        resolved = {
+        origin = {
           id,
           lng: coordinates[0],
           lat: coordinates[1],
           address: result.response.docs[0].weergavenaam
         };
 
-        commit("saveResolved", resolved);
+        commit("save", origin);
       }
     } catch (error) {
       dispatch("reportError", error, { root: true });
     }
 
-    return resolved;
+    return origin;
   }
 };
 
@@ -153,7 +153,7 @@ export default {
         highlightColor: "#942190"
       }
     ],
-    resolved: []
+    cache: []
   },
   getters,
   mutations,

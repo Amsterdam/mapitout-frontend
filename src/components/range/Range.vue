@@ -7,7 +7,7 @@
         :isDisabled="isDisabled"
         :types="originTypes"
         :lookup-address="lookupAddress"
-        :resolve-address-id="resolveAddressId"
+        @input="onLocationInput"
       />
     </div>
     <div class="transport">
@@ -16,10 +16,16 @@
         :isDisabled="isDisabled"
         v-model="transportTypeId"
         :options="transportTypes"
+        @input="onTransportTypeInput"
       />
     </div>
     <div class="time">
-      <travel-time class="input" :isDisabled="isDisabled" v-model="travelTime" />
+      <travel-time
+        class="input"
+        :isDisabled="isDisabled"
+        v-model="travelTime"
+        @input="onTravelTimeInput"
+      />
     </div>
   </div>
 </template>
@@ -107,9 +113,7 @@ export default {
         departureTime: new Date().toISOString(),
         originTypeId: 0,
         originId: "",
-        originAddress: "",
-        originLat: null,
-        originLng: null
+        origin: ""
       })
     },
     isDisabled: {
@@ -119,15 +123,12 @@ export default {
   },
   data() {
     return {
-      travelTime: this.value.travelTime,
       transportTypeId: this.value.transportTypeId,
-      departureTime: this.value.departureTime,
+      travelTime: this.value.travelTime,
       origin: {
         typeId: this.value.originTypeId,
         addressId: this.value.originId,
-        address: this.value.originAddress,
-        addressLat: this.value.originLat,
-        addressLng: this.value.originLng
+        address: this.value.origin
       }
     };
   },
@@ -140,31 +141,42 @@ export default {
     })
   },
   watch: {
-    origin: function(origin) {
+    value: function(value) {
+      this.transportTypeId = this.value.transportTypeId;
+      this.travelTime = this.value.travelTime;
+
+      this.origin = {
+        typeId: value.originTypeId,
+        addressId: value.originId,
+        address: value.origin
+      };
+    }
+  },
+  methods: {
+    ...mapActions("origins", {
+      lookupAddress: "lookup"
+    }),
+
+    onLocationInput(origin) {
       this.$emit("input", {
         ...this.value,
         originTypeId: origin.typeId,
         originId: origin.addressId,
-        originAddress: origin.address,
-        originLat: origin.addressLat,
-        originLng: origin.addressLng
+        origin: origin.address
       });
     },
 
-    transportTypeId: function(transportTypeId) {
+    onTransportTypeInput(transportTypeId) {
       this.$emit("input", { ...this.value, transportTypeId });
     },
 
-    travelTime: function(travelTime) {
+    onTravelTimeInput(travelTime) {
       this.$emit("input", {
         ...this.value,
         travelTime,
         departureTime: this.getDepartureTime(new Date()).toISOString()
       });
-    }
-  },
-  methods: {
-    ...mapActions("origins", ["lookupAddress", "resolveAddressId"]),
+    },
 
     getDepartureTime(date) {
       const dayOfWeek = date.getUTCDay();

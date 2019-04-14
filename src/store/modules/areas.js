@@ -1,27 +1,43 @@
 import { http } from "../../utils";
 
+export const getters = {
+  getAreasFromCache: state => key =>
+    state.cache.find(cachedAreaObject => cachedAreaObject.key === key)
+};
+
 export const mutations = {
   replace(state, areas) {
     state.areas = areas;
+  },
+
+  save(state, { key, areas }) {
+    if (!state.cache.find(areaObject => areaObject.key === key)) {
+      state.cache.push({ key, areas });
+    }
   }
 };
 
 export const actions = {
-  async fetch({ dispatch, commit, rootGetters }, ranges) {
-    const url = new URL(process.env.VUE_APP_ENDPOINT_AREAS);
-    const request = {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-type": "application/json; charset=utf-8"
-      },
-      body: JSON.stringify({
-        departure_searches: ranges.map(range => {
+  async fetch({ dispatch, commit, getters, rootGetters }, ranges) {
+    const rangesWithDefinedOrigins = ranges.filter(range => range.originId);
+
+    let areas = [];
+
+    if (rangesWithDefinedOrigins.length > 0) {
+      const origins = await Promise.all(
+        rangesWithDefinedOrigins.map(range =>
+          dispatch("origins/resolve", range.originId, { root: true })
+        )
+      );
+      const requestBody = {
+        departure_searches: rangesWithDefinedOrigins.map(range => {
+          const origin = origins.find(origin => origin.id === range.originId);
+
           return {
-            id: `${range.id}`,
+            id: String(range.id),
             coords: {
-              lat: range.originLat,
-              lng: range.originLng
+              lat: origin.lat,
+              lng: origin.lng
             },
             departure_time: range.departureTime,
             travel_time: range.travelTime * 60,
@@ -33,40 +49,58 @@ export const actions = {
         unions: [
           {
             id: "union",
-            search_ids: ranges.map(range => `${range.id}`)
-          }
-        ],
-        intersections: [
-          {
-            id: "intersection",
-            search_ids: ranges.map(range => `${range.id}`)
+            search_ids: rangesWithDefinedOrigins.map(range => `${range.id}`)
           }
         ]
-      })
-    };
+      };
 
-    let areas = [];
+      if (rangesWithDefinedOrigins.length > 1) {
+        requestBody.intersections = [
+          {
+            id: "intersection",
+            search_ids: rangesWithDefinedOrigins.map(range => `${range.id}`)
+          }
+        ];
+      }
 
-    try {
-      const result = await http(url, request);
+      const body = JSON.stringify(requestBody);
 
-      areas = result.results.map(timeMap => {
-        return {
-          id: timeMap.search_id,
-          rangeId: parseInt(timeMap.search_id),
-          paths: timeMap.shapes.reduce((acc, shape) => {
-            let paths = [shape.shell];
+      const cachedAreasObject = getters.getAreasFromCache(body);
 
-            if (shape.holes.length > 0) {
-              paths = paths.concat(shape.holes);
-            }
+      if (cachedAreasObject) {
+        areas = cachedAreasObject.areas;
+      } else {
+        try {
+          const result = await http(process.env.VUE_APP_ENDPOINT_AREAS, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-type": "application/json; charset=utf-8"
+            },
+            body
+          });
 
-            return acc.concat(paths);
-          }, [])
-        };
-      });
-    } catch (error) {
-      dispatch("reportError", error, { root: true });
+          areas = result.results.map(timeMap => {
+            return {
+              id: timeMap.search_id,
+              rangeId: parseInt(timeMap.search_id),
+              paths: timeMap.shapes.reduce((acc, shape) => {
+                let paths = [shape.shell];
+
+                if (shape.holes.length > 0) {
+                  paths = paths.concat(shape.holes);
+                }
+
+                return acc.concat(paths);
+              }, [])
+            };
+          });
+
+          commit("save", { key: body, areas });
+        } catch (error) {
+          dispatch("reportError", error, { root: true });
+        }
+      }
     }
 
     commit("replace", areas);
@@ -77,8 +111,10 @@ export default {
   namespaced: true,
   state: {
     mapBoundaries: { north: 53.53, south: 50.74, west: 3.35, east: 7.25 },
-    areas: []
+    areas: [],
+    cache: []
   },
+  getters,
   mutations,
   actions
 };

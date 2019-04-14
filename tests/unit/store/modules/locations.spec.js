@@ -57,7 +57,7 @@ describe("locations store module", () => {
       commit: jest.fn(),
       getters: {
         getPoiIconByPoiTypeId: jest.fn(),
-        getResolvedById: jest.fn()
+        getOriginById: jest.fn()
       }
     };
 

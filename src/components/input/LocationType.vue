@@ -21,7 +21,7 @@
       <select
         class="native"
         tabindex="0"
-        v-model="selected"
+        v-model="value"
         :disabled="isDisabled"
         @change="onSelectChange"
       >
@@ -248,13 +248,12 @@ export default {
   },
   data() {
     return {
-      selected: this.value,
       isListVisible: false
     };
   },
   computed: {
     selectedTypeIcon: function() {
-      const option = this.options.find(option => option.id === this.selected);
+      const option = this.options.find(option => option.id === this.value);
 
       if (option) {
         return option.iconComponent;
@@ -278,12 +277,12 @@ export default {
     },
 
     onListItemClick(value) {
-      this.selected = value;
+      this.$emit("input", value);
       this.isListVisible = false;
     },
 
     onSelectChange(event) {
-      this.selected = parseInt(event.target.value);
+      this.$emit("input", event.target.value);
     }
   }
 };

@@ -34,12 +34,12 @@ describe("origins store module", () => {
   });
 
   describe("getters", () => {
-    describe("getResolvedById", () => {
+    describe("getOriginById", () => {
       it("should retrieve the correct resolved address if it's saved into the state", () => {
         const resolved = { id: "test-id", value: {} };
         const state = { resolved: [resolved] };
 
-        const result = getters.getResolvedById(state)(resolved.id);
+        const result = getters.getOriginById(state)(resolved.id);
 
         expect(result).toEqual(resolved);
       });
@@ -48,7 +48,7 @@ describe("origins store module", () => {
         const resolved = { id: "test-id", coordinates: {} };
         const state = { resolved: [resolved] };
 
-        const result = getters.getResolvedById(state)("other-id");
+        const result = getters.getOriginById(state)("other-id");
 
         expect(result).toBeUndefined();
       });
@@ -95,7 +95,7 @@ describe("origins store module", () => {
       commit: jest.fn(),
       getters: {
         getPoiIconByPoiTypeId: jest.fn(),
-        getResolvedById: jest.fn()
+        getOriginById: jest.fn()
       }
     };
 

@@ -30,7 +30,7 @@
           @click="onSuggestionClick(index)"
           :class="['item', { cursor: index === cursorIndex }]"
         >
-          <button class="option">{{ suggestion.label }}</button>
+          <button class="option">{{ suggestion.address }}</button>
         </li>
       </ul>
     </transition>
@@ -161,9 +161,7 @@ export default {
       default() {
         return {
           id: "",
-          address: "",
-          lat: null,
-          lng: null
+          address: ""
         };
       }
     },
@@ -172,10 +170,6 @@ export default {
       default: false
     },
     search: {
-      type: Function,
-      required: true
-    },
-    resolve: {
       type: Function,
       required: true
     }
@@ -193,6 +187,10 @@ export default {
   watch: {
     areSuggestionsVisible: function(value) {
       this.cursorIndex = value ? 0 : -1;
+    },
+
+    value: function(value) {
+      this.query = value.address;
     }
   },
 
@@ -248,27 +246,19 @@ export default {
 
     async select(index) {
       const suggestion = this.suggestions[index];
+
       let newValue = {
         id: "",
-        address: "",
-        lat: null,
-        lng: null
+        address: ""
       };
 
       if (suggestion) {
-        if (suggestion.id !== this.value.id) {
-          const resolved = await this.resolve(suggestion.id);
-
-          if (resolved) {
-            newValue = { ...resolved };
-          }
-        } else {
-          newValue = { ...this.value };
-        }
+        newValue = { ...suggestion };
       }
 
       if (!isEqual(newValue, this.value)) {
         this.query = newValue.address;
+
         this.$emit("input", newValue);
       }
     }

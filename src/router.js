@@ -1,12 +1,12 @@
 import Vue from "vue";
 import Router from "vue-router";
-import qs from "qs";
 
 import store from "./store";
 
 import RangesPanel from "./components/RangesPanel";
 import DetailsPanel from "./components/DetailsPanel";
-import { isEqual, pick } from "lodash-es";
+import qs from "qs";
+import { isEqual } from "lodash-es";
 
 Vue.use(Router);
 
@@ -20,34 +20,7 @@ const router = new Router({
     },
     {
       path: "/ranges",
-      component: RangesPanel,
-      beforeEnter: async (to, from, next) => {
-        const queryRanges = Object.values(qs.parse(to.query.ranges)).map(range => ({
-          id: parseInt(range.id),
-          travelTime: parseInt(range.tt),
-          originId: range.oId,
-          originTypeId: parseInt(range.otId),
-          transportTypeId: parseInt(range.ttId),
-          departureTime: new Date(parseInt(range.t)).toISOString()
-        }));
-
-        const storeRanges = store.state.ranges.ranges.map(range =>
-          pick(range, [
-            "id",
-            "travelTime",
-            "originId",
-            "originTypeId",
-            "transportTypeId",
-            "departureTime"
-          ])
-        );
-
-        if (!isEqual(queryRanges, storeRanges)) {
-          await store.dispatch("ranges/replace", queryRanges);
-        } else {
-          next();
-        }
-      }
+      component: RangesPanel
     },
     {
       path: "/details",
@@ -59,6 +32,28 @@ const router = new Router({
       }
     }
   ]
+});
+
+router.beforeEach(async (to, from, next) => {
+  const ranges = Object.values(qs.parse(to.query.r)).map(range => ({
+    id: parseInt(range.id),
+    originTypeId: parseInt(range.otId),
+    originId: range.oId,
+    origin: range.o,
+    transportTypeId: parseInt(range.ttId),
+    travelTime: parseInt(range.tt),
+    departureTime: new Date(parseInt(range.t)).toISOString()
+  }));
+
+  // if (ranges[0] && store.state.ranges.ranges[0]) {
+  //   console.log(ranges[0].transportTypeId, store.state.ranges.ranges[0].transportTypeId);
+  // }
+
+  if (!isEqual(ranges, store.state.ranges.ranges)) {
+    await store.dispatch("ranges/replace", ranges);
+  }
+
+  next();
 });
 
 export default router;

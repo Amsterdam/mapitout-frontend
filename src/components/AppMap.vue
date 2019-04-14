@@ -7,7 +7,7 @@ import GoogleMapsApiLoader from "google-maps-api-loader";
 import { getDeviceGeoLocation } from "../utils";
 import styles from "../style/google-maps";
 import { mapGetters, mapState, mapActions } from "vuex";
-import { isEqual, pick } from "lodash-es";
+import { isEqual } from "lodash-es";
 
 export default {
   data() {
@@ -25,6 +25,7 @@ export default {
   computed: {
     ...mapGetters("locations", ["getPoiIconByPoiTypeId"]),
     ...mapGetters("origins", [
+      "getOriginById",
       "getOriginIconByOriginTypeId",
       "getOriginHighlightColorByOriginTypeId"
     ]),
@@ -51,17 +52,9 @@ export default {
       }
     },
 
-    ranges: function(newRanges, oldRanges) {
+    ranges: function(ranges) {
       if (this.google && this.map) {
-        this.drawOriginMarkers(newRanges);
-      }
-
-      const [rangeOriginTypes, oldRangeOriginTypes] = [newRanges, oldRanges].map(ranges =>
-        ranges.map(range => pick(range, ["id", "originTypeId"]))
-      );
-
-      if (!isEqual(rangeOriginTypes, oldRangeOriginTypes)) {
-        this.updateAreas(newRanges);
+        this.updateAreas(ranges);
       }
     },
 
@@ -99,8 +92,7 @@ export default {
       this.google = googleApi;
       this.map = await this.initGoogleMaps(googleApi);
 
-      this.drawAreas(this.areas);
-      this.drawOriginMarkers(this.ranges);
+      this.drawAreas(this.areas, this.ranges);
 
       if (this.details) {
         this.drawDetailsMarker();
@@ -144,61 +136,77 @@ export default {
         this.unionPolygon.setMap(null);
       }
 
-      this.unionPolygon = this.createUnionPolygon(areas.find(area => area.id === "union"));
-
-      if (this.unionPolygon) {
-        this.unionPolygon.setMap(this.map);
-      }
-
       this.intersectionPolylines.map(polyline => {
         polyline.setMap(null);
-      });
-
-      this.intersectionPolylines = this.createIntersectionPolylines(
-        areas.find(area => area.id === "intersection")
-      );
-
-      this.intersectionPolylines.map(polyline => {
-        polyline.setMap(this.map);
       });
 
       this.rangePolygons.map(({ polygon }) => {
         polygon.setMap(null);
       });
 
+      this.unionPolygon = this.createUnionPolygon(areas.find(area => area.id === "union"));
+
+      if (this.unionPolygon) {
+        this.unionPolygon.setMap(this.map);
+      }
+
+      this.originMarkers.forEach(originMarker => {
+        originMarker.marker.setMap(null);
+      });
+
+      this.intersectionPolylines = this.createIntersectionPolylines(
+        areas.find(area => area.id === "intersection")
+      ).map(polyline => {
+        polyline.setMap(this.map);
+
+        return polyline;
+      });
+
       this.rangePolygons = areas
         .filter(area => !["intersection", "union"].includes(area.id))
-        .map(area => this.createRangePolygon(area));
+        .map(area => this.createRangePolygon(area))
+        .map(rangePolygon => {
+          rangePolygon.polygon.setMap(this.map);
 
-      this.rangePolygons.map(({ polygon }) => {
-        polygon.setMap(this.map);
-      });
-    },
-
-    updateAreas(ranges) {
-      this.rangePolygons.forEach(({ rangeId, polygon }) => {
-        const range = ranges.find(range => range.id === rangeId);
-        const highlightColor = this.getOriginHighlightColorByOriginTypeId(range.originTypeId);
-
-        polygon.setOptions({
-          fillColor: highlightColor
+          return rangePolygon;
         });
-      });
-    },
 
-    drawOriginMarkers(ranges) {
-      this.originMarkers.forEach(marker => {
-        marker.setMap(null);
-      });
-
-      this.originMarkers = ranges
-        .filter(range => range.originLat && range.originLng)
+      this.originMarkers = areas
+        .filter(area => !["intersection", "union"].includes(area.id))
+        .map(area => this.ranges.find(range => range.id === area.rangeId))
+        .filter(range => range)
         .map(range => this.createOriginMarker(range))
+        .filter(origin => origin)
         .map(originMarker => {
-          originMarker.setMap(this.map);
+          originMarker.marker.setMap(this.map);
 
           return originMarker;
         });
+    },
+
+    updateAreas(ranges) {
+      ranges.forEach(range => {
+        const rangePolygon = this.rangePolygons.find(
+          rangePolygon => rangePolygon.rangeId === range.id
+        );
+
+        if (rangePolygon) {
+          rangePolygon.polygon.setOptions({
+            fillColor: this.getOriginHighlightColorByOriginTypeId(range.originTypeId)
+          });
+        }
+
+        const originMarker = this.originMarkers.find(
+          originMarker => originMarker.rangeId === range.id
+        );
+
+        if (originMarker) {
+          originMarker.marker.setIcon({
+            url: this.getOriginIconByOriginTypeId(range.originTypeId),
+            scaledSize: new this.google.maps.Size(24, 24)
+          });
+        }
+      });
     },
 
     drawPois(pois) {
@@ -296,21 +304,29 @@ export default {
     },
 
     createOriginMarker(range) {
-      const originMarker = new this.google.maps.Marker({
-        position: {
-          lat: range.originLat,
-          lng: range.originLng
-        },
-        title: range.originAddress,
-        icon: {
-          url: this.getOriginIconByOriginTypeId(range.originTypeId),
-          scaledSize: new this.google.maps.Size(24, 24)
-        }
-      });
+      let originMarker;
 
-      originMarker.addListener("click", () => {
-        this.activateRange(range.id);
-      });
+      const origin = this.getOriginById(range.originId);
+
+      if (origin) {
+        const marker = new this.google.maps.Marker({
+          position: {
+            lat: origin.lat,
+            lng: origin.lng
+          },
+          title: range.originAddress,
+          icon: {
+            url: this.getOriginIconByOriginTypeId(range.originTypeId),
+            scaledSize: new this.google.maps.Size(24, 24)
+          }
+        });
+
+        marker.addListener("click", () => {
+          this.activateRange(range.id);
+        });
+
+        originMarker = { rangeId: range.id, marker };
+      }
 
       return originMarker;
     },
