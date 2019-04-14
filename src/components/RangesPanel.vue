@@ -30,6 +30,10 @@
 <style scoped lang="scss">
 @import "../style/variables";
 
+.body {
+  overflow: scroll;
+}
+
 .range-list {
   overflow: scroll;
 }
