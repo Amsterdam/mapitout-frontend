@@ -1,50 +1,16 @@
 import { http } from "../../utils";
-
-export function buildAreasFetchRequestBody(ranges, origins) {
-  const requestBody = {
-    departure_searches: ranges.map(range => {
-      const origin = origins.find(origin => origin.id === range.originId);
-
-      if (!origin) {
-        throw new Error("Invalid request parameters");
-      }
-
-      return {
-        id: String(range.id),
-        coords: {
-          lat: origin.lat,
-          lng: origin.lng
-        },
-        departure_time: range.departureTime,
-        travel_time: range.travelTime * 60,
-        transportation: {
-          type: range.transportTypeValue
-        }
-      };
-    }),
-    unions: [
-      {
-        id: "union",
-        search_ids: ranges.map(range => `${range.id}`)
-      }
-    ]
-  };
-
-  if (ranges.length > 1) {
-    requestBody.intersections = [
-      {
-        id: "intersection",
-        search_ids: ranges.map(range => `${range.id}`)
-      }
-    ];
-  }
-
-  return requestBody;
-}
+import { isEqual, omit } from "lodash-es";
 
 export const getters = {
-  getAreasFromCache: state => key =>
-    state.cache.find(cachedAreaObject => cachedAreaObject.key === key),
+  getAreasFromCache: state => key => {
+    const cachedAreaObject = state.cache.find(cachedAreaObject => cachedAreaObject.key === key);
+
+    if (cachedAreaObject) {
+      return cachedAreaObject.areas;
+    }
+
+    return undefined;
+  },
 
   unionArea: state => state.areas.find(area => area.id === "union")
 };
@@ -63,55 +29,93 @@ export const mutations = {
 
 export const actions = {
   async fetch({ dispatch, commit, getters, rootState, rootGetters }) {
-    const rangesWithDefinedOrigins = rootState.ranges.ranges.filter(range => range.originId);
+    const ranges = rootState.ranges.ranges
+      .filter(range => range.originId)
+      .map(range => ({
+        ...range,
+        transportTypeValue: rootGetters["transports/getTransportValueById"](range.transportTypeId)
+      }));
+
     let areas = [];
 
-    if (rangesWithDefinedOrigins.length > 0) {
-      const origins = await dispatch(
-        "origins/resolveArray",
-        rangesWithDefinedOrigins.map(range => range.originId)
-      );
+    if (ranges.length > 0) {
+      const origins = await dispatch("origins/resolveArray", ranges.map(range => range.originId));
 
-      const requestBody = buildAreasFetchRequestBody(
-        rangesWithDefinedOrigins.map(range => ({
-          ...range,
-          transportTypeValue: rootGetters["transports/getTransportValueById"](range.transportTypeId)
-        })),
-        origins
-      );
+      if (isEqual(origins.map(origin => origin.id), ranges.map(range => range.originId))) {
+        const cacheKey = ranges
+          .map(range => omit(range, ["id", "origin"]))
+          .map(range => Object.values(range).join("-"))
+          .join(";");
+        const cachedAreas = getters.getAreasFromCache(cacheKey);
 
-      const cacheKey = JSON.stringify(requestBody);
-      const cachedAreasObject = getters.getAreasFromCache(cacheKey);
+        if (cachedAreas) {
+          areas = cachedAreas;
+        } else {
+          const requestBody = {
+            departure_searches: ranges.map(range => {
+              const origin = origins.find(origin => origin.id === range.originId);
 
-      if (cachedAreasObject) {
-        areas = cachedAreasObject.areas;
-      } else {
-        const result = await http(process.env.VUE_APP_ENDPOINT_AREAS, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-type": "application/json; charset=utf-8"
-          },
-          body: JSON.stringify(requestBody)
-        });
-
-        areas = result.results.map(timeMap => {
-          return {
-            id: timeMap.search_id,
-            rangeId: parseInt(timeMap.search_id),
-            paths: timeMap.shapes.reduce((acc, shape) => {
-              let paths = [shape.shell];
-
-              if (shape.holes.length > 0) {
-                paths = paths.concat(shape.holes);
+              return {
+                id: String(range.id),
+                coords: {
+                  lat: origin.lat,
+                  lng: origin.lng
+                },
+                departure_time: range.departureTime,
+                travel_time: range.travelTime * 60,
+                transportation: {
+                  type: range.transportTypeValue
+                }
+              };
+            }),
+            unions: [
+              {
+                id: "union",
+                search_ids: ranges.map(range => `${range.id}`)
               }
-
-              return acc.concat(paths);
-            }, [])
+            ]
           };
-        });
 
-        commit("save", { key: cacheKey, areas });
+          if (ranges.length > 1) {
+            requestBody.intersections = [
+              {
+                id: "intersection",
+                search_ids: ranges.map(range => `${range.id}`)
+              }
+            ];
+          }
+
+          try {
+            const result = await http(process.env.VUE_APP_ENDPOINT_AREAS, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-type": "application/json; charset=utf-8"
+              },
+              body: JSON.stringify(requestBody)
+            });
+
+            areas = result.results.map(timeMap => {
+              return {
+                id: timeMap.search_id,
+                rangeId: parseInt(timeMap.search_id),
+                paths: timeMap.shapes.reduce((acc, shape) => {
+                  let paths = [shape.shell];
+
+                  if (shape.holes.length > 0) {
+                    paths = paths.concat(shape.holes);
+                  }
+
+                  return acc.concat(paths);
+                }, [])
+              };
+            });
+
+            commit("save", { key: cacheKey, areas });
+          } catch (error) {
+            dispatch("error/network", error, { root: true });
+          }
+        }
       }
     }
 
