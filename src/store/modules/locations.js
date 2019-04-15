@@ -38,14 +38,14 @@ export const actions = {
         poi_in_polygon: {
           type: "Feature",
           geometry: {
-            type: "Polygon",
-            coordinates: unionArea.paths.map(polygon =>
+            type: "MultiPolygon",
+            coordinates: unionArea.paths.map(polygon => [
               polygon.map(point => [point.lng, point.lat])
-            ),
+            ]),
             crs: {
               type: "name",
               properties: {
-                name: "EPSG:4326"
+                name: "EPSG:43  26"
               }
             }
           }
@@ -58,11 +58,11 @@ export const actions = {
         requestBody.poi_by_type = selectedRootFilters.map(filter => filter.value);
       }
 
-      // const selectedPropertyFilters = selectedFilters.filter(filter => filter.propertyId);
-      //
-      // if (selectedPropertyFilters.length > 0) {
-      //   requestBody.poi_by_property = selectedPropertyFilters.map(filter => filter.value);
-      // }
+      const selectedPropertyFilters = selectedFilters.filter(filter => filter.propertyId);
+
+      if (selectedPropertyFilters.length > 0) {
+        requestBody.poi_by_property = selectedPropertyFilters.map(filter => filter.value);
+      }
 
       try {
         const result = await http(process.env.VUE_APP_ENDPOINT_POI_SEARCH, {
