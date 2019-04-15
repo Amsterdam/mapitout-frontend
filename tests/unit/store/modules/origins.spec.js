@@ -8,46 +8,19 @@ jest.mock("../../../../src/utils", () => {
 });
 
 describe("origins store module", () => {
-  describe("mutations", () => {
-    describe("saveResolved", () => {
-      it("should add the resolved address to state", () => {
-        const state = { resolved: [] };
-        const resolved = { id: "test-id", coordinates: {} };
-
-        mutations.saveResolved(state, resolved);
-
-        expect(state.resolved.length).toBe(1);
-        expect(state.resolved.includes(resolved)).toBeTruthy();
-      });
-
-      it("should skip adding and already resolved address to state", () => {
-        const resolved = { id: "test-id", coordinates: {} };
-        const resolved2 = { id: "test-id", coordinates: {} };
-        const state = { resolved: [resolved] };
-
-        mutations.saveResolved(state, resolved2);
-
-        expect(state.resolved.length).toBe(1);
-        expect(state.resolved.includes(resolved)).toBeTruthy();
-      });
-    });
-  });
-
   describe("getters", () => {
     describe("getOriginById", () => {
+      const state = {
+        origins: [{ id: "test" }]
+      };
+
       it("should retrieve the correct resolved address if it's saved into the state", () => {
-        const resolved = { id: "test-id", value: {} };
-        const state = { resolved: [resolved] };
+        const result = getters.getOriginById(state)("test");
 
-        const result = getters.getOriginById(state)(resolved.id);
-
-        expect(result).toEqual(resolved);
+        expect(result).toEqual(state.origins[0]);
       });
 
-      it("should return null if the requested id was not saved into the state", () => {
-        const resolved = { id: "test-id", coordinates: {} };
-        const state = { resolved: [resolved] };
-
+      it("should return undefined if the requested id was not saved into the state", () => {
         const result = getters.getOriginById(state)("other-id");
 
         expect(result).toBeUndefined();
@@ -55,13 +28,14 @@ describe("origins store module", () => {
     });
 
     describe("getOriginIconByOriginTypeId", () => {
-      const originType = { id: 0, value: "test-value", icon: "icon" };
-      const state = { originTypes: [originType] };
+      const state = {
+        types: [{ id: "test", icon: "icon" }]
+      };
 
       it("should return the icon of the origin type stored in the state by passed type id", () => {
-        const result = getters.getOriginIconByOriginTypeId(state)(originType.id);
+        const result = getters.getOriginIconByOriginTypeId(state)("test");
 
-        expect(result).toEqual(originType.icon);
+        expect(result).toEqual(state.types[0].icon);
       });
 
       it("should return undefined if the requested id was not saved into the state", () => {
@@ -72,19 +46,43 @@ describe("origins store module", () => {
     });
 
     describe("getOriginHighlightColorByOriginTypeId", () => {
-      const originType = { id: 0, value: "test-value", highlightColor: "color" };
-      const state = { originTypes: [originType] };
+      const state = {
+        types: [{ id: "test", highlightColor: "#color" }]
+      };
 
       it("should return the highlight color of the origin type stored in the state by passed type id", () => {
-        const result = getters.getOriginHighlightColorByOriginTypeId(state)(originType.id);
+        const result = getters.getOriginHighlightColorByOriginTypeId(state)("test");
 
-        expect(result).toEqual(originType.highlightColor);
+        expect(result).toEqual(state.types[0].highlightColor);
       });
 
       it("should return undefined if the requested id was not saved into the state", () => {
         const result = getters.getOriginHighlightColorByOriginTypeId(state)("other-id");
 
-        expect(result).toBe("#000000");
+        expect(result).toBeUndefined();
+      });
+    });
+  });
+
+  describe("mutations", () => {
+    describe("saveResolved", () => {
+      const origin = { id: "test" };
+
+      it("should add the resolved address to state", () => {
+        const state = { origins: [] };
+
+        mutations.save(state, origin);
+
+        expect(state.origins.length).toBe(1);
+        expect(state.origins.includes(origin)).toBeTruthy();
+      });
+
+      it("should skip adding and already resolved address to state", () => {
+        const state = { origins: [origin] };
+
+        mutations.save(state, origin);
+
+        expect(state.origins.length).toBe(1);
       });
     });
   });
@@ -103,11 +101,11 @@ describe("origins store module", () => {
       jest.resetAllMocks();
     });
 
-    describe("lookupAddress", () => {
+    describe("lookup", () => {
       it("should call http with the correct url and request object", () => {
         const query = "testQuery";
         const expectedRequestObject = { method: "GET" };
-        actions.lookupAddress(context, query);
+        actions.lookup(context, query);
 
         expect(http).toHaveBeenCalledTimes(1);
 
@@ -129,12 +127,12 @@ describe("origins store module", () => {
         });
 
         const expectedResult = [
-          { id: "test-id", label: "test address" },
-          { id: "test-id1", label: "test address1" },
-          { id: "test-id2", label: "test address2" }
+          { id: "test-id", address: "test address" },
+          { id: "test-id1", address: "test address1" },
+          { id: "test-id2", address: "test address2" }
         ];
 
-        const result = await actions.lookupAddress(context, query);
+        const result = await actions.lookup(context, query);
 
         expect(result).toEqual(expectedResult);
       });
@@ -144,33 +142,33 @@ describe("origins store module", () => {
 
         http.mockRejectedValue(new Error());
 
-        const result = await actions.lookupAddress(context, query);
+        const result = await actions.lookup(context, query);
 
         expect(result).toEqual([]);
         expect(context.dispatch).toBeCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("reportError");
+        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });
     });
 
-    describe("resolveAddressId", () => {
+    describe("resolve", () => {
       it("should return the already resolved address if present in its state", async () => {
         const testId = "test-id";
-        const resolved = { id: testId, address: "test value", addressLat: 1, addressLng: 2 };
+        const origin = { id: testId, address: "test value", lat: 1, lng: 2 };
 
-        context.getters.getResolvedById.mockReturnValue(resolved);
+        context.getters.getOriginById.mockReturnValue(origin);
 
-        const result = await actions.resolveAddressId(context, testId);
+        const result = await actions.resolve(context, testId);
 
-        expect(result).toEqual(resolved);
+        expect(result).toEqual(origin);
       });
 
       it("should call http with the correct request object if no resolved value is found in state", () => {
         const testId = "test-id";
         const expectedRequestObject = { method: "GET" };
 
-        actions.resolveAddressId(context, testId);
+        actions.resolve(context, testId);
 
         expect(http).toHaveBeenCalledTimes(1);
 
@@ -184,11 +182,11 @@ describe("origins store module", () => {
 
         http.mockRejectedValue(new Error());
 
-        const result = await actions.resolveAddressId(context, testId);
+        const result = await actions.resolve(context, testId);
 
         expect(result).toEqual(expectedResult);
         expect(context.dispatch).toBeCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("reportError");
+        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });
@@ -214,11 +212,53 @@ describe("origins store module", () => {
           }
         });
 
-        const result = await actions.resolveAddressId(context, testId);
+        const result = await actions.resolve(context, testId);
 
         expect(result).toEqual(expectedResult);
         expect(context.commit).toBeCalledTimes(1);
-        expect(context.commit).toHaveBeenCalledWith("saveResolved", expectedResult);
+        expect(context.commit).toHaveBeenCalledWith("save", expectedResult);
+      });
+    });
+
+    describe("resolveArray", () => {
+      it("should dispatch resolve actions for all ids passed as a parameter", async () => {
+        const ids = ["test-id-1", "test-id-2"];
+
+        await actions.resolveArray(context, ids);
+
+        expect(context.dispatch).toBeCalledTimes(2);
+        expect(context.dispatch.mock.calls[0]).toEqual(["resolve", ids[0]]);
+        expect(context.dispatch.mock.calls[1]).toEqual(["resolve", ids[1]]);
+      });
+
+      it("should dispatch resolve actions for all ids passed as a parameter", async () => {
+        const ids = ["test-id-1", "test-id-2"];
+
+        await actions.resolveArray(context, ids);
+
+        expect(context.dispatch).toBeCalledTimes(2);
+        expect(context.dispatch.mock.calls[0]).toEqual(["resolve", ids[0]]);
+        expect(context.dispatch.mock.calls[1]).toEqual(["resolve", ids[1]]);
+      });
+
+      it("should return the origins array if all origins were resolved", async () => {
+        const ids = ["test-id"];
+        const origin = { id: "test-id" };
+
+        context.dispatch.mockResolvedValue(origin);
+        const result = await actions.resolveArray(context, ids);
+
+        expect(result).toEqual([origin]);
+      });
+
+      it("should return an empty origins array if none or only some of the origins were resolved", async () => {
+        const ids = ["test-id"];
+        const origin = undefined;
+
+        context.dispatch.mockResolvedValue(origin);
+        const result = await actions.resolveArray(context, ids);
+
+        expect(result).toEqual([]);
       });
     });
   });

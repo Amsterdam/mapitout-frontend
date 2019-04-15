@@ -8,7 +8,7 @@ import IconWellness from "@/assets/icons/IconWellness.svg";
 import { http } from "../../utils";
 
 export const getters = {
-  getOriginById: state => id => state.cache.find(origin => origin.id === id),
+  getOriginById: state => id => state.origins.find(origin => origin.id === id),
 
   getOriginIconByOriginTypeId: state => id => {
     const originType = state.types.find(originType => originType.id === id);
@@ -19,14 +19,14 @@ export const getters = {
   getOriginHighlightColorByOriginTypeId: state => id => {
     const originType = state.types.find(originType => originType.id === id);
 
-    return originType ? originType.highlightColor : "#000000";
+    return originType ? originType.highlightColor : undefined;
   }
 };
 
 export const mutations = {
-  save(state, origin) {
-    if (!state.cache.find(origin => origin.id === origin.id)) {
-      state.cache.push(origin);
+  save(state, newOrigin) {
+    if (!state.origins.find(origin => origin.id === newOrigin.id)) {
+      state.origins.push(newOrigin);
     }
   }
 };
@@ -51,7 +51,7 @@ export const actions = {
         address: suggestion.weergavenaam
       }));
     } catch (error) {
-      dispatch("reportError", error, { root: true });
+      dispatch("error/network", error, { root: true });
     }
 
     return suggestions;
@@ -93,7 +93,7 @@ export const actions = {
         commit("save", origin);
       }
     } catch (error) {
-      dispatch("reportError", error, { root: true });
+      dispatch("error/network", error, { root: true });
     }
 
     return origin;
@@ -102,7 +102,13 @@ export const actions = {
   async resolveArray({ dispatch }, ids) {
     let origins = await Promise.all(ids.map(id => dispatch("resolve", id)));
 
-    return origins.filter(origin => origin);
+    origins = origins.filter(origin => origin);
+
+    if (origins.length === ids.length) {
+      return origins;
+    }
+
+    return [];
   }
 };
 
@@ -159,7 +165,7 @@ export default {
         highlightColor: "#942190"
       }
     ],
-    cache: []
+    origins: []
   },
   getters,
   mutations,
