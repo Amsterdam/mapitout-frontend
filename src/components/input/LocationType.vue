@@ -282,7 +282,7 @@ export default {
     },
 
     onSelectChange(event) {
-      this.$emit("input", event.target.value);
+      this.$emit("input", parseInt(event.target.value));
     }
   }
 };

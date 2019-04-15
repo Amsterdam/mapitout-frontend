@@ -7,7 +7,10 @@ const localVue = createLocalVue();
 describe("TransportType", () => {
   it("should create", () => {
     const wrapper = shallowMount(TransportType, {
-      localVue
+      localVue,
+      propsData: {
+        options: []
+      }
     });
 
     expect(wrapper.isVueInstance()).toBeTruthy();
@@ -15,10 +18,22 @@ describe("TransportType", () => {
 
   it("should change its value upon clicking an option", () => {
     const wrapper = shallowMount(TransportType, {
-      localVue
+      localVue,
+      propsData: {
+        options: [{ id: 0, value: "walking", label: "Walking", icon: "icon-transport-pedestrian" }]
+      },
+      data() {
+        return {
+          isListVisible: true,
+          attachToDocument: true
+        };
+      }
     });
 
-    wrapper.find("li button").trigger("click");
+    wrapper
+      .findAll("button.option")
+      .at(0)
+      .trigger("click");
 
     expect(wrapper.emitted("input")).toBeTruthy();
   });

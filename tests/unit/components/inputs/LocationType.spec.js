@@ -92,7 +92,6 @@ describe("LocationType", () => {
     });
 
     wrapper.find("select").setValue(1);
-    wrapper.findAll("select").trigger("change");
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);

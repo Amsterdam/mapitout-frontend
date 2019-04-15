@@ -302,7 +302,7 @@ describe("LocationAddress", () => {
     });
     await wrapper.vm.select(-1);
 
-    expect(wrapper.emitted().input[0][0]).toEqual({ id: "", address: "", lat: null, lng: null });
+    expect(wrapper.emitted().input[0][0]).toEqual({ id: "", address: "" });
   });
 
   it("should emit an input event whenever a selection is resolved", async () => {

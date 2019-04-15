@@ -5,17 +5,17 @@ import { http } from "../../utils";
 
 import { isArray } from "lodash-es";
 
-export const mutations = {
-  replace(state, pois) {
-    state.pois = pois;
-  }
-};
-
 export const getters = {
   getPoiIconByPoiTypeId: state => id => {
     const poiType = state.poiTypes.find(poiType => poiType.id === id);
 
     return poiType ? poiType.icon : undefined;
+  }
+};
+
+export const mutations = {
+  replace(state, pois) {
+    state.pois = pois;
   }
 };
 
