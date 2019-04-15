@@ -1,6 +1,14 @@
 export const mutations = {
   add(state, range) {
-    state.ranges.push(range);
+    let id = 0;
+
+    while (state.ranges.find(range => range.id === id)) {
+      id++;
+    }
+
+    state.ranges.push({ ...range, id });
+
+    return id;
   },
 
   activate(state, id) {
@@ -13,16 +21,8 @@ export const mutations = {
 };
 
 export const actions = {
-  add({ commit, state }, range) {
-    let id = 0;
-
-    while (state.ranges.find(range => range.id === id)) {
-      id++;
-    }
-
-    commit("add", { id, ...range });
-
-    return id;
+  add({ commit }, range) {
+    return commit("add", range);
   },
 
   activate({ commit }, id) {
