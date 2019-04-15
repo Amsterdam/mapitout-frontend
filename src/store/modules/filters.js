@@ -4,10 +4,6 @@ export const mutations = {
       ...filter,
       selected: selectedIds.includes(filter.id)
     }));
-  },
-
-  update(state, filters) {
-    state.filters = filters;
   }
 };
 

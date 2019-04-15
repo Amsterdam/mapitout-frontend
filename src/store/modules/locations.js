@@ -6,12 +6,6 @@ import { http } from "../../utils";
 import { isArray } from "lodash-es";
 
 export const mutations = {
-  saveResolved(state, resolved) {
-    if (state.resolved.filter(resolved => resolved.id === resolved.id).length === 0) {
-      state.resolved.push(resolved);
-    }
-  },
-
   replace(state, pois) {
     state.pois = pois;
   }

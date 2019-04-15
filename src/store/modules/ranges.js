@@ -29,7 +29,7 @@ export const actions = {
     commit("activate", id);
   },
 
-  async replace({ commit }, ranges) {
+  replace({ commit }, ranges) {
     commit("replace", ranges);
   }
 };
