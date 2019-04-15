@@ -1,5 +1,9 @@
-const getters = {
-  getTransportValueById: state => id => state.types.find(type => type.id === id).value
+export const getters = {
+  getTransportValueById: state => id => {
+    const type = state.types.find(type => type.id === id);
+
+    return type ? type.value : undefined;
+  }
 };
 
 export default {
