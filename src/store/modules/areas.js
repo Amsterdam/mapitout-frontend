@@ -1,5 +1,47 @@
 import { http } from "../../utils";
 
+export function buildAreasFetchRequestBody(ranges, origins) {
+  const requestBody = {
+    departure_searches: ranges.map(range => {
+      const origin = origins.find(origin => origin.id === range.originId);
+
+      if (!origin) {
+        throw new Error("Invalid request parameters");
+      }
+
+      return {
+        id: String(range.id),
+        coords: {
+          lat: origin.lat,
+          lng: origin.lng
+        },
+        departure_time: range.departureTime,
+        travel_time: range.travelTime * 60,
+        transportation: {
+          type: range.transportTypeValue
+        }
+      };
+    }),
+    unions: [
+      {
+        id: "union",
+        search_ids: ranges.map(range => `${range.id}`)
+      }
+    ]
+  };
+
+  if (ranges.length > 1) {
+    requestBody.intersections = [
+      {
+        id: "intersection",
+        search_ids: ranges.map(range => `${range.id}`)
+      }
+    ];
+  }
+
+  return requestBody;
+}
+
 export const getters = {
   getAreasFromCache: state => key =>
     state.cache.find(cachedAreaObject => cachedAreaObject.key === key),
@@ -25,82 +67,51 @@ export const actions = {
     let areas = [];
 
     if (rangesWithDefinedOrigins.length > 0) {
-      const origins = await Promise.all(
-        rangesWithDefinedOrigins.map(range =>
-          dispatch("origins/resolve", range.originId, { root: true })
-        )
+      const origins = await dispatch(
+        "origins/resolveArray",
+        rangesWithDefinedOrigins.map(range => range.originId)
       );
-      const requestBody = {
-        departure_searches: rangesWithDefinedOrigins.map(range => {
-          const origin = origins.find(origin => origin.id === range.originId);
 
-          return {
-            id: String(range.id),
-            coords: {
-              lat: origin.lat,
-              lng: origin.lng
-            },
-            departure_time: range.departureTime,
-            travel_time: range.travelTime * 60,
-            transportation: {
-              type: rootGetters["transports/getTransportValueById"](range.transportTypeId)
-            }
-          };
-        }),
-        unions: [
-          {
-            id: "union",
-            search_ids: rangesWithDefinedOrigins.map(range => `${range.id}`)
-          }
-        ]
-      };
+      const requestBody = buildAreasFetchRequestBody(
+        rangesWithDefinedOrigins.map(range => ({
+          ...range,
+          transportTypeValue: rootGetters["transports/getTransportValueById"](range.transportTypeId)
+        })),
+        origins
+      );
 
-      if (rangesWithDefinedOrigins.length > 1) {
-        requestBody.intersections = [
-          {
-            id: "intersection",
-            search_ids: rangesWithDefinedOrigins.map(range => `${range.id}`)
-          }
-        ];
-      }
-
-      const body = JSON.stringify(requestBody);
-
-      const cachedAreasObject = getters.getAreasFromCache(body);
+      const cacheKey = JSON.stringify(requestBody);
+      const cachedAreasObject = getters.getAreasFromCache(cacheKey);
 
       if (cachedAreasObject) {
         areas = cachedAreasObject.areas;
       } else {
-        try {
-          const result = await http(process.env.VUE_APP_ENDPOINT_AREAS, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-type": "application/json; charset=utf-8"
-            },
-            body
-          });
+        const result = await http(process.env.VUE_APP_ENDPOINT_AREAS, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-type": "application/json; charset=utf-8"
+          },
+          body: JSON.stringify(requestBody)
+        });
 
-          areas = result.results.map(timeMap => {
-            return {
-              id: timeMap.search_id,
-              rangeId: parseInt(timeMap.search_id),
-              paths: timeMap.shapes.reduce((acc, shape) => {
-                let paths = [shape.shell];
+        areas = result.results.map(timeMap => {
+          return {
+            id: timeMap.search_id,
+            rangeId: parseInt(timeMap.search_id),
+            paths: timeMap.shapes.reduce((acc, shape) => {
+              let paths = [shape.shell];
 
-                if (shape.holes.length > 0) {
-                  paths = paths.concat(shape.holes);
-                }
+              if (shape.holes.length > 0) {
+                paths = paths.concat(shape.holes);
+              }
 
-                return acc.concat(paths);
-              }, [])
-            };
-          });
+              return acc.concat(paths);
+            }, [])
+          };
+        });
 
-          commit("save", { key: body, areas });
-        } catch (error) {
-          dispatch("reportError", error, { root: true });
-        }
+        commit("save", { key: cacheKey, areas });
       }
     }
 

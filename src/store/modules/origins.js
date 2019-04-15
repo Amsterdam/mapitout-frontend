@@ -97,6 +97,12 @@ export const actions = {
     }
 
     return origin;
+  },
+
+  async resolveArray({ dispatch }, ids) {
+    let origins = await Promise.all(ids.map(id => dispatch("resolve", id)));
+
+    return origins.filter(origin => origin);
   }
 };
 

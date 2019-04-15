@@ -9,16 +9,42 @@ jest.mock("../../../../src/utils", () => {
 
 describe("areas store module", () => {
   describe("mutations", () => {
-    describe("update", () => {
-      it("should update the state areas", () => {
-        const newAreas = [{ id: "area-0" }];
+    describe("replace", () => {
+      it("should replace the state areas", () => {
+        const areas = [{ id: "area-0" }];
         const state = {
           areas: []
         };
 
-        mutations.update(state, newAreas);
+        mutations.replace(state, areas);
 
-        expect(state.areas).toEqual(newAreas);
+        expect(state.areas).toEqual(areas);
+      });
+    });
+
+    describe("save", () => {
+      it("should save the areas to the state cache", () => {
+        const areas = [{ id: "area-0" }];
+        const key = "key";
+        const state = {
+          cache: []
+        };
+
+        mutations.save(state, { key, areas });
+
+        expect(state.cache).toEqual([{ key, areas }]);
+      });
+
+      it("should not add duplicate keys to the cache", () => {
+        const areas1 = [{ id: "area-0" }];
+        const key = "key";
+        const state = {
+          cache: [{ key, areas: areas1 }]
+        };
+
+        mutations.save(state, { key, areas: { id: "area-2" } });
+
+        expect(state.cache).toEqual([{ key, areas: areas1 }]);
       });
     });
   });
@@ -26,25 +52,38 @@ describe("areas store module", () => {
   describe("actions", () => {
     const context = {
       dispatch: jest.fn(),
-      commit: jest.fn()
+      commit: jest.fn(),
+      getters: {
+        getAreasFromCache: jest.fn()
+      },
+      rootGetters: {
+        "transports/getTransportValueById": jest.fn()
+      },
+      rootState: {
+        ranges: {
+          ranges: []
+        }
+      }
     };
+
+    const departureTime = new Date().toISOString();
 
     let ranges = [
       {
-        id: "range-0",
-        originLat: 1,
-        originLng: 2,
+        id: 0,
+        originTypeId: 0,
+        originId: "origin-0",
         travelTime: 45,
-        transportType: "public_transport",
-        departureTime: new Date()
+        transportTypeId: 0,
+        departureTime
       },
       {
-        id: "range-1",
-        originLat: 1,
-        originLng: 2,
+        id: 1,
+        originTypeId: 1,
+        originId: "origin-1",
         travelTime: 20,
-        transportType: "car",
-        departureTime: new Date()
+        transportTypeId: 1,
+        departureTime
       }
     ];
 
@@ -53,6 +92,32 @@ describe("areas store module", () => {
     });
 
     describe("fetch", () => {
+      it("should commit an empty areas array when there are no ranges with defined origins in state", () => {
+        actions.fetch({
+          ...context,
+          rootState: {
+            ranges: {
+              ranges: [{ id: 0 }]
+            }
+          }
+        });
+
+        expect(context.commit).toHaveBeenCalledTimes(1);
+        expect(context.commit).toHaveBeenCalledWith("replace", []);
+      });
+      it("should commit an empty areas array when there are no ranges with defined origins in state", () => {
+        actions.fetch({
+          ...context,
+          rootState: {
+            ranges: {
+              ranges: [{ id: 0 }]
+            }
+          }
+        });
+
+        expect(context.commit).toHaveBeenCalledTimes(1);
+        expect(context.commit).toHaveBeenCalledWith("replace", []);
+      });
       it("should call fetch with the correct request object", () => {
         const expectedRequest = {
           body: `{"departure_searches":[{"id":"range-0","coords":{"lat":1,"lng":2},"departure_time":"${ranges[0].departureTime.toISOString()}","travel_time":2700,"transportation":{"type":"public_transport"}},{"id":"range-1","coords":{"lat":1,"lng":2},"departure_time":"${ranges[1].departureTime.toISOString()}","travel_time":1200,"transportation":{"type":"car"}}],"unions":[{"id":"union","search_ids":["range-0","range-1"]}],"intersections":[{"id":"intersection","search_ids":["range-0","range-1"]}]}`,
