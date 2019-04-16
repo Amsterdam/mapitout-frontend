@@ -168,7 +168,7 @@ export default {
   },
 
   methods: {
-    ...mapActions("locations", {
+    ...mapActions("pois", {
       lookupPoi: "lookup"
     }),
 

@@ -24,8 +24,7 @@ export const actions = {
     let pois = [];
 
     const unionArea = rootGetters["areas/unionArea"];
-    const filters = rootState.filters.filters;
-    const selectedFilters = filters.filter(filter => filter.selected);
+    const selectedFilters = rootState.filters.filters.filter(filter => filter.selected);
 
     if (unionArea && selectedFilters.length > 0) {
       const requestBody = {
@@ -72,7 +71,7 @@ export const actions = {
           pois = result.map(locationData => locationData[0]);
         }
       } catch (error) {
-        dispatch("reportError", error, { root: true });
+        dispatch("error/network", error, { root: true });
       }
     }
 
@@ -111,7 +110,7 @@ export const actions = {
         };
       }
     } catch (error) {
-      dispatch("reportError", error, { root: true });
+      dispatch("error/network", error, { root: true });
     }
 
     return details;

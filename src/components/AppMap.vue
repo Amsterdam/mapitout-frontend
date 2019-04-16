@@ -23,14 +23,14 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("locations", ["getPoiIconByPoiTypeId"]),
+    ...mapGetters("pois", ["getPoiIconByPoiTypeId"]),
     ...mapGetters("origins", [
       "getOriginById",
       "getOriginIconByOriginTypeId",
       "getOriginHighlightColorByOriginTypeId"
     ]),
     ...mapState("areas", ["mapBoundaries", "areas"]),
-    ...mapState("locations", ["pois"]),
+    ...mapState("pois", ["pois"]),
     ...mapState("ranges", {
       ranges: "ranges",
       activeRangeId: state => state.activeId

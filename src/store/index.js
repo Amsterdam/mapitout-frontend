@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import qs from "qs";
 import { isEqual, omit } from "lodash-es";
 
-import locations from "./modules/locations";
+import pois from "./modules/pois";
 import ranges from "./modules/ranges";
 import areas from "./modules/areas";
 import filters from "./modules/filters";
@@ -30,7 +30,7 @@ const store = new Vuex.Store({
   },
   modules: {
     origins,
-    locations,
+    pois,
     ranges,
     areas,
     filters,
@@ -89,7 +89,7 @@ store.watch(
   state => state.areas.areas,
   (newAreas, oldAreas) => {
     if (!isEqual(newAreas, oldAreas)) {
-      store.dispatch("locations/fetch");
+      store.dispatch("pois/fetch");
     }
   }
 );
@@ -98,7 +98,7 @@ store.watch(
   state => state.filters.filters,
   (newFilters, oldFilters) => {
     if (!isEqual(newFilters, oldFilters)) {
-      store.dispatch("locations/fetch");
+      store.dispatch("pois/fetch");
     }
   }
 );
