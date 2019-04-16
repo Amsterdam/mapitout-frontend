@@ -197,7 +197,7 @@ describe("root store", () => {
     await flushPromises();
 
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith("locations/fetch");
+    expect(dispatchSpy).toHaveBeenCalledWith("pois/fetch");
 
     dispatchSpy.mockReset();
 
@@ -224,7 +224,7 @@ describe("root store", () => {
     await flushPromises();
 
     expect(dispatchSpy).toHaveBeenCalledTimes(1);
-    expect(dispatchSpy).toHaveBeenCalledWith("locations/fetch");
+    expect(dispatchSpy).toHaveBeenCalledWith("pois/fetch");
 
     dispatchSpy.mockReset();
 
