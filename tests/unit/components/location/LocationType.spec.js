@@ -91,10 +91,10 @@ describe("LocationType", () => {
       }
     });
 
-    wrapper.find("select").setValue(1);
+    wrapper.findAll("select").trigger("change");
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
-    expect(wrapper.emitted().input[0]).toEqual([1]);
+    expect(wrapper.emitted().input[0]).toEqual([0]);
   });
 });
