@@ -2,7 +2,9 @@
   <div class="panel panel-filters">
     <div class="header">
       <div class="title">
-        <icon-arrow-left class="icon" v-if="viewing" @click="onClickBack" />
+        <button class="back" v-if="viewing" @click="onClickBack">
+          <icon-arrow-left class="icon" />
+        </button>
         <icon-buildings class="icon" v-if="!viewing" />
         <span>{{ viewing ? viewing.name : "Living Essentials" }}</span>
       </div>
@@ -70,6 +72,14 @@
   @media (min-width: $breakpoint-tablet-portrait) {
     display: none;
   }
+}
+
+.back {
+  outline: 0 none;
+  border: 0 none;
+  padding: 0;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 .filter-list,
