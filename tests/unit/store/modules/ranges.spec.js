@@ -24,17 +24,6 @@ describe("ranges store module", () => {
         expect(state.ranges.length).toBe(2);
         expect(state.ranges).toEqual([{ ...range, id: 0 }, { ...range, id: 1 }]);
       });
-
-      it("should return the id of the newly added range", () => {
-        const range = { originId: "test" };
-        const state = {
-          ranges: [{ ...range, id: 0 }]
-        };
-
-        const result = mutations.add(state, range);
-
-        expect(result).toBe(1);
-      });
     });
 
     describe("activate", () => {
@@ -81,10 +70,9 @@ describe("ranges store module", () => {
 
         context.commit.mockReturnValue(0);
 
-        const result = actions.add(context, range);
+        actions.add(context, range);
 
         expect(context.commit).toHaveBeenCalledWith("add", range);
-        expect(result).toBe(0);
       });
     });
 

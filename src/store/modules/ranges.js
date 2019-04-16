@@ -7,8 +7,6 @@ export const mutations = {
     }
 
     state.ranges.push({ ...range, id });
-
-    return id;
   },
 
   activate(state, id) {
@@ -22,7 +20,7 @@ export const mutations = {
 
 export const actions = {
   add({ commit }, range) {
-    return commit("add", range);
+    commit("add", range);
   },
 
   activate({ commit }, id) {

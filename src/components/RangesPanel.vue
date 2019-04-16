@@ -166,10 +166,10 @@ export default {
       let rangeId;
 
       if (this.ranges.length === 0) {
-        rangeId = await this.addRange(Range.props.value.default());
-      } else {
-        rangeId = this.ranges[this.ranges.length - 1].id;
+        await this.addRange(Range.props.value.default());
       }
+
+      rangeId = this.ranges[this.ranges.length - 1].id;
 
       if (this.activeRangeId !== rangeId) {
         this.activateRange(rangeId);
