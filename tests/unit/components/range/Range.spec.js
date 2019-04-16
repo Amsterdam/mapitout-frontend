@@ -13,20 +13,27 @@ describe("Range", () => {
         namespaced: true,
         state: {
           types: [{ id: 0, value: "wellness", label: "Well" }]
+        },
+        actions: {
+          lookup: jest.fn()
+        }
+      },
+      transports: {
+        namespaced: true,
+        state: {
+          types: [{ id: 0, value: "walking", label: "Walking" }]
         }
       }
     }
   });
   const range = {
-    id: "range-0",
-    originType: "home",
+    id: 0,
+    originTypeId: 0,
     originId: "",
-    originAddress: "",
-    originLat: null,
-    originLng: null,
-    transportType: "public_transport",
+    origin: "",
+    transportTypeId: 0,
     travelTime: 45,
-    highlightColor: "#ff0000"
+    departureTime: new Date().toISOString()
   };
   it("should create", () => {
     const wrapper = shallowMount(Range, {
@@ -53,12 +60,10 @@ describe("Range", () => {
     const origin = {
       typeId: 0,
       address: "different",
-      addressId: "different",
-      addressLat: 1,
-      addressLng: 2
+      addressId: "different"
     };
 
-    wrapper.vm.origin = origin;
+    wrapper.vm.onLocationInput(origin);
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
@@ -67,9 +72,7 @@ describe("Range", () => {
         ...wrapper.vm.value,
         originTypeId: origin.typeId,
         originId: origin.addressId,
-        originAddress: origin.address,
-        originLat: origin.addressLat,
-        originLng: origin.addressLng
+        origin: origin.address
       }
     ]);
   });
@@ -84,7 +87,7 @@ describe("Range", () => {
     });
     const travelTime = 10;
 
-    wrapper.setData({ travelTime });
+    wrapper.vm.onTravelTimeInput(travelTime);
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
@@ -105,18 +108,49 @@ describe("Range", () => {
         value: range
       }
     });
-    const transportType = "driving";
+    const transportType = 2;
 
-    wrapper.setData({ transportType });
+    wrapper.vm.onTransportTypeInput(transportType);
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
     expect(wrapper.emitted().input[0]).toEqual([
       {
         ...wrapper.vm.value,
-        transportType: transportType
+        transportTypeId: transportType
       }
     ]);
+  });
+
+  it("should update its child models on value change", () => {
+    const newRange = {
+      id: 0,
+      originTypeId: 1,
+      originId: "test",
+      origin: "test",
+      transportTypeId: 1,
+      travelTime: 60,
+      departureTime: new Date().toISOString()
+    };
+    const wrapper = shallowMount(Range, {
+      localVue,
+      store,
+      propsData: {
+        value: range
+      }
+    });
+
+    wrapper.setProps({
+      value: newRange
+    });
+
+    expect(wrapper.vm.transportTypeId).toBe(newRange.transportTypeId);
+    expect(wrapper.vm.travelTime).toBe(newRange.travelTime);
+    expect(wrapper.vm.origin).toEqual({
+      typeId: newRange.originTypeId,
+      addressId: newRange.originId,
+      address: newRange.origin
+    });
   });
 
   describe("getDepartureTime", () => {

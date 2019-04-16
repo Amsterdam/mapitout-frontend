@@ -95,7 +95,7 @@
 <script>
 import Location from "../Location";
 import TransportType from "../TransportType";
-import TravelTime from "../input/TravelTime";
+import TravelTime from "./TravelTime";
 import { mapActions, mapState } from "vuex";
 
 export default {
