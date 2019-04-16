@@ -14,7 +14,7 @@
             <button
               class="delete"
               v-if="range.id !== activeRangeId"
-              @click="onClickRangeDelete(range.id, $event)"
+              @click.stop="onClickRangeDelete(range.id)"
             >
               <icon-delete class="icon" />
             </button>
@@ -143,16 +143,14 @@ export default {
     })
   },
 
-  beforeRouteEnter(to, from, next) {
-    next(async vm => {
-      await vm.init();
-    });
-  },
-
   async beforeRouteUpdate(to, from, next) {
     await this.init();
 
     next();
+  },
+
+  async created() {
+    await this.init();
   },
 
   methods: {
@@ -176,9 +174,7 @@ export default {
       }
     },
 
-    onClickRangeDelete(removedRangeId, event) {
-      event.stopPropagation();
-
+    onClickRangeDelete(removedRangeId) {
       const ranges = this.ranges.map(range => (range.id === removedRangeId ? undefined : range));
 
       this.navigate(ranges.filter(range => range));
@@ -191,9 +187,9 @@ export default {
     },
 
     async onClickAddRange() {
-      const rangeId = await this.addRange(Range.props.value.default());
+      await this.addRange(Range.props.value.default());
 
-      this.activateRange(rangeId);
+      this.activateRange(this.ranges[this.ranges.length - 1].id);
     },
 
     onInputRange(updatedRange) {
