@@ -153,18 +153,16 @@ export default {
     };
   },
 
-  async beforeRouteEnter(to, from, next) {
-    next(async vm => {
-      vm.details = await vm.lookupPoi(to.params.poi);
-    });
-  },
-
   async beforeRouteUpdate(to, from, next) {
     if (to.params.poi !== from.params.poi) {
-      this.details = await this.lookupPoi(to.params.poi);
+      await this.setDetails(to.params.poi);
     }
 
     next();
+  },
+
+  async created() {
+    await this.setDetails(this.$route.params.poi);
   },
 
   methods: {
@@ -174,6 +172,10 @@ export default {
 
     onClickBack() {
       this.$router.back();
+    },
+
+    async setDetails(poiName) {
+      this.details = await this.lookupPoi(poiName);
     }
   }
 };

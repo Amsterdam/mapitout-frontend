@@ -39,7 +39,9 @@ export const actions = {
     let areas = [];
 
     if (ranges.length > 0) {
-      const origins = await dispatch("origins/resolveArray", ranges.map(range => range.originId));
+      const origins = await dispatch("origins/resolveArray", ranges.map(range => range.originId), {
+        root: true
+      });
 
       if (isEqual(origins.map(origin => origin.id), ranges.map(range => range.originId))) {
         const cacheKey = ranges
