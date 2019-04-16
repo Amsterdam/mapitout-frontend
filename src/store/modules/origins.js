@@ -51,7 +51,7 @@ export const actions = {
         address: suggestion.weergavenaam
       }));
     } catch (error) {
-      dispatch("error/network", error, { root: true });
+      dispatch("errors/network", error, { root: true });
     }
 
     return suggestions;
@@ -93,7 +93,7 @@ export const actions = {
         commit("save", origin);
       }
     } catch (error) {
-      dispatch("error/network", error, { root: true });
+      dispatch("errors/network", error, { root: true });
     }
 
     return origin;

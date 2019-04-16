@@ -297,7 +297,7 @@ describe("areas store module", () => {
 
         expect(context.dispatch).toHaveBeenCalledTimes(2);
 
-        expect(context.dispatch.mock.calls[1][0]).toBe("error/network");
+        expect(context.dispatch.mock.calls[1][0]).toBe("errors/network");
         expect(context.dispatch.mock.calls[1][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[1][2]).toEqual({ root: true });
       });

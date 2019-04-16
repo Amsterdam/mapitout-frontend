@@ -113,7 +113,7 @@ export const actions = {
 
             commit("save", { key: cacheKey, areas });
           } catch (error) {
-            dispatch("error/network", error, { root: true });
+            dispatch("errors/network", error, { root: true });
           }
         }
       }

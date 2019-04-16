@@ -3,6 +3,7 @@ import Vuex from "vuex";
 import qs from "qs";
 import { isEqual, omit } from "lodash-es";
 
+import errors from "./modules/errors";
 import pois from "./modules/pois";
 import ranges from "./modules/ranges";
 import areas from "./modules/areas";
@@ -11,18 +12,6 @@ import origins from "./modules/origins";
 import transports from "./modules/transports";
 
 Vue.use(Vuex);
-
-export const mutations = {
-  error(state, payload) {
-    state.error = payload;
-  }
-};
-
-export const actions = {
-  reportError({ commit }, error) {
-    commit("error", error.message);
-  }
-};
 
 const store = new Vuex.Store({
   state: {
@@ -34,10 +23,9 @@ const store = new Vuex.Store({
     ranges,
     areas,
     filters,
-    transports
-  },
-  mutations,
-  actions
+    transports,
+    errors
+  }
 });
 
 store.watch(

@@ -208,7 +208,7 @@ describe("pois store module", () => {
         expect(context.commit).toHaveBeenCalledTimes(1);
         expect(context.commit).toHaveBeenCalledWith("replace", []);
         expect(context.dispatch).toHaveBeenCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
+        expect(context.dispatch.mock.calls[0][0]).toBe("errors/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });
@@ -284,7 +284,7 @@ describe("pois store module", () => {
 
         expect(result).toBeNull();
         expect(context.dispatch).toBeCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
+        expect(context.dispatch.mock.calls[0][0]).toBe("errors/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });

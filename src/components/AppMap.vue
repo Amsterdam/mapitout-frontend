@@ -96,13 +96,15 @@ export default {
       activateRange: "activate"
     }),
 
-    ...mapActions(["reportError"]),
+    ...mapActions("errors", {
+      genericError: "generic"
+    }),
 
     async initGoogleApi() {
       try {
         return await GoogleMapsApiLoader({ apiKey: process.env.VUE_APP_GOOGLE_API_KEY });
       } catch (error) {
-        this.reportError(error);
+        this.genericError(error);
         return null;
       }
     },

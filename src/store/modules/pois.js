@@ -71,7 +71,7 @@ export const actions = {
           pois = result.map(locationData => locationData[0]);
         }
       } catch (error) {
-        dispatch("error/network", error, { root: true });
+        dispatch("errors/network", error, { root: true });
       }
     }
 
@@ -110,7 +110,7 @@ export const actions = {
         };
       }
     } catch (error) {
-      dispatch("error/network", error, { root: true });
+      dispatch("errors/network", error, { root: true });
     }
 
     return details;

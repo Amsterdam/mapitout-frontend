@@ -146,7 +146,7 @@ describe("origins store module", () => {
 
         expect(result).toEqual([]);
         expect(context.dispatch).toBeCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
+        expect(context.dispatch.mock.calls[0][0]).toBe("errors/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });
@@ -186,7 +186,7 @@ describe("origins store module", () => {
 
         expect(result).toEqual(expectedResult);
         expect(context.dispatch).toBeCalledTimes(1);
-        expect(context.dispatch.mock.calls[0][0]).toBe("error/network");
+        expect(context.dispatch.mock.calls[0][0]).toBe("errors/network");
         expect(context.dispatch.mock.calls[0][1]).toBeInstanceOf(Error);
         expect(context.dispatch.mock.calls[0][2]).toEqual({ root: true });
       });
