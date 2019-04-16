@@ -1,7 +1,7 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";
 
-import LocationAddress from "@/components/input/LocationAddress.vue";
+import LocationAddress from "@/components/location/LocationAddress.vue";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);

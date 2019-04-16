@@ -93,8 +93,8 @@
 }
 </style>
 <script>
-import Location from "../input/Location";
-import TransportType from "../input/TransportType";
+import Location from "../Location";
+import TransportType from "../TransportType";
 import TravelTime from "../input/TravelTime";
 import { mapActions, mapState } from "vuex";
 

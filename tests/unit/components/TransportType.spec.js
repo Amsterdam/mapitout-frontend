@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 
-import TransportType from "@/components/input/TransportType.vue";
+import TransportType from "@/components/TransportType.vue";
 
 const localVue = createLocalVue();
 
@@ -21,20 +21,12 @@ describe("TransportType", () => {
       localVue,
       propsData: {
         options: [{ id: 0, value: "walking", label: "Walking", icon: "icon-transport-pedestrian" }]
-      },
-      data() {
-        return {
-          isListVisible: true,
-          attachToDocument: true
-        };
       }
     });
 
-    wrapper
-      .findAll("button.option")
-      .at(0)
-      .trigger("click");
+    wrapper.vm.onListItemClick(1);
 
-    expect(wrapper.emitted("input")).toBeTruthy();
+    expect(wrapper.emitted().input.length).toBe(1);
+    expect(wrapper.emitted().input[0]).toEqual([1]);
   });
 });

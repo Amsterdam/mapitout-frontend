@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 
-import LocationType from "@/components/input/LocationType.vue";
+import LocationType from "@/components/location/LocationType.vue";
 import origins from "@/store/modules/origins";
 
 const localVue = createLocalVue();

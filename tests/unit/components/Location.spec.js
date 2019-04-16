@@ -1,6 +1,6 @@
 import { shallowMount, createLocalVue } from "@vue/test-utils";
 
-import Location from "@/components/input/Location.vue";
+import Location from "@/components/Location.vue";
 import Vuex from "vuex";
 
 const localVue = createLocalVue();
@@ -28,13 +28,11 @@ describe("Location", () => {
       propsData
     });
 
-    wrapper.setData({
-      typeId: 1
-    });
+    wrapper.vm.onTypeInput(2);
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
-    expect(wrapper.emitted().input[0]).toEqual([{ ...wrapper.vm.value, typeId: 1 }]);
+    expect(wrapper.emitted().input[0]).toEqual([{ ...wrapper.vm.value, typeId: 2 }]);
   });
 
   it("should emit and input event whenever the address changes ", () => {
@@ -44,12 +42,10 @@ describe("Location", () => {
     });
     const address = {
       id: "different",
-      address: "different",
-      lat: 2,
-      lng: 3
+      address: "different"
     };
 
-    wrapper.vm.address = address;
+    wrapper.vm.onAddressInput(address);
 
     expect(wrapper.emitted().input).toBeTruthy();
     expect(wrapper.emitted().input.length).toBe(1);
@@ -57,10 +53,35 @@ describe("Location", () => {
       {
         ...wrapper.vm.value,
         addressId: address.id,
-        address: address.address,
-        addressLat: address.lat,
-        addressLng: address.lng
+        address: address.address
       }
     ]);
+  });
+
+  it("should pass on the updated value to its child components", () => {
+    const wrapper = shallowMount(Location, {
+      localVue,
+      propsData: {
+        ...propsData,
+        value: {
+          addressId: "test-id",
+          address: "test"
+        }
+      }
+    });
+    const value = {
+      addressId: "different",
+      address: "different",
+      typeId: 1
+    };
+
+    wrapper.setProps({
+      value
+    });
+
+    expect(wrapper.vm.address).toEqual({
+      id: value.addressId,
+      address: value.address
+    });
   });
 });

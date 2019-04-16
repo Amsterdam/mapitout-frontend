@@ -19,7 +19,7 @@
   </div>
 </template>
 <style scoped lang="scss">
-@import "../../style/variables";
+@import "../style/variables";
 
 .list {
   list-style: none;

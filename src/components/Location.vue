@@ -18,7 +18,7 @@
   </div>
 </template>
 <style scoped lang="scss">
-@import "../../style/variables";
+@import "../style/variables";
 
 .location {
   display: flex;
@@ -32,8 +32,8 @@
 }
 </style>
 <script>
-import LocationType from "./LocationType";
-import LocationAddress from "./LocationAddress";
+import LocationType from "./location/LocationType";
+import LocationAddress from "./location/LocationAddress";
 
 export default {
   components: {
