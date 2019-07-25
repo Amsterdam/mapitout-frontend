@@ -1,0 +1,73 @@
+@import "../../style/variables";
+
+.panel-filters {
+  @media (min-width: $breakpoint-tablet-portrait) {
+    box-shadow: 0 2px 8px 0 lighten($greyscale-1, 50);
+  }
+}
+
+.back {
+  outline: 0 none;
+  border: 0 none;
+  padding: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.header {
+  min-height: 50px;
+  background: $greyscale-0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+
+  .title {
+    text-transform: uppercase;
+    color: $greyscale-2;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    flex-grow: 1;
+
+    .icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 12px;
+      color: $greyscale-2;
+
+      &.icon-filters {
+        @media (max-width: $breakpoint-tablet-portrait) {
+          position: absolute;
+          right: 48px;
+        }
+      }
+    }
+  }
+}
+
+.body {
+  background: white;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.items {
+  padding: 20px;
+  margin: 0;
+  list-style: none;
+
+  .item {
+    margin: 10px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

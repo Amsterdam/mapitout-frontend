@@ -1,0 +1,12 @@
+@import "../../style/variables";
+
+.location {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.address {
+  flex-grow: 1;
+  margin-left: 16px;
+}

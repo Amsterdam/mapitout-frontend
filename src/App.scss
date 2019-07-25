@@ -1,0 +1,169 @@
+@import "./style/variables";
+@import "./style/fonts";
+
+$header-height: 50px;
+$sidebar-collapsed-height: 128px;
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.app-header {
+  height: $header-height;
+  align-self: stretch;
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  position: relative;
+}
+
+.app-map {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: $sidebar-collapsed-height;
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    bottom: 0;
+  }
+}
+
+.nav {
+  z-index: 2;
+}
+
+.expandable {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: border-top-left-radius 0.2s ease-in-out, border-top-right-radius 0.2s ease-in-out, height 0.2s ease-in-out;
+
+  .handle-drag {
+    position: relative;
+    height: 12px;
+    padding: 12px 0;
+    margin: -12px 0;
+    cursor: pointer;
+
+    @media (min-width: $breakpoint-tablet-portrait) {
+      display: none;
+    }
+
+    &::before {
+      content: " ";
+      position: absolute;
+      z-index: 1;
+      top: 12px;
+      left: 0;
+      display: block;
+      height: 12px;
+      width: 100%;
+      background: $greyscale-0;
+    }
+
+    &::after {
+      content: " ";
+      position: relative;
+      z-index: 2;
+      margin: 4px auto auto auto;
+      display: block;
+      width: 24px;
+      height: 4px;
+      border-radius: 2px;
+      background-color: $greyscale-1;
+    }
+  }
+
+  &.expanding {
+    transition: unset;
+    height: auto;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-color: white;
+  }
+
+  &.expanded {
+    height: calc(100% + #{$header-height});
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-color: white;
+
+    @media (min-width: $breakpoint-tablet-portrait) {
+      height: unset;
+      background-color: transparent;
+    }
+  }
+}
+
+.sidebar {
+  z-index: 3;
+  height: $sidebar-collapsed-height;
+  overflow: hidden;
+
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    align-self: stretch;
+    position: relative;
+    width: 340px;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin: 24px 0 24px 24px;
+    max-height: 100%;
+    height: auto;
+    overflow: visible;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .main {
+    @media (min-width: $breakpoint-tablet-portrait) {
+      box-shadow: 0 2px 8px 0 lighten($greyscale-1, 50);
+    }
+  }
+
+  .panel-filters {
+    display: none;
+
+    @media (min-width: $breakpoint-tablet-portrait) {
+      display: block;
+      margin-top: 12px;
+    }
+  }
+
+  &:not(.expanded) {
+    .panel-ranges::v-deep {
+      .range-defined {
+        @media (max-width: $breakpoint-tablet-portrait) {
+          .travel-time {
+            order: 1;
+            background-color: $greyscale-2;
+          }
+        }
+      }
+    }
+  }
+}
+
+.filters-mobile {
+  z-index: 4;
+  height: 0;
+  overflow: hidden;
+}

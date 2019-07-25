@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentRangeSummary should remove the range from the store when clicking the delete button 1`] = `"0"`;
+
+exports[`ComponentRangeSummary should update the store selected range id when clicking a range summary  1`] = `"0"`;

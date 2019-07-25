@@ -1,4 +1,4 @@
-<svg width="28" height="28" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg">
   <g transform="translate(5.5 6.5)" fill="none" fill-rule="evenodd">
     <circle stroke="currentColor" cx="3.719" cy="11.688" r="3.188" />
     <circle stroke="currentColor" cx="13.813" cy="11.688" r="3.188" />

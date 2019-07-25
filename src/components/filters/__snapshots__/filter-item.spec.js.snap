@@ -1,0 +1,18 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterItem should change its value when clicking the toggle 1`] = `
+Array [
+  Object {
+    "category": null,
+    "children": null,
+    "icon": "icon-bus",
+    "id": 1,
+    "name": "Stations",
+    "parent": null,
+    "propertyId": null,
+    "root": true,
+    "selected": true,
+    "value": "Station",
+  },
+]
+`;

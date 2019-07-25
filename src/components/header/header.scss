@@ -1,0 +1,90 @@
+
+@import "../../style/variables";
+
+header {
+  position: relative;
+  background: $greyscale-0;
+  overflow: visible;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+
+  @media (min-width: $breakpoint-desktop) {
+    padding: 0 15%;
+  }
+}
+
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1;
+
+  .icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 16px;
+  }
+
+  span {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+
+    @media (min-width: $breakpoint-tablet-portrait) {
+      font-size: 14px;
+    }
+
+    &.text-it {
+      color: $primary;
+    }
+
+    &.text-map,
+    &.text-out {
+      color: $greyscale-2;
+    }
+  }
+}
+
+.filters-toggle {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  outline: none;
+  border: 0 none;
+  color: $greyscale-2;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+
+  .icon {
+    height: 16px;
+    width: 16px;
+    color: $greyscale-2;
+    margin-left: 16px;
+  }
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    display: none;
+  }
+}
+
+.iamsterdam {
+  position: absolute;
+  top: 100%;
+  right: 10px;
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    right: 20px;
+  }
+
+  @media (min-width: $breakpoint-desktop) {
+    right: 15%;
+  }
+}

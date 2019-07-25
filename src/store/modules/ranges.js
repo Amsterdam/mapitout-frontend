@@ -1,43 +1,120 @@
+import { isEqual } from "lodash-es";
+import { fetchAreas } from "../../api/travelTime";
+
+const defaultRangeParams = {
+  origin: "",
+  originId: "",
+  originLat: 0,
+  originLng: 0,
+  originTypeId: 0,
+  travelTime: 45,
+  transportTypeValue: "cycling"
+};
+
+export const getters = {
+  unionArea: state => state.areas.find(area => area.id === "union")
+};
+
 export const mutations = {
-  add(state, range) {
-    let id = 0;
-
-    while (state.ranges.find(range => range.id === id)) {
-      id++;
-    }
-
-    state.ranges.push({ ...range, id });
+  selectId(state, id) {
+    state.selectedId = id;
   },
 
-  activate(state, id) {
-    state.activeId = id;
+  updateParams(state, params) {
+    state.params = params;
   },
 
-  replace(state, ranges) {
-    state.ranges = ranges;
+  updateAreas(state, areas) {
+    state.areas = areas;
   }
 };
 
 export const actions = {
-  add({ commit }, range) {
-    commit("add", range);
+  addParams({ dispatch, state }, params = {}) {
+    let id = 0;
+
+    while (state.params.find(params => params.id === String(id))) {
+      id++;
+    }
+
+    const newParams = {
+      ...defaultRangeParams,
+      ...params,
+      id: String(id)
+    };
+
+    dispatch("updateAllParams", state.params.concat([{ ...newParams }]));
+
+    return newParams;
   },
 
-  activate({ commit }, id) {
-    commit("activate", id);
+  removeParams({ dispatch, state }, id) {
+    if (state.params.find(params => params.id === id)) {
+      dispatch(
+        "updateAllParams",
+        state.params.filter(params => params.id !== id)
+      );
+    }
   },
 
-  replace({ commit }, ranges) {
-    commit("replace", ranges);
+  updateParams({ dispatch, state }, params) {
+    dispatch(
+      "updateAllParams",
+      state.params.map(rangeParams =>
+        rangeParams.id === params.id ? params : rangeParams
+      )
+    );
+  },
+
+  updateAllParams({ commit, state }, paramsList) {
+    if (!isEqual(paramsList, state.params)) {
+      commit("updateParams", paramsList);
+    }
+  },
+
+  async updateAreas({ dispatch, commit }, rangesParams) {
+    const rangeParamsWithDefinedOriginId = rangesParams.filter(
+      rangeParams => rangeParams.originId
+    );
+
+    if (rangeParamsWithDefinedOriginId.length > 0) {
+      try {
+        const areas = await fetchAreas(rangeParamsWithDefinedOriginId);
+
+        commit("updateAreas", areas);
+      } catch (error) {
+        commit("updateAreas", []);
+
+        dispatch("errors/network", error, { root: true });
+      }
+    } else {
+      commit("updateAreas", []);
+    }
+  },
+
+  selectId({ commit, state }, id) {
+    if (
+      state.params.find(params => params.id === id) &&
+      state.selectedId !== id
+    ) {
+      commit("selectId", id);
+    }
   }
 };
 
 export default {
   namespaced: true,
   state: {
-    activeId: "",
-    ranges: []
+    selectedId: "0",
+    areas: [],
+    params: [
+      {
+        ...defaultRangeParams,
+        id: "0"
+      }
+    ]
   },
+  getters,
   mutations,
   actions
 };

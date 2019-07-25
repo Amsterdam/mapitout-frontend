@@ -3,7 +3,8 @@ module.exports = {
   transform: {
     "^.+\\.svg": "<rootDir>/svgTransform.js",
     "^.+\\.vue$": "vue-jest",
-    ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+    ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$":
+      "jest-transform-stub",
     "^.+\\.jsx?$": "babel-jest"
   },
   transformIgnorePatterns: ["<rootDir>/node_modules/(?!lodash-es)"],
@@ -12,7 +13,15 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1"
   },
   snapshotSerializers: ["jest-serializer-vue"],
-  testMatch: ["**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"],
+  testMatch: ["**/*.spec.(js|jsx|ts|tsx)"],
   testURL: "http://localhost/",
-  collectCoverageFrom: ["!**/src/__mocks__/**", "**/src/**/*.{js,vue}"]
+  collectCoverageFrom: [
+    "!**/src/__mocks__/**",
+    "!**/src/**/*.spec.{js,vue}",
+    "!**/src/main.js",
+    "!**/src/router.js",
+    "!**/src/registerServiceWorker.js",
+    "**/src/**/*.{js,vue}"
+  ],
+  setupFiles: ["./test/setup.js"]
 };

@@ -6,6 +6,9 @@ module.exports = {
     svgRule.uses.clear();
 
     svgRule
+      .use("babel-loader")
+      .loader("babel-loader")
+      .end()
       .oneOf("inline")
       .resourceQuery(/inline/)
       .use("vue-svg-loader")

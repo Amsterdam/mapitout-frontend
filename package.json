@@ -3,15 +3,19 @@
   "version": "0.1.0",
   "license": "MPL-2.0",
   "description": "Web frontend for the iAmsterdam map-it-out app.",
-  "author": "Alexandru Cazacu<alex@nvent.nl>",
+  "author": "Alex Cazacu<alex@nvent.nl>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Amsterdam/mapitout-frontend.git"
+  },
+  "engines": {
+    "node": "10"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
+    "lint:fix": "vue-cli-service lint --fix",
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
@@ -19,36 +23,34 @@
     "hammerjs": "^2.0.8",
     "lodash-es": "^4.17.11",
     "normalize.css": "^8.0.1",
-    "qs": "^6.7.0",
-    "register-service-worker": "^1.5.2",
-    "vue": "^2.6.6",
-    "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "vuex-router-sync": "^5.0.0"
+    "register-service-worker": "^1.6.2",
+    "vue": "^2.6.10",
+    "vue-router": "^3.0.7",
+    "vuex": "^3.1.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.5.5",
-    "@vue/cli-plugin-eslint": "^3.5.1",
-    "@vue/cli-plugin-pwa": "^3.5.1",
-    "@vue/cli-plugin-unit-jest": "^3.5.3",
-    "@vue/cli-service": "^3.5.3",
+    "@vue/cli-plugin-babel": "^3.9.2",
+    "@vue/cli-plugin-eslint": "^3.9.2",
+    "@vue/cli-plugin-pwa": "^3.9.0",
+    "@vue/cli-plugin-unit-jest": "^3.9.0",
+    "@vue/cli-service": "^3.9.2",
     "@vue/eslint-config-prettier": "^4.0.1",
-    "@vue/test-utils": "^1.0.0-beta.20",
+    "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "7.0.0-bridge.0",
-    "babel-eslint": "^10.0.1",
-    "babel-jest": "^23.6.0",
-    "eslint": "^5.8.0",
-    "eslint-plugin-vue": "^5.0.0",
+    "babel-eslint": "^10.0.2",
+    "babel-jest": "^24.8.0",
+    "eslint": "^6.0.1",
+    "eslint-plugin-vue": "^5.2.3",
     "fibers": "^3.1.1",
     "flush-promises": "^1.0.2",
-    "lint-staged": "^8.1.0",
-    "sass": "^1.16.0",
+    "jest-fetch-mock": "^2.1.2",
+    "lint-staged": "^9.1.0",
+    "ramda": "^0.26.1",
+    "sass": "^1.22.3",
     "sass-loader": "^7.1.0",
+    "sinon": "^7.3.2",
     "vue-svg-loader": "^0.12.0",
-    "vue-template-compiler": "^2.5.21"
-  },
-  "gitHooks": {
-    "pre-commit": "lint-staged"
+    "vue-template-compiler": "^2.6.10"
   },
   "lint-staged": {
     "*.js": [

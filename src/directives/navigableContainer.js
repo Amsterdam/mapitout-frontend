@@ -3,6 +3,7 @@ import Vue from "vue";
 Vue.directive("navigable-container", {
   bind(el, binding, vNode) {
     const cursorPropName = binding.value.cursorPropName;
+    const enabledPropName = binding.value.enabledPropName;
 
     el.addEventListener("mouseover", event => {
       const hoveredListItemEl = event.target.closest("li");
@@ -19,7 +20,10 @@ Vue.directive("navigable-container", {
     });
 
     el.addEventListener("keydown", event => {
-      if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+      if (
+        ["ArrowUp", "ArrowDown"].includes(event.key) &&
+        vNode.context[enabledPropName]
+      ) {
         event.preventDefault();
         const minIndex = 0;
         const maxIndex = el.querySelectorAll("li").length - 1;
