@@ -103,28 +103,3 @@ Array [
   },
 ]
 `;
-
-exports[`ComponentFilters should create 1`] = `
-Array [
-  Object {
-    "iconComponent": "icon-education",
-    "id": 2,
-    "isFilter": true,
-    "name": "Schools",
-    "parentId": 0,
-    "propertyId": null,
-    "selected": false,
-    "value": "School",
-  },
-  Object {
-    "iconComponent": "icon-bus",
-    "id": 1,
-    "isFilter": true,
-    "name": "Stations",
-    "parentId": 0,
-    "propertyId": null,
-    "selected": false,
-    "value": "Station",
-  },
-]
-`;
