@@ -1,5 +1,7 @@
 # mapitout-frontend
 
+Map application to visualize travel times to and from various points on the map.
+
 ## Project setup
 The google maps public key used in production is most likely restricted, in order to get the maps working, add an `.env.local` file to the root of the project with the following contents:
 
