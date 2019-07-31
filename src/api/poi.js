@@ -17,7 +17,6 @@ export const fetchPois = async (
 ) => {
   if (
     typeof area !== "object" ||
-    !area.hasOwnProperty("paths") ||
     !isArray(area.paths) ||
     area.paths.length === 0
   ) {

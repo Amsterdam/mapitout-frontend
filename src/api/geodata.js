@@ -55,6 +55,7 @@ export const geoLocateAddress = async (addressId = "") => {
       address: response.docs[0].weergavenaam
     };
 
+    // eslint-disable-next-line require-atomic-updates
     cache.geoLocation[addressId] = geoLocation;
 
     return geoLocation;

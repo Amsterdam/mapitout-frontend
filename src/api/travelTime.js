@@ -73,6 +73,7 @@ export const fetchAreas = async (rangesParams = []) => {
     };
   });
 
+  // eslint-disable-next-line require-atomic-updates
   cache.areas[cacheKey] = result;
 
   return result;

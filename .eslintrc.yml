@@ -10,7 +10,11 @@ overrides:
     files:
       - src/**/*.spec.js
     rules:
-      no-console: warn
+      no-console: off
+  - env:
+      node: true
+    files:
+      - ./*.js
 parserOptions:
   parser: babel-eslint
 rules:
