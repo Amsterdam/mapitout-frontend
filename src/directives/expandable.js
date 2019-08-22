@@ -10,6 +10,8 @@ let disabled = false;
 
 Vue.directive("expandable", {
   bind(el, binding, vNode) {
+    disabled = vNode.context.$browserDetect.isIE;
+
     if (disabled) {
       return;
     }
@@ -94,8 +96,6 @@ Vue.directive("expandable", {
   },
 
   inserted(el, binding, vNode) {
-    disabled = vNode.context.$browserDetect.isIE;
-
     if (disabled) {
       return;
     }
