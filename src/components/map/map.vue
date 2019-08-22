@@ -10,12 +10,7 @@ import { mapActions, mapGetters, mapState } from "vuex";
 import { isEqual } from "lodash-es";
 import ComponentLegal from "../legal/legal";
 
-import {
-  createMap,
-  createMarker,
-  createPolygon,
-  getGoogleMapsApi
-} from "../../api/googleMaps";
+import { createMap, createMarker, createPolygon } from "../../api/googleMaps";
 
 export default {
   components: {
@@ -42,15 +37,13 @@ export default {
   },
 
   async mounted() {
-    const googleMapsApi = await getGoogleMapsApi();
-
     this.map = createMap(
       this.$refs.map,
       {
         center: this.mapCenter,
         boundaries: this.mapBoundaries
       },
-      googleMapsApi
+      google
     );
   },
 
@@ -148,8 +141,6 @@ export default {
     async redrawPois(pois) {
       this.clearPois();
 
-      const googleMapsApi = await getGoogleMapsApi();
-
       this.pois = pois.map(poi => {
         const marker = createMarker(
           {
@@ -159,7 +150,7 @@ export default {
             icon: poi.icon,
             map: this.map
           },
-          googleMapsApi
+          google
         );
 
         marker.addListener("click", () => {
@@ -179,22 +170,18 @@ export default {
     },
 
     async drawUnion(configuration) {
-      const googleMapsApi = await getGoogleMapsApi();
-
       const unionPolygon = createPolygon(
         {
           paths: configuration.paths,
           map: this.map
         },
-        googleMapsApi
+        google
       );
 
       this.polygons.push({ id: "union", polygon: unionPolygon });
     },
 
     async drawAreas(areas) {
-      const googleMapsApi = await getGoogleMapsApi();
-
       areas
         .map(area => {
           const rangeParams = this.rangesParams.find(
@@ -221,7 +208,7 @@ export default {
               strokeWeight: areas.length > 2 ? 0.5 : 1,
               map: this.map
             },
-            googleMapsApi
+            google
           );
 
           polygon.addListener("mouseout", () => {
@@ -244,7 +231,7 @@ export default {
               icon: configuration.icon,
               map: this.map
             },
-            googleMapsApi
+            google
           );
 
           marker.addListener("click", () => {

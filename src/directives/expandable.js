@@ -6,8 +6,13 @@ const STATE_ATTRIBUTE_PREFIX = "data-expandable-state";
 const STATE_ATTRIBUTE_ORIGINAL_HEIGHT = `${STATE_ATTRIBUTE_PREFIX}-original-height`;
 const STATE_ATTRIBUTE_DRAG_HANDLE_HEIGHT = `${STATE_ATTRIBUTE_PREFIX}-drag-handle-height`;
 
+let disabled = false;
+
 Vue.directive("expandable", {
   bind(el, binding, vNode) {
+    if (disabled) {
+      return;
+    }
     const expandedPropName = binding.value.expandedPropName;
     const expandingPropName = binding.value.expandingPropName;
 
@@ -68,6 +73,9 @@ Vue.directive("expandable", {
     });
 
     dragHandleHammerInstance.on("panend", () => {
+      if (!el) {
+        return;
+      }
       vNode.context[expandingPropName] = false;
 
       if (vNode.context[expandedPropName]) {
@@ -85,8 +93,14 @@ Vue.directive("expandable", {
     });
   },
 
-  inserted(el) {
-    el.setAttribute(STATE_ATTRIBUTE_ORIGINAL_HEIGHT, el.offsetHeight);
+  inserted(el, binding, vNode) {
+    disabled = vNode.context.$browserDetect.isIE;
+
+    if (disabled) {
+      return;
+    }
+
+    el.setAttribute(STATE_ATTRIBUTE_ORIGINAL_HEIGHT, String(el.offsetHeight));
     el.setAttribute(
       STATE_ATTRIBUTE_DRAG_HANDLE_HEIGHT,
       el.querySelector(`.${CLASS_HANDLE_DRAG}`).offsetHeight
@@ -94,6 +108,10 @@ Vue.directive("expandable", {
   },
 
   unbind(el) {
+    if (disabled) {
+      return;
+    }
+
     el.removeAttribute(STATE_ATTRIBUTE_ORIGINAL_HEIGHT);
 
     Hammer.off(el);

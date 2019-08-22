@@ -3,6 +3,8 @@ env:
 extends:
   - plugin:vue/essential
   - "@vue/prettier"
+globals:
+  google: true
 overrides:
   - env:
       jest: true

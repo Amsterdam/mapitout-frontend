@@ -25,6 +25,7 @@
     "normalize.css": "^8.0.1",
     "register-service-worker": "^1.6.2",
     "vue": "^2.6.10",
+    "vue-browser-detect-plugin": "^0.1.5",
     "vue-router": "^3.0.7",
     "vuex": "^3.1.1"
   },

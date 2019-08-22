@@ -1,4 +1,5 @@
 import Vue from "vue";
+import browserDetect from "vue-browser-detect-plugin";
 
 import "./registerServiceWorker";
 
@@ -7,6 +8,8 @@ import router from "./router";
 import store from "./store";
 
 Vue.config.productionTip = false;
+
+Vue.use(browserDetect);
 
 new Vue({
   router,
