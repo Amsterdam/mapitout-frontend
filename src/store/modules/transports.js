@@ -28,7 +28,7 @@ export default {
         iconComponent: "icon-transport-pedestrian"
       },
       {
-        value: "cycling+ferry",
+        value: "cycling+public_transport",
         label: "Public Transport and Bicycle",
         iconComponent: "icon-transport-bicycle-bus"
       }
