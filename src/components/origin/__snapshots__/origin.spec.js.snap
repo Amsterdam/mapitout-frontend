@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentOrigin should emit an input event when the address type changes its value 1`] = `
+Array [
+  Object {
+    "address": "test",
+    "addressId": "test",
+    "addressLat": 0,
+    "addressLng": 0,
+    "typeId": 2,
+  },
+]
+`;
+
+exports[`ComponentOrigin should emit and input event when the address changes its value 1`] = `
+Array [
+  Object {
+    "address": "different",
+    "addressId": "different",
+    "addressLat": 5,
+    "addressLng": 4,
+    "typeId": 0,
+  },
+]
+`;

@@ -1,0 +1,72 @@
+@import "../../style/variables";
+
+.range-summary {
+  position: relative;
+  height: 80px;
+  margin: 0;
+  list-style: inside none;
+
+  .values {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    line-height: 1;
+    width: calc(100% - 96px);
+    padding: 28px;
+    margin: 0 20px;
+  }
+
+  .location-type {
+    width: 28px;
+    height: 28px;
+    padding-right: 16px;
+  }
+
+  .location-address {
+    font-size: 13px;
+    margin-left: 16px;
+    color: darken($greyscale-2, 40);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    @media (min-width: $breakpoint-tablet-portrait) {
+      width: 134px;
+    }
+  }
+
+  .transport-method {
+    height: 28px;
+    width: 28px;
+    margin-left: 16px;
+    color: darken($greyscale-2, 40);
+  }
+
+  .travel-time {
+    font-size: 11px;
+    color: darken($greyscale-2, 40);
+  }
+
+  .delete {
+    border: 0 none;
+    outline: 0 none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    position: absolute;
+    right: 10px;
+    top: calc(50% - 8px);
+
+    .icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      color: lighten($greyscale-1, 25);
+    }
+
+    &:hover {
+      .icon {
+        color: $greyscale-1;
+      }
+    }
+  }
+}

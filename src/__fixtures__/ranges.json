@@ -1,0 +1,22 @@
+[
+  {
+    "id": "0",
+    "originTypeId": 0,
+    "originId": "",
+    "origin": "",
+    "originLat": 0,
+    "originLng": 0,
+    "transportTypeValue": "cycling",
+    "travelTime": 45
+  },
+  {
+    "id": "1",
+    "originTypeId": 0,
+    "originId": "",
+    "origin": "",
+    "originLat": 0,
+    "originLng": 0,
+    "transportTypeValue": "cycling",
+    "travelTime": 45
+  }
+]

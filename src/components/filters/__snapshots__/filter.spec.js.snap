@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentFilter should toggle the selected value in the store when clicking the toggle 1`] = `
+Object {
+  "iconComponent": "icon-bus",
+  "id": 1,
+  "name": "Stations",
+  "parentId": 0,
+  "propertyId": null,
+  "selected": false,
+  "value": "Station",
+}
+`;

@@ -1,0 +1,71 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fetchPois should call request with the correct url and request configuration object 1`] = `
+Array [
+  "https://www.example.com/poi-search",
+  Object {
+    "body": "{\\"poi_in_polygon\\":{\\"type\\":\\"Feature\\",\\"geometry\\":{\\"type\\":\\"MultiPolygon\\",\\"coordinates\\":[[[[2,1]]],[[[4,3]]]],\\"crs\\":{\\"type\\":\\"name\\",\\"properties\\":{\\"name\\":\\"EPSG:4326\\"}}}}}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`fetchPois should call request with the correct url and request configuration object 2`] = `
+Array [
+  "https://www.example.com/poi-search",
+  Object {
+    "body": "{\\"poi_in_polygon\\":{\\"type\\":\\"Feature\\",\\"geometry\\":{\\"type\\":\\"MultiPolygon\\",\\"coordinates\\":[[[[2,1]]],[[[4,3]]]],\\"crs\\":{\\"type\\":\\"name\\",\\"properties\\":{\\"name\\":\\"EPSG:4326\\"}}}},\\"poi_by_type\\":[1]}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`fetchPois should call request with the correct url and request configuration object 3`] = `
+Array [
+  "https://www.example.com/poi-search",
+  Object {
+    "body": "{\\"poi_in_polygon\\":{\\"type\\":\\"Feature\\",\\"geometry\\":{\\"type\\":\\"MultiPolygon\\",\\"coordinates\\":[[[[2,1]]],[[[4,3]]]],\\"crs\\":{\\"type\\":\\"name\\",\\"properties\\":{\\"name\\":\\"EPSG:4326\\"}}}},\\"poi_by_property\\":[2]}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`fetchPois should call request with the correct url and request configuration object 4`] = `
+Array [
+  "https://www.example.com/poi-search",
+  Object {
+    "body": "{\\"poi_in_polygon\\":{\\"type\\":\\"Feature\\",\\"geometry\\":{\\"type\\":\\"MultiPolygon\\",\\"coordinates\\":[[[[2,1]]],[[[4,3]]]],\\"crs\\":{\\"type\\":\\"name\\",\\"properties\\":{\\"name\\":\\"EPSG:4326\\"}}}},\\"poi_by_type\\":[1],\\"poi_by_property\\":[2]}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`lookupPoi should call request with the correct url and request configuration object 1`] = `
+Array [
+  "https://www.example.com/poi-search",
+  Object {
+    "body": "{\\"poi_by_name\\":\\"test\\"}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;

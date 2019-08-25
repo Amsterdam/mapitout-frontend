@@ -1,14 +1,16 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-import RangesPanel from "./components/RangesPanel";
-import DetailsPanel from "./components/DetailsPanel";
+import { BASE_URL } from "./env";
+
+import ComponentRanges from "./components/ranges/ranges.vue";
+import ComponentPoiDetails from "./components/poi-details/poi-details.vue";
 
 Vue.use(Router);
 
 const router = new Router({
   mode: "history",
-  base: process.env.BASE_URL,
+  base: BASE_URL,
   routes: [
     {
       path: "/",
@@ -18,12 +20,12 @@ const router = new Router({
     {
       path: "/ranges",
       name: "ranges",
-      component: RangesPanel
+      component: ComponentRanges
     },
     {
       path: "/details/:poi",
       name: "details",
-      component: DetailsPanel
+      component: ComponentPoiDetails
     }
   ]
 });

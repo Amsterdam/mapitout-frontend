@@ -1,0 +1,59 @@
+@import "../../style/variables";
+
+.filter-group {
+  width: 100%;
+}
+
+.toggle-expand {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 48px;
+  width: 100%;
+  padding: 0 24px;
+  border: 0 none;
+  outline: 0 none;
+  background-color: $greyscale-2;
+  cursor: pointer;
+  font-size: 14px;
+
+  .icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 16px;
+  }
+
+  .icon-toggle {
+    width: 8px;
+    height: 4px;
+    margin-left: 16px;
+    transform: rotate(180deg);
+
+    .collapsed & {
+      transform: rotate(0);
+    }
+  }
+
+  .name {
+    flex-grow: 1;
+    text-align: left;
+  }
+}
+
+.group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  .item {
+    border-bottom: 2px solid $greyscale-2;
+  }
+}
+
+.filter::v-deep {
+  background-color: white;
+
+  .icon {
+    visibility: hidden;
+  }
+}

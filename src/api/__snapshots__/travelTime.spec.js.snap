@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`fetchAreas when no cached value exists should call request with the correct url and request configuration object 1`] = `
+Array [
+  "https://www.example.com/ranges",
+  Object {
+    "body": "{\\"departure_searches\\":[{\\"id\\":\\"0\\",\\"coords\\":{\\"lat\\":0,\\"lng\\":0},\\"departure_time\\":\\"2019-07-15T09:00:00.000Z\\",\\"travel_time\\":2700,\\"transportation\\":{\\"type\\":\\"0\\"}}],\\"unions\\":[{\\"id\\":\\"union\\",\\"search_ids\\":[\\"0\\"]}]}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;
+
+exports[`fetchAreas when no cached value exists should call request with the correct url and request configuration object 2`] = `
+Array [
+  "https://www.example.com/ranges",
+  Object {
+    "body": "{\\"departure_searches\\":[{\\"id\\":\\"0\\",\\"coords\\":{\\"lat\\":0,\\"lng\\":0},\\"departure_time\\":\\"2019-07-15T09:00:00.000Z\\",\\"travel_time\\":2700,\\"transportation\\":{\\"type\\":\\"0\\"}},{\\"id\\":\\"1\\",\\"coords\\":{\\"lat\\":0,\\"lng\\":0},\\"departure_time\\":\\"2019-07-15T09:00:00.000Z\\",\\"travel_time\\":2700,\\"transportation\\":{\\"type\\":\\"0\\"}}],\\"unions\\":[{\\"id\\":\\"union\\",\\"search_ids\\":[\\"0\\",\\"1\\"]}]}",
+    "headers": Object {
+      "Accept": "application/json",
+      "Content-type": "application/json; charset=utf-8",
+    },
+    "method": "POST",
+  },
+]
+`;

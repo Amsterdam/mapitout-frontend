@@ -1,0 +1,23 @@
+env:
+  es6: true
+extends:
+  - plugin:vue/essential
+  - "@vue/prettier"
+globals:
+  google: true
+overrides:
+  - env:
+      jest: true
+      node: true
+    files:
+      - src/**/*.spec.js
+    rules:
+      no-console: off
+  - env:
+      node: true
+    files:
+      - ./*.js
+parserOptions:
+  parser: babel-eslint
+rules:
+  no-console: warn

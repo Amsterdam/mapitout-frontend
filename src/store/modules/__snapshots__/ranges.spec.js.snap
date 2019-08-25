@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ranges store module actions updateParams should dispatch an updateAllParams mutation with the updated params 1`] = `
+Array [
+  "updateAllParams",
+  Array [
+    Object {
+      "id": "0",
+      "origin": "",
+      "originId": "",
+      "originLat": 0,
+      "originLng": 0,
+      "originTypeId": 0,
+      "transportTypeValue": "cycling",
+      "travelTime": 60,
+    },
+    Object {
+      "id": "0",
+      "origin": "",
+      "originId": "",
+      "originLat": 0,
+      "originLng": 0,
+      "originTypeId": 0,
+      "transportTypeValue": "cycling",
+      "travelTime": 60,
+    },
+  ],
+]
+`;

@@ -1,0 +1,24 @@
+@import "../../style/variables";
+
+.map {
+  position: relative;
+}
+.canvas {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+.legal {
+  position: absolute;
+  z-index: 2;
+  bottom: 15px;
+  right: 5px;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.5);
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    right: auto;
+    left: 80px;
+    bottom: 6px;
+  }
+}

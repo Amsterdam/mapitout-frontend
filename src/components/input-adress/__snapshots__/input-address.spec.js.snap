@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InputAddress when selecting a suggestion id should emit an input event and set input value when resolving a suggestion 1`] = `
+Array [
+  Object {
+    "address": "Veer 2-Tf1, Zaamslag",
+    "id": "adr-483fe2345d45557137c3ba46c2717cea",
+    "lat": 51,
+    "lng": 4,
+  },
+]
+`;
+
+exports[`InputAddress when selecting a suggestion id should emit an input event when failing to resolve a suggestion 1`] = `
+Array [
+  Object {
+    "address": "",
+    "id": "",
+    "lat": 0,
+    "lng": 0,
+  },
+]
+`;
+
+exports[`InputAddress when selecting a suggestion id should emit an input event when the selected suggestion id is blank 1`] = `
+Array [
+  Object {
+    "address": "",
+    "id": "",
+    "lat": 0,
+    "lng": 0,
+  },
+]
+`;

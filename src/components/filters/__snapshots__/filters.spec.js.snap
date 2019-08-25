@@ -1,0 +1,105 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentFilters should correctly process the raw filters 1`] = `
+Array [
+  Object {
+    "iconComponent": "icon-education",
+    "id": 2,
+    "isFilter": true,
+    "name": "Schools",
+    "parentId": 0,
+    "propertyId": null,
+    "selected": false,
+    "value": "School",
+  },
+  Object {
+    "iconComponent": "icon-bus",
+    "id": 1,
+    "isFilter": true,
+    "name": "Stations",
+    "parentId": 0,
+    "propertyId": null,
+    "selected": false,
+    "value": "Station",
+  },
+]
+`;
+
+exports[`ComponentFilters should correctly process the raw filters 2`] = `
+Array [
+  Object {
+    "children": Array [
+      Object {
+        "group": "School programs",
+        "iconComponent": "icon-education",
+        "id": 3,
+        "name": "Age Range 4-11",
+        "parentId": 2,
+        "propertyId": 1,
+        "selected": false,
+        "value": "Age range 4-11",
+      },
+      Object {
+        "group": "School programs",
+        "iconComponent": "icon-education",
+        "id": 4,
+        "name": "Age Range 4-18",
+        "parentId": 2,
+        "propertyId": 2,
+        "selected": false,
+        "value": "Age range 4-18",
+      },
+      Object {
+        "group": "School programs",
+        "iconComponent": "icon-education",
+        "id": 5,
+        "name": "Primary Education",
+        "parentId": 2,
+        "propertyId": 3,
+        "selected": false,
+        "value": "Primary education",
+      },
+      Object {
+        "group": "School programs",
+        "iconComponent": "icon-education",
+        "id": 6,
+        "name": "Secondary Education",
+        "parentId": 2,
+        "propertyId": 4,
+        "selected": false,
+        "value": "Secondary education",
+      },
+    ],
+    "iconComponent": "icon-education",
+    "isGroup": true,
+    "name": "School programs",
+  },
+  Object {
+    "children": Array [
+      Object {
+        "group": "School system",
+        "iconComponent": "icon-education",
+        "id": 7,
+        "name": "International Schools",
+        "parentId": 2,
+        "propertyId": 5,
+        "selected": false,
+        "value": "International schools",
+      },
+      Object {
+        "group": "School system",
+        "iconComponent": "icon-education",
+        "id": 8,
+        "name": "Dutch Schools",
+        "parentId": 2,
+        "propertyId": 6,
+        "selected": false,
+        "value": "Dutch schools",
+      },
+    ],
+    "iconComponent": "icon-education",
+    "isGroup": true,
+    "name": "School system",
+  },
+]
+`;

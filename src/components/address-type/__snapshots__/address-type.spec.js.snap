@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentAddressType should emit an input event and hide the list when clicking on an dropdown option 1`] = `
+Array [
+  1,
+]
+`;
+
+exports[`ComponentAddressType should emit an input event when selecting an option from the native select element 1`] = `
+Array [
+  0,
+]
+`;

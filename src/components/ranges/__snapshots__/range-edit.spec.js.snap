@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentRangeEdit should update the store params when the origin property changes 1`] = `
+Object {
+  "id": "0",
+  "origin": "different",
+  "originId": "different",
+  "originLat": 0,
+  "originLng": 0,
+  "originTypeId": 0,
+  "transportTypeValue": "cycling",
+  "travelTime": 45,
+}
+`;
+
+exports[`ComponentRangeEdit should update the store params when the transportType property changes 1`] = `
+Object {
+  "id": "0",
+  "origin": "",
+  "originId": "",
+  "originLat": 0,
+  "originLng": 0,
+  "originTypeId": 0,
+  "transportTypeValue": "driving",
+  "travelTime": 45,
+}
+`;
+
+exports[`ComponentRangeEdit should update the store params when the travelTime property changes 1`] = `
+Object {
+  "id": "0",
+  "origin": "",
+  "originId": "",
+  "originLat": 0,
+  "originLng": 0,
+  "originTypeId": 0,
+  "transportTypeValue": "cycling",
+  "travelTime": 10,
+}
+`;

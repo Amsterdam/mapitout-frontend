@@ -1,0 +1,127 @@
+@import "../../style/variables";
+
+.panel-ranges {
+  .body {
+    background: white;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 24px;
+  }
+
+
+  &.collapsed {
+    @media (max-width: $breakpoint-tablet-portrait - 1) {
+      .footer {
+        display: none;
+      }
+
+      .body {
+        height: 80px;
+        overflow: hidden;
+      }
+
+      .item {
+        display: none;
+
+        &.active {
+          display: block;
+          overflow: hidden;
+
+          .range::v-deep {
+            .origin {
+              position: relative;
+
+              &::after {
+                content: " ";
+                display: block;
+                position: absolute;
+                z-index: 4;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+              }
+            }
+
+            &.defined {
+              .travel-time {
+                background-color: $greyscale-2;
+                order: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.ranges {
+  margin: 0;
+  padding: 0;
+  list-style: none inside;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.item {
+  order: 2;
+
+  &:hover {
+    background-color: $greyscale-2;
+    cursor: pointer;
+  }
+
+  .range {
+    margin: 0 16px;
+  }
+
+  .range-summary::v-deep {
+    .values {
+      border-bottom: 2px solid $greyscale-2;
+    }
+  }
+
+  &:last-child {
+    .range-summary::v-deep {
+      .values {
+        border-bottom: 0 none ;
+      }
+    }
+  }
+
+  &.active {
+    order: 1;
+
+    &:hover {
+      background-color: transparent;
+      cursor: default;
+    }
+
+    .range {
+      margin: 0;
+      border-bottom: 0 none;
+    }
+  }
+}
+
+.add {
+  display: block;
+  border: 1px solid black;
+  background-color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: black;
+
+  &:hover {
+    background-color: black;
+    color: white;
+  }
+}

@@ -1,5 +1,8 @@
+import 'babel-polyfill';
+import 'whatwg-fetch';
+import 'url-polyfill';
 import Vue from "vue";
-import { sync } from "vuex-router-sync";
+import browserDetect from "vue-browser-detect-plugin";
 
 import "./registerServiceWorker";
 
@@ -9,7 +12,7 @@ import store from "./store";
 
 Vue.config.productionTip = false;
 
-sync(store, router);
+Vue.use(browserDetect);
 
 new Vue({
   router,

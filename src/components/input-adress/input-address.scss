@@ -1,0 +1,97 @@
+
+@import "../../style/variables";
+
+.location-address {
+  position: relative;
+  align-items: stretch;
+  color: $greyscale-1;
+
+  &.disabled {
+    &::before {
+      content: " ";
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      position: absolute;
+      z-index: 1;
+    }
+
+    &::after {
+      width: 40%;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0), white);
+    }
+  }
+}
+
+.input {
+  border-style: solid;
+  border-color: $greyscale-1;
+  border-width: 0 0 1px 0;
+  border-radius: 0;
+  color: $greyscale-1;
+  outline: none;
+  padding: 4px 0;
+  width: 100%;
+  line-height: 1;
+  font-size: 16px;
+  background: transparent;
+  transition: padding 0.1s ease-in-out;
+  text-overflow: ellipsis;
+
+  @media (min-width: $breakpoint-tablet-portrait) {
+    font-size: 13px;
+  }
+
+  .disabled & {
+    z-index: -1;
+    border-width: 0;
+    padding: 0;
+  }
+
+  &:focus {
+    border-width: 0 0 2px 0;
+  }
+}
+
+.dropdown {
+  position: absolute;
+  left: -68px;
+  top: 100%;
+  width: calc(100% + 68px);
+  border-radius: 0 0 2px 2px;
+  background-color: white;
+  padding: 0;
+  list-style: none;
+  box-shadow: 0 1px 2px 0 $greyscale-1;
+  margin: 4px 0 0 0;
+
+  &.fade-enter-active,
+  &.fade-leave-active {
+    transition: opacity 0.2s ease-in-out, margin-top 0.2s ease-in-out;
+  }
+
+  &.fade-enter,
+  &.fade-leave-to {
+    margin-top: 0;
+    opacity: 0;
+  }
+}
+
+.item {
+  padding: 4px 8px;
+  cursor: pointer;
+
+  &.cursor {
+    background-color: $greyscale-2;
+  }
+}
+
+.option {
+  border: 0 none;
+  background-color: transparent;
+  outline: 0 none;
+  padding: 0;
+  text-align: left;
+  font-size: 14px;
+}

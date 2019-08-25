@@ -1,0 +1,64 @@
+@import "../../style/variables";
+
+.filter {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  background-color: $greyscale-2;
+  padding: 0 24px;
+}
+
+.icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 16px;
+}
+
+.name {
+  flex-grow: 1;
+  font-size: 14px;
+}
+
+button.name {
+  border: 0 none;
+  outline: 0 none;
+  background-color: transparent;
+  text-decoration: underline;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.toggle {
+  position: relative;
+  height: 28px;
+  width: 50px;
+  border: 0 none;
+  background-color: rgba($greyscale-1, 0.2);
+  outline: none;
+  cursor: pointer;
+  border-radius: 14px;
+  transition: background-color 0.1s ease-in-out;
+
+  &::after {
+    content: " ";
+    display: block;
+    background-color: white;
+    width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.1s ease-in-out;
+  }
+
+  &.selected {
+    background-color: $greyscale-1;
+
+    &::after {
+      transform: translateX(22px);
+    }
+  }
+}

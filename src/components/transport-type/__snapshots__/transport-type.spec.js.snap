@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ComponentTransportType should change its value when clicking an option 1`] = `
+Array [
+  "public_transport",
+]
+`;
