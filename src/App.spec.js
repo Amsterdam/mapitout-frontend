@@ -16,7 +16,10 @@ describe("App", () => {
       localVue,
       stubs: ["app-header", "app-tabs", "app-map", "router-view"],
       mocks: {
-        $route: jest.fn()
+        $route: jest.fn(),
+        $browserDetect: {
+          isIE: false
+        }
       }
     });
   });

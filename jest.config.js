@@ -23,5 +23,8 @@ module.exports = {
     "!**/src/registerServiceWorker.js",
     "**/src/**/*.{js,vue}"
   ],
-  setupFiles: ["./test/setup.js"]
+  setupFiles: ["./test/setup.js"],
+  globals: {
+    "google": true
+  }
 };
