@@ -3,7 +3,6 @@
 .range-summary {
   position: relative;
   height: 80px;
-  padding: 0 20px;
   margin: 0;
   list-style: inside none;
 
@@ -12,8 +11,9 @@
     flex-direction: row;
     align-items: center;
     line-height: 1;
-    width: 100%;
+    width: calc(100% - 96px);
     padding: 28px;
+    margin: 0 20px;
   }
 
   .location-type {
