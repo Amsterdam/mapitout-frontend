@@ -20,14 +20,17 @@
   },
   "dependencies": {
     "@google/markerclusterer": "^1.0.3",
+    "babel-polyfill": "^6.26.0",
     "hammerjs": "^2.0.8",
     "lodash-es": "^4.17.11",
     "normalize.css": "^8.0.1",
     "register-service-worker": "^1.6.2",
+    "url-polyfill": "^1.1.7",
     "vue": "^2.6.10",
     "vue-browser-detect-plugin": "^0.1.5",
     "vue-router": "^3.0.7",
-    "vuex": "^3.1.1"
+    "vuex": "^3.1.1",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.9.2",
