@@ -8,6 +8,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import { isEqual } from "lodash-es";
+import MarkerClusterer from "@google/markerclusterer";
 import ComponentLegal from "../legal/legal";
 
 import { createMap, createMarker, createPolygon } from "../../api/googleMaps";
@@ -29,10 +30,9 @@ export default {
 
   data() {
     return {
-      googleMapsApi: null,
       map: null,
       polygons: [],
-      pois: []
+      clusters: []
     };
   },
 
@@ -45,6 +45,12 @@ export default {
       },
       google
     );
+
+    this.clusters = new MarkerClusterer(this.map, [], {
+      minimumClusterSize: 5,
+      imagePath:
+        "https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m"
+    });
   },
 
   watch: {
@@ -120,14 +126,6 @@ export default {
       this.polygons = [];
     },
 
-    clearPois() {
-      this.pois.forEach(({ marker }) => {
-        marker.setMap(null);
-      });
-
-      this.pois = [];
-    },
-
     async redrawAreas(areas) {
       this.clearAreas();
 
@@ -139,19 +137,15 @@ export default {
     },
 
     async redrawPois(pois) {
-      this.clearPois();
+      this.clusters.clearMarkers();
 
-      this.pois = pois.map(poi => {
-        const marker = createMarker(
-          {
-            title: poi.name,
-            lat: poi.geo_location.coordinates[1],
-            lng: poi.geo_location.coordinates[0],
-            icon: poi.icon,
-            map: this.map
-          },
-          google
-        );
+      const markers = pois.map(poi => {
+        const marker = createMarker({
+          title: poi.name,
+          lat: poi.geo_location.coordinates[1],
+          lng: poi.geo_location.coordinates[0],
+          icon: poi.icon
+        });
 
         marker.addListener("click", () => {
           this.$router.push({
@@ -162,21 +156,17 @@ export default {
           });
         });
 
-        return {
-          data: poi,
-          marker
-        };
+        return marker;
       });
+
+      this.clusters.addMarkers(markers);
     },
 
     async drawUnion(configuration) {
-      const unionPolygon = createPolygon(
-        {
-          paths: configuration.paths,
-          map: this.map
-        },
-        google
-      );
+      const unionPolygon = createPolygon({
+        paths: configuration.paths,
+        map: this.map
+      });
 
       this.polygons.push({ id: "union", polygon: unionPolygon });
     },
@@ -200,16 +190,13 @@ export default {
           };
         })
         .forEach(configuration => {
-          const polygon = createPolygon(
-            {
-              paths: configuration.paths,
-              fillColor: configuration.color,
-              fillOpacity: 0.2,
-              strokeWeight: areas.length > 2 ? 0.5 : 1,
-              map: this.map
-            },
-            google
-          );
+          const polygon = createPolygon({
+            paths: configuration.paths,
+            fillColor: configuration.color,
+            fillOpacity: 0.2,
+            strokeWeight: areas.length > 2 ? 0.5 : 1,
+            map: this.map
+          });
 
           polygon.addListener("mouseout", () => {
             if (configuration.id !== this.selectedId) {
@@ -223,16 +210,14 @@ export default {
             this.selectRangeById(configuration.id);
           });
 
-          const marker = createMarker(
-            {
-              title: configuration.origin,
-              lat: configuration.originLat,
-              lng: configuration.originLng,
-              icon: configuration.icon,
-              map: this.map
-            },
-            google
-          );
+          const marker = createMarker({
+            title: configuration.origin,
+            lat: configuration.originLat,
+            lng: configuration.originLng,
+            icon: configuration.icon
+          });
+
+          marker.setMap(this.map);
 
           marker.addListener("click", () => {
             this.selectRangeById(configuration.id);
